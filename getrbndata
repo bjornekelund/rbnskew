@@ -1,0 +1,12 @@
+#!/bin/bash
+# get a full month of data
+MONTH="05"
+FOLDER="rbnfiles"
+for i in {01..31}
+  do
+    FILE="2020"$MONTH$i
+    echo "File: "$FILE
+    wget --no-hsts http://www.reversebeacon.net/raw_data/dl.php?f=$FILE -O $FOLDER/$FILE.zip
+    gunzip < $FOLDER/$FILE.zip > $FOLDER/$FILE.csv
+  done
+exit
