@@ -1,10 +1,10 @@
 gcc = gcc -ggdb
 
-skew:	skew.o  Makefile
-	$(gcc) -o skew skew.o -lm
+offlineskew:	offlineskew.o  Makefile
+	$(gcc) -o offlineskew offlineskew.o -lm
 
-skew.o:	skew.c Makefile
-	$(gcc) -c skew.c
-	
+offlineskew.o:	offlineskew.c Makefile
+	$(gcc) -c offlineskew.c
+
 clean	:
 	rm -f *.o
