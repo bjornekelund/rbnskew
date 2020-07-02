@@ -13,7 +13,7 @@
 #define FMT "%Y-%m-%d %H:%M:%S"
 #define SPOTSWINDOW 500
 #define MAXSKIMMERS 1000
-#define USAGE "Usage: %s -f filename -t target_call -d \n"
+#define USAGE "Usage: %s -f filename -t callsign -d -s\n"
 #define MAXAPART 60 
 #define MINSNR 6
 #define MINFREQ 7000
@@ -41,14 +41,14 @@ struct Skimmer
 };
 
 int main(int argc, char *argv[]) {
-	char *referenceskimmer[10] = {"JF2IWL", "AC0C", "WB6BEE" ,"SM7IUN", 
+	char *referenceskimmer[10] = {"JF2IWL", "AC0C", "WB6BEE", "SM7IUN", 
 		"DF4UE", "K9IMM", "NW0W", "KM3T", "N2QT", "DF7GB" };
     FILE *fp;
-	char filename[STRLEN] = "";
+	char filename[STRLEN] = "", target[STRLEN] = "";
 	int totalspots = 0, usedspots = 0, c, got, i, j, matches, spp = 0;
 	time_t starttime, stoptime, spottime, firstspot, lastspot;
 	struct tm *timeinfo, stime;
-	bool verbose = false, reference, sort = false;
+	bool verbose = false, reference, sort = false, targeted = false;
 	char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN];
 	char firsttimestring[STRLEN], lasttimestring[STRLEN];
 	char outstring[LINELEN];
@@ -62,12 +62,20 @@ int main(int argc, char *argv[]) {
 	for (i = 0; i < SPOTSWINDOW; i++)
 		strcpy(pipeline[i].dx, "");
 	
-    while ((c = getopt(argc, argv, "sdf:")) != -1)
+    while ((c = getopt(argc, argv, "t:sdf:")) != -1)
     {
         switch (c)
         {
             case 'f':
                 strcpy(filename, optarg);
+                break;
+            case 't':
+				for (i = 0; i < strlen(optarg) + 1; i++)
+					target[i] = toupper(optarg[i]);
+				// for (i = 0; i < referenceskimmers; i++)
+					// if (strcmp(referenceskimmer[i], target) == 0)
+						// referenceskimmer[i] = "";
+				targeted = true;
                 break;
 			case 'd':
 				verbose = true;
@@ -118,7 +126,7 @@ int main(int argc, char *argv[]) {
 			// Check if this spot is by a reference skimmer
 			for (i = 0; i < referenceskimmers; i++)
 			{
-				if (strcmp(de, referenceskimmer[i]) == 0)
+				if (strcmp(de, referenceskimmer[i]) == 0 && !(targeted && strcmp(de, target) == 0))
 				{
 					reference = true;
 					break;
@@ -133,8 +141,9 @@ int main(int argc, char *argv[]) {
 				for (i = 0; i < SPOTSWINDOW; i++)
 				{
 					if (!pipeline[i].analyzed && !pipeline[i].reference && freq > MINFREQ &&
-						strcmp(pipeline[i].dx, dx) == 0 && 
-						snr > MINSNR && abs(difftime(pipeline[i].time, spottime)) < MAXAPART)
+						strcmp(pipeline[i].dx, dx) == 0 && snr > MINSNR && 
+						abs(difftime(pipeline[i].time, spottime)) < MAXAPART && 
+						!(targeted && strcmp(pipeline[i].de, target) != 0))
 					{
 						delta = pipeline[i].freq - (int)round(freq * 10.0);
 						adelta = delta > 0 ? delta : -delta;

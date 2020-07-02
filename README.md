@@ -9,11 +9,13 @@ It uses a set of known and trusted GPSDO-controlled skimmers as reference
 and calculates the average deviation in reported frequency for all spots 
 meeeting the criteria below.
 
+For a more rapid analysis, the analysis can be done for only a selected call.
+
 The adjustment factor listed is intended to be applied to the skimmer's 
 current value of the FreqCalibration parameter in SkimSrv.ini.
 `SkimSrv.ini` can be found in `%appdata%\Afreet\Products\SkimSrv`
 
-`skimlist -f "rbn csv file" -d (verbose) -s (sort result)`
+`skimlist -f csvfile [-t callsign] [-d] (verbose) [-s] (sort result)`
 
 The analysis of skimlist has the following characteristics:
 
@@ -25,9 +27,17 @@ The analysis of skimlist has the following characteristics:
 * Does not list skimmers with less than 100 spots to guarantee statistical significance
 * Assumes a relative frequency error, i.e. originating solely from the skimmer's reference oscillator
 
-`offlineskew` is an experimental tool for more detailed analysis of a single skimmer. 
+`offlineskew` is old code and a development tool. Do not use. 
 
-`offlineskew -f "rbn csv file" -t "targeted skimmer" -d (verbose mode)`
+To run the code on your machine (Linux or Windows' Ubuntu emulator) the following steps are required:
+
+`$ sudo apt install git
+`$ sudo apt install gcc
+`$ sudo apt install make
+`$ git clone https://github.com/bjornekelund/rbnskew
+`$ cd rbnskew
+`$ make
+
 
 
 
