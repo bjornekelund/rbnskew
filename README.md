@@ -11,8 +11,10 @@ meeeting the criteria below.
 
 The trusted skimmers are listed in the file `reference`. One callsign per line.
 
-For a more rapid analysis, the analysis can be done for only a selected call.
-This is done by the script `checkreferences` which walks through the used
+For a more rapid analysis, the analysis can be done for only a selected call 
+using the -t option.
+
+This option is used  by the script `checkreferences` which walks through the used
 reference skimmers and checks each of them against the others. 
 
 The script `getrbndata` downloads all data for a selected month into the 
@@ -47,7 +49,3 @@ To run the code on your machine (Linux or Windows' Ubuntu emulator) the followin
 `$ git clone https://github.com/bjornekelund/rbnskew`\
 `$ cd rbnskew`\
 `$ make`
-
-
-
-
