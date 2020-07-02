@@ -2,11 +2,11 @@
 Skew analysis for the RBN network
 
 `skimlist` analyses a comma separated list of spots (formatted as the csv 
-files available from http://www.reversebeacon.net/raw_data/) to determine 
+files available from http://www.reversebeacon.net/raw_data) to determine 
 the relative frequency error for all skimmers listed in the file. 
 
-It uses a set of trusted GPSDO-controlled skimmers as reference and 
-calculates the average deviation in reported frequency for all spots 
+It uses a set of known and trusted GPSDO-controlled skimmers as reference 
+and calculates the average deviation in reported frequency for all spots 
 meeeting the criteria below.
 
 The adjustment factor listed is intended to be applied to the skimmer's 
