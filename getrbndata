@@ -1,6 +1,6 @@
 #!/bin/bash
 # get a full month of data
-MONTH="05"
+MONTH="06"
 FOLDER="rbnfiles"
 for i in {01..31}
   do

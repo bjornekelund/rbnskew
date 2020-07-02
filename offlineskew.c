@@ -5,30 +5,30 @@
 #include <time.h>
 #include <stdbool.h>
 #include <math.h>
+#include <unistd.h>
+#include <ctype.h>
 
 #define STRLEN 32
 #define LINELEN 128
 #define FMT "%Y-%m-%d %H:%M:%S"
-#define SPOTSWINDOW 1000
+#define SPOTSWINDOW 200
 #define USAGE "Usage: %s -f filename -t target_call -d \n"
 
 int main(int argc, char *argv[]) {
-	char *goldencall[10] = {"JF2IWL", "AC0C", "WB6BEE" ,"SM7IUN", 
+	char *referenceskimmer[10] = {"JF2IWL", "AC0C", "WB6BEE" ,"SM7IUN", 
 		"DF4UE", "K9IMM", "NW0W", "KM3T", "N2QT", "DF7GB" };
-    char filename[STRLEN] = "";
 
     FILE *fp;
-	char targetcall[STRLEN] = "";
+	char targetcall[STRLEN] = "", filename[STRLEN] = "";
 	int goldencount = 0, spotcount = 0, c, got, i, matches;
-	time_t rawtime;
+	time_t starttime, stoptime;
 	struct tm *timeinfo, spottime;
-	bool verbose = false, verified, targeted;
+	bool verbose = false, reference, targeted;
 	char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN];
 	int snr, delta, adelta, targetcount = 0, badcount = 0;
 	float freq, accreldiff = 0.0;
 	char flag;
-	// int verifiedthreshold = 10;
-	int goldencalls = sizeof(*goldencall);
+	int referenceskimmers = sizeof(*referenceskimmer);
 	
 	struct Spot {
 		char de[STRLEN];// Skimmer callsign
@@ -36,8 +36,8 @@ int main(int argc, char *argv[]) {
 		time_t time;	// Spot timestamp in epoch format
 		int snr;		// SNR for spotcount
 		int freq;		// 10x spot frequency
-		bool verified;	// Verified boolean
-		bool used; 	// If displayed
+		bool reference;	// Originates from a reference skimmer
+		bool analyzed; 	// Already analyzed
 	};
 	
 	struct Spot pipeline[SPOTSWINDOW];
@@ -55,6 +55,8 @@ int main(int argc, char *argv[]) {
                 break;
             case 't':
                 strcpy(targetcall, optarg);
+				for (i = 0; i < strlen(targetcall); i++)
+					targetcall[i] = toupper(targetcall[i]);
                 break;
 			case 'd':
 				verbose = true;
@@ -73,17 +75,20 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-
     targeted = strlen(targetcall) != 0;
 	
 	fp = fopen(filename, "r");
 
 	if (verbose) 
 	{
-		(void)time(&rawtime);
-		timeinfo = localtime(&rawtime);
+		(void)time(&starttime);
+		timeinfo = localtime(&starttime);
 		fprintf(stderr, "Starting at %s", asctime(timeinfo));
 	}
+	
+	if (!isatty(STDOUT_FILENO))
+		printf("Analysis results can be found in last lines of file.\n---\n");
+
 	
 	while (fgets(line, LINELEN, fp))
 	{
@@ -91,38 +96,31 @@ int main(int argc, char *argv[]) {
 		got = sscanf(line, "%[^,],%*[^,],%*[^,],%f,%*[^,],%[^,],%*[^,],%*[^,],%*[^,],%d,%[^,],%*s", 
 			de, &freq, dx, &snr, timestring);
 		
-		if (got == 5)
+		if (got == 5) // If parsing is successful
 		{ 
 			spotcount++;
-
-			// matches = 0;
-			// for (i = 0; i < SPOTSWINDOW; i++)
-			// {
-				// if (strcmp(pipeline[i].dx, dx) && pipeline[i].freq == (int)round(freq * 10.0))
-					// matches++;
-			// }
-			// verified = matches > VERIFIEDTHRESHOLD;
-			
-			verified = false;
-			for (i = 0; i < goldencalls; i++)
+		
+			reference = false;
+			// Check if this spot is by a golden skimmer
+			for (i = 0; i < referenceskimmers; i++)
 			{
-				if (strcmp(de, goldencall[i]) == 0)
+				if (strcmp(de, referenceskimmer[i]) == 0)
 				{
 					if (!targeted || strcmp(targetcall, de) != 0)
 					{
-						verified = true;
+						reference = true;
 						break;
 					}
 				}
 			}
 
-			if (verified)
+			if (reference) // If it is reference spot, use it to verify all un-analyzed, non-reference spots in the pipeline
 			{
 				if (verbose && false) 
-					fprintf(stderr, "Verified spot of %8s by %8s\n", dx, de);
+					fprintf(stderr, "Reference spot of %8s by %8s\n", dx, de);
 				for (i = 0; i < SPOTSWINDOW; i++)
 				{
-					if ((strcmp(pipeline[i].dx, dx) == 0 && !pipeline[i].used) && 
+					if ((strcmp(pipeline[i].dx, dx) == 0 && !pipeline[i].analyzed && !pipeline[i].reference) && 
 						((targeted && strcmp(pipeline[i].de, targetcall) == 0) || !targeted))
 					{
 						delta = pipeline[i].freq - (int)round(freq * 10.0);
@@ -134,15 +132,13 @@ int main(int argc, char *argv[]) {
 								spottime = *localtime(&pipeline[i].time);
 								(void)strftime(timestring, STRLEN, FMT, &spottime);
 								printf("%s %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
-									adelta != 0 ? "Inaccurate spot of" : "Accurate spot of  ", 
+									adelta != 0 ? "Deviating spot of" : "Accurate spot of ", 
 									pipeline[i].dx, pipeline[i].de, pipeline[i].freq / 10.0, 
 									freq, delta / 10.0, timestring);
-								// badcount++;
 							}
-							pipeline[i].used = true;
-							accreldiff += 100000.0 * delta / freq; // In ppm
+							pipeline[i].analyzed = true; // To only analyze each spot once
+							accreldiff += 100000.0 * delta / freq; // Average the relative deviation in pm
 							targetcount++;
-							// fprintf(stderr, "delta=%d freq=%f accreldiff=%f targetcount=%d\n", delta, freq, accreldiff, targetcount);
 						}
 					}
 				}
@@ -152,18 +148,12 @@ int main(int argc, char *argv[]) {
 			strcpy(pipeline[spp].dx, dx);
 			pipeline[spp].freq = (int)round(freq * 10.0);
 			pipeline[spp].snr = snr;
-			pipeline[spp].verified = verified;
-			pipeline[spp].used = false;			
+			pipeline[spp].reference = reference;
+			pipeline[spp].analyzed = false;			
 
 			(void)strptime(timestring, FMT, &spottime);
 			pipeline[spp].time = mktime(&spottime);
-			
-			// if (strcmp(de, goldencall) == 0) 
-			// {
-				// (void)strftime(timestring, STRLEN, FMT, &spottime);
-				// goldencount++;
-			// }
-			
+		
 			if (verbose && false)
 			{
 				spottime = *localtime(&pipeline[spp].time);
@@ -180,16 +170,17 @@ int main(int argc, char *argv[]) {
 	if (targeted)
 	{
 		char outstring[LINELEN];
-		sprintf(outstring, "Average error of skimmer %s is %+3.2fppm over %d spots = calibration factor %10.9f\n", 
+		sprintf(outstring, "---\nAverage deviation for skimmer %s is %+3.2fppm measured over %d spots.\nSuggested calibration adjustment factor is %10.9f\n", 
 			targetcall, accreldiff / targetcount, targetcount, 1.0 + accreldiff / (targetcount * 1000000.0));
-		fprintf(stderr, "%s", outstring);
+		if (!isatty(STDOUT_FILENO))
+			fprintf(stderr, "%s", outstring);
 		printf("%s", outstring);
 	}
 		
 	if (verbose && false) 
 	{
 		spp = (spp + SPOTSWINDOW - 1) % SPOTSWINDOW; // Back up to last position in buffer
-		fprintf(stderr, "Done reading %d spots of which %d golden spots\n", spotcount, goldencount);
+		fprintf(stderr, "Done reading %d spots of which %d reference spots\n", spotcount, goldencount);
 		for (i = 0; i < SPOTSWINDOW; i++) 
 		{
 			spottime = *localtime(&pipeline[i].time);
@@ -198,12 +189,14 @@ int main(int argc, char *argv[]) {
 				i == spp ? '*': ' ', i, pipeline[i].de, pipeline[i].dx, 
 				pipeline[i].freq / 10.0, pipeline[i].snr, timestring);
 		}
-
 	}
 
-	(void)time(&rawtime);
-	timeinfo = localtime(&rawtime);
-	fprintf(stderr, "Stopped at %s", asctime(timeinfo));
+	if (verbose)
+	{
+		(void)time(&stoptime);
+		timeinfo = localtime(&stoptime);
+		fprintf(stderr, "Execution took %.0f seconds\n", difftime(stoptime, starttime));
+	}
 
 	(void)fclose(fp);
 
