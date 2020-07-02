@@ -35,9 +35,9 @@ struct Spot
 struct Skimmer 
 {
 	char name[STRLEN];	// Skimmer callsign
-	float accdev;		// Accumulated deviation in ppm
-	float avdev; 		// Average deviation in ppm
-	float absavdev; 	// Absolute average deviation in ppm
+	double accdev;		// Accumulated deviation in ppm
+	double avdev; 		// Average deviation in ppm
+	double absavdev; 	// Absolute average deviation in ppm
 	int count; 			// Number of analyzed spots
 	time_t first; 		// Earliest spot
 	time_t last; 		// Latest spot
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	if (isatty(STDOUT_FILENO) == 0)
-		printf("Skimmer accuracy analysis based on RBN offline data\n");
+		printf("Skimmer accuracy analysis based on RBN offline data.\n");
 
 	// List reference skimmers
 	strcpy(outstring, "Reference skimmers used: ");
@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
 			column = 6;
 		}
 	}
-	printf("\n");
+	printf(".\n");
 
 	fp = fopen(filename, "r");
 	
@@ -314,7 +314,7 @@ int main(int argc, char *argv[]) {
 	sprintf(outstring, "Processed a total of %d RBN spots between %s and %s.\n", 
 		totalspots, firsttimestring, lasttimestring);
 	printboth(outstring, quiet);
-	sprintf(outstring, "The average spot flow was %.1f spots per minute.\n", 60.0 * totalspots / difftime(lastspot, firstspot));
+	sprintf(outstring, "The average spot flow was %.0f spots per minute.\n", 60.0 * totalspots / difftime(lastspot, firstspot));
 	printboth(outstring, quiet);
 	sprintf(outstring, "%d spots met the following selection criteria:\n", usedspots);
 	printboth(outstring, quiet);
@@ -333,7 +333,7 @@ int main(int argc, char *argv[]) {
 
 	(void)time(&stoptime);
 	timeinfo = localtime(&stoptime);
-	sprintf(outstring, "Total processing time was %.0f seconds\n", difftime(stoptime, starttime));
+	sprintf(outstring, "Total processing time was %.0f seconds.\n", difftime(stoptime, starttime));
 	printboth(outstring, quiet);
 	
 	(void)fclose(fp);
