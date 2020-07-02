@@ -15,6 +15,7 @@
 #define MAXSKIMMERS 1000
 #define USAGE "Usage: %s -f filename -t target_call -d \n"
 #define MAXAPART 60 
+#define MINSNR 6
 
 struct Spot 
 {
@@ -44,11 +45,11 @@ int main(int argc, char *argv[]) {
     FILE *fp;
 	char filename[STRLEN] = "";
 	int totalspots = 0, usedspots = 0, c, got, i, j, matches, spp = 0;
-	time_t starttime, stoptime, spottime;
+	time_t starttime, stoptime, spottime, firstspot, lastspot;
 	struct tm *timeinfo, stime;
 	bool verbose = false, reference, sort = false;
 	char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN];
-	char firstimestring[STRLEN], lasttimestring[STRLEN];
+	char firsttimestring[STRLEN], lasttimestring[STRLEN];
 	char outstring[LINELEN];
 	int snr, delta, adelta, skimmers = 0, skimpos;
 	float freq, apart;
@@ -97,7 +98,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	if (isatty(STDOUT_FILENO) == 0)
-		printf("Skimmer accuracy analysis based on RBN offline data\n---\n");
+		printf("Skimmer accuracy analysis based on RBN offline data\n");
 	
 	while (fgets(line, LINELEN, fp))
 	{
@@ -131,7 +132,7 @@ int main(int argc, char *argv[]) {
 				for (i = 0; i < SPOTSWINDOW; i++)
 				{
 					if (!pipeline[i].analyzed && !pipeline[i].reference && strcmp(pipeline[i].dx, dx) == 0 && 
-						abs(difftime(pipeline[i].time, spottime)) < MAXAPART)
+						snr > MINSNR && abs(difftime(pipeline[i].time, spottime)) < MAXAPART)
 					{
 						delta = pipeline[i].freq - (int)round(freq * 10.0);
 						adelta = delta > 0 ? delta : -delta;
@@ -201,11 +202,17 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	// Calculate averages
+	// Calculate statistics
+	firstspot = skimmer[0].first;
+	lastspot = skimmer[0].last;
 	for (i = 0; i < skimmers; i++)
 	{
 		skimmer[i].avdev = skimmer[i].accdev / skimmer[i].count;
 		skimmer[i].absavdev = fabs(skimmer[i].avdev);
+		if (skimmer[i].first < firstspot)
+			firstspot = skimmer[i].first;
+		if (skimmer[i].last > lastspot)
+			lastspot = skimmer[i].last;
 	}
 
 	// Sort by absolute average deviation if desired
@@ -230,18 +237,22 @@ int main(int argc, char *argv[]) {
 	{
 		if (skimmer[i].count > 100)
 		{
-			stime = *localtime(&skimmer[i].first);
-			(void)strftime(firstimestring, STRLEN, FMT, &stime);
 
-			stime = *localtime(&skimmer[i].last);
-			(void)strftime(lasttimestring, STRLEN, FMT, &stime);
-
-			printf("Skimmer %10s average deviation %+5.1fppm over %4d spots between %s and %s\n", 
-			skimmer[i].name, skimmer[i].avdev, skimmer[i].count, firstimestring, lasttimestring);
+			printf("Skimmer %9s average deviation %+5.1fppm over %4d spots (%11.9f)\n", 
+				skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
+				);
 		}
 	}
 	
-	sprintf(outstring, "Based on %d spots of which %d were used for analysis.\n", totalspots, usedspots);
+	stime = *localtime(&firstspot);
+	(void)strftime(firsttimestring, STRLEN, FMT, &stime);
+
+	stime = *localtime(&lastspot);
+	(void)strftime(lasttimestring, STRLEN, FMT, &stime);
+
+	sprintf(outstring, "A total of %d RBN spots between %s and %s.\n%d met the quality criteria for analysis.\n", 
+		totalspots, firsttimestring, lasttimestring, usedspots);
+
 	fprintf(stderr, "%s", outstring);
 	if (isatty(STDOUT_FILENO) == 0)
 		printf("%s", outstring);
