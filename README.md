@@ -7,17 +7,16 @@ the relative frequency error for all skimmers listed in the file.
 
 It uses a set of known and trusted GPSDO-controlled skimmers as reference 
 and calculates the average deviation in reported frequency for all spots 
-meeeting the criteria below.
+meeeting the criteria below. 
 
 The trusted skimmers are listed in the file `reference`. One callsign per line.
 
-For a more rapid analysis, the analysis can be done for only a selected call 
-using the -t option.
+For a more rapid analysis, it can be done for only a selected call, using the -t option.
 
-This option is used  by the script `checkreferences` which walks through the used
-reference skimmers and checks each of them against the others. 
+This option is for instance used  by the script `checkreferences` which walks through 
+the current list of reference skimmers and checks each of them against the others. 
 
-The script `getrbndata` downloads all data for a selected month into the 
+The script `getrbndata` downloads all RBN data for a selected month into the 
 `rbnfiles` subfolder.
 
 The adjustment factor listed is intended to be applied to the skimmer's 
