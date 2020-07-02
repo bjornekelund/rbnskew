@@ -1,6 +1,7 @@
 #!/bin/bash
 FOLDER=rbnfiles
 FILE=20200701.csv
+echo "Verification of reference skimmer integrity."
 echo "Analysis based on file" $FILE "with" `wc -l < $FOLDER/$FILE` "spots."
 for skimmer in `tr '\n' ' ' < reference`; do
 	./skimlist -q -f $FOLDER/$FILE -t ${skimmer} > result.tmp
