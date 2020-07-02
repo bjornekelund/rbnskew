@@ -16,6 +16,7 @@
 #define USAGE "Usage: %s -f filename -t target_call -d \n"
 #define MAXAPART 60 
 #define MINSNR 6
+#define MINFREQ 7000
 
 struct Spot 
 {
@@ -131,7 +132,8 @@ int main(int argc, char *argv[]) {
 				
 				for (i = 0; i < SPOTSWINDOW; i++)
 				{
-					if (!pipeline[i].analyzed && !pipeline[i].reference && strcmp(pipeline[i].dx, dx) == 0 && 
+					if (!pipeline[i].analyzed && !pipeline[i].reference && freq > MINFREQ &&
+						strcmp(pipeline[i].dx, dx) == 0 && 
 						snr > MINSNR && abs(difftime(pipeline[i].time, spottime)) < MAXAPART)
 					{
 						delta = pipeline[i].freq - (int)round(freq * 10.0);

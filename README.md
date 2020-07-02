@@ -22,6 +22,7 @@ The analysis of skimlist has the following characteristics:
 * Only considers the 500 most recent spots at any time
 * Only includes spots less than 60 seconds apart from a reference spot
 * Only considers spots with more than 5dB SNR
+* Only considers spots above 7000kHz
 * Only considers spots with less than 0.5kHz absolute frequency error
 * Does not list skimmers with less than 100 spots 
 
