@@ -31,12 +31,12 @@ The analysis of skimlist has the following characteristics:
 
 To run the code on your machine (Linux or Windows' Ubuntu emulator) the following steps are required:
 
-`$ sudo apt install git
-`$ sudo apt install gcc
-`$ sudo apt install make
-`$ git clone https://github.com/bjornekelund/rbnskew
-`$ cd rbnskew
-`$ make
+`$ sudo apt install git`\
+`$ sudo apt install gcc`\
+`$ sudo apt install make`\
+`$ git clone https://github.com/bjornekelund/rbnskew`\
+`$ cd rbnskew`\
+`$ make`
 
 
 
