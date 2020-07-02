@@ -238,7 +238,7 @@ int main(int argc, char *argv[]) {
 		if (skimmer[i].count > 100)
 		{
 
-			printf("Skimmer %9s average deviation %+5.1fppm over %4d spots (%11.9f)\n", 
+			printf("Skimmer %9s average deviation %+5.1fppm over %5d spots (%11.9f)\n", 
 				skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
 				);
 		}
