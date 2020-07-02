@@ -126,17 +126,14 @@ int main(int argc, char *argv[]) {
 		line[strcspn(line, "\r\n")] = 0;
 		got = sscanf(line, "%s", tempstring);
 		if (got == 1)
+        {
+            strcpy(referenceskimmer[referenceskimmers].call, tempstring);
 			referenceskimmers++;
-		strcpy(referenceskimmer[i].call, tempstring);
-		fprintf(stderr, "reference skimmer #%d is %s\n", referenceskimmers, referenceskimmer[i].call);
+        }
 	}
 	
 	(void)fclose(fr);
-	
-	fprintf(stderr, "%d reference skimmers read\n", referenceskimmers);
-	
-	fprintf(stderr, "Reference skimmers #3 is \"%s\"\n", referenceskimmer[2].call);
-	
+		
 	(void)time(&starttime);
 	timeinfo = localtime(&starttime);
 
