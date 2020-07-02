@@ -32,11 +32,6 @@ struct Spot
 	bool analyzed; 		// Already analyzed
 };
 
-struct Reference 
-{
-	char call[STRLEN];
-};
-
 struct Skimmer 
 {
 	char name[STRLEN];	// Skimmer callsign
@@ -60,7 +55,7 @@ void printboth(char *outstring, bool quiet)
 
 int main(int argc, char *argv[]) {
 	int referenceskimmers = 0;
-	struct Reference referenceskimmer[128];
+	char referenceskimmer[128][STRLEN];
     FILE *fp, *fr;
 	char filename[STRLEN] = "", target[STRLEN] = "";
 	int totalspots = 0, usedspots = 0, c, got, i, j, matches, spp = 0;
@@ -123,11 +118,9 @@ int main(int argc, char *argv[]) {
 	
 	while (fgets(line, LINELEN, fr))
 	{
-		line[strcspn(line, "\r\n")] = 0;
-		got = sscanf(line, "%s", tempstring);
-		if (got == 1)
+		if (sscanf(line, "%s", tempstring) == 1)
         {
-            strcpy(referenceskimmer[referenceskimmers].call, tempstring);
+            strcpy(referenceskimmer[referenceskimmers], tempstring);
 			referenceskimmers++;
         }
 	}
@@ -152,7 +145,7 @@ int main(int argc, char *argv[]) {
 	column = (int)strlen(outstring);
 	for (i = 0; i < referenceskimmers; i++)
 	{
-		sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i].call);
+		sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i]);
 		printf("%s", outstring);
 		column += strlen(outstring);
 		if (column > 70)
@@ -182,7 +175,7 @@ int main(int argc, char *argv[]) {
 			// Check if this spot is by a reference skimmer
 			for (i = 0; i < referenceskimmers; i++)
 			{
-				if (strcmp(de, referenceskimmer[i].call) == 0 && !(targeted && strcmp(de, target) == 0))
+				if (strcmp(de, referenceskimmer[i]) == 0 && !(targeted && strcmp(de, target) == 0))
 				{
 					reference = true;
 					break;

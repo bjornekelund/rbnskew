@@ -1,13 +1,7 @@
 #!/bin/bash
-#CALLS=`tr '\n' ' ' < reference | cat`
-for skimmer in `tr '\n' ' ' < reference | cat`; do
+for skimmer in `tr '\n' ' ' < reference`; do
 #	echo "Analysing" ${skimmer}
 	./skimlist -q -f rbnfiles/20200701.csv -t ${skimmer} > result.tmp
 	grep deviation result.tmp 
 done
-rm -f result.tmp
-
-#AC0C WB6BEE SM7IUN KM3T\
-#				S55OO VE2WU \
-#				3B8CW DO4DXA BA7QT OE9GHV \
-#				W3OA LZ4UX CX6VM W1NT K7EG NN3RP; do
+rm -f result.tmp rbnfiles/*.zip
