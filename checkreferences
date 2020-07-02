@@ -1,10 +1,13 @@
 #!/bin/bash
-for skimmer in AC0C WB6BEE SM7IUN KM3T LZ7AA S55OO\
-				VE2WU WZ7I BG4GOV3 VE7CC\
-				3B8CW DO4DXA BA7QT OE9GHV DK9IP\
-				AA4VV LU5FF R6YY G0KTN DL3DTH TF3Y\
-				W3OA LZ4UX CX6VM W1NT K7EG NN3RP; do
-#	echo "Analysing" ${skimmer}
-	./skimlist -q -f rbnfiles/20200701.csv -t ${skimmer} > ${skimmer}.txt
-	grep deviation ${skimmer}.txt
+#CALLS=`tr '\n' ' ' < reference | cat`
+for skimmer in `tr '\n' ' ' < reference | cat`; do
+	echo "Analysing" ${skimmer}
+	./skimlist -q -f rbnfiles/20200701.csv -t ${skimmer} > result.tmp
+	grep deviation result.tmp 
 done
+rm -f result.tmp
+
+#AC0C WB6BEE SM7IUN KM3T\
+#				S55OO VE2WU \
+#				3B8CW DO4DXA BA7QT OE9GHV \
+#				W3OA LZ4UX CX6VM W1NT K7EG NN3RP; do

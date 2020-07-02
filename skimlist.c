@@ -11,7 +11,7 @@
 #define STRLEN 32
 #define LINELEN 256
 #define FMT "%Y-%m-%d %H:%M:%S"
-#define SPOTSWINDOW 2000
+#define SPOTSWINDOW 1000
 #define MAXSKIMMERS 200
 #define USAGE "Usage: %s -f filename -t callsign -d -s\n"
 #define MAXAPART 30 
@@ -19,6 +19,7 @@
 #define MINFREQ 7000
 #define MINSPOTS 100
 #define MAXERR 5
+#define REFFILENAME "reference"
 
 struct Spot 
 {
@@ -29,6 +30,11 @@ struct Spot
 	int freq;			// 10x spot frequency
 	bool reference;		// Originates from a reference skimmer
 	bool analyzed; 		// Already analyzed
+};
+
+struct Reference 
+{
+	char call[STRLEN];
 };
 
 struct Skimmer 
@@ -53,16 +59,9 @@ void printboth(char *outstring, bool quiet)
 }
 
 int main(int argc, char *argv[]) {
-	const int referenceskimmers = 23;
-	char *referenceskimmer[23] = 
-		{
-			"AC0C", "WB6BEE", "SM7IUN", "KM3T", // Trusted
-			"S55OO", "VE2WU", "BG4GOV3", // Benchmarks well
-			"3B8CW", "DO4DXA", "BA7QT", "OE9GHV", 
-			"AA4VV", "LU5FF", "R6YY", "G0KTN", "DL3DTH", "TF3Y", 
-			"W3OA", "LZ4UX", "CX6VM", "W1NT", "K7EG", "NN3RP"
-		}; 
-    FILE *fp;
+	int referenceskimmers = 0;
+	struct Reference referenceskimmer[128];
+    FILE *fp, *fr;
 	char filename[STRLEN] = "", target[STRLEN] = "";
 	int totalspots = 0, usedspots = 0, c, got, i, j, matches, spp = 0;
 	time_t starttime, stoptime, spottime, firstspot, lastspot;
@@ -70,7 +69,7 @@ int main(int argc, char *argv[]) {
 	bool verbose = false, reference, sort = false, targeted = false, quiet = false;
 	char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN];
 	char firsttimestring[STRLEN], lasttimestring[STRLEN];
-	char outstring[LINELEN];
+	char outstring[LINELEN], tempstring[STRLEN];
 	int snr, delta, adelta, skimmers = 0, skimpos, column;
 	float freq, apart;
 	
@@ -120,8 +119,24 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	fp = fopen(filename, "r");
-
+	fr = fopen(REFFILENAME, "r");
+	
+	while (fgets(line, LINELEN, fr))
+	{
+		line[strcspn(line, "\r\n")] = 0;
+		got = sscanf(line, "%s", tempstring);
+		if (got == 1)
+			referenceskimmers++;
+		strcpy(referenceskimmer[i].call, tempstring);
+		fprintf(stderr, "reference skimmer #%d is %s\n", referenceskimmers, referenceskimmer[i].call);
+	}
+	
+	(void)fclose(fr);
+	
+	fprintf(stderr, "%d reference skimmers read\n", referenceskimmers);
+	
+	fprintf(stderr, "Reference skimmers #3 is \"%s\"\n", referenceskimmer[2].call);
+	
 	(void)time(&starttime);
 	timeinfo = localtime(&starttime);
 
@@ -140,7 +155,7 @@ int main(int argc, char *argv[]) {
 	column = (int)strlen(outstring);
 	for (i = 0; i < referenceskimmers; i++)
 	{
-		sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i]);
+		sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i].call);
 		printf("%s", outstring);
 		column += strlen(outstring);
 		if (column > 70)
@@ -151,6 +166,7 @@ int main(int argc, char *argv[]) {
 	}
 	printf("\n");
 
+	fp = fopen(filename, "r");
 	
 	while (fgets(line, LINELEN, fp))
 	{
@@ -169,7 +185,7 @@ int main(int argc, char *argv[]) {
 			// Check if this spot is by a reference skimmer
 			for (i = 0; i < referenceskimmers; i++)
 			{
-				if (strcmp(de, referenceskimmer[i]) == 0 && !(targeted && strcmp(de, target) == 0))
+				if (strcmp(de, referenceskimmer[i].call) == 0 && !(targeted && strcmp(de, target) == 0))
 				{
 					reference = true;
 					break;

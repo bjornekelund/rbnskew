@@ -19,7 +19,7 @@ current value of the FreqCalibration parameter in SkimSrv.ini.
 
 The analysis of skimlist has the following characteristics:
 
-* Only considers the 200 most recent spots at any time for efficiency reasons
+* Only considers the 1000 most recent spots at any time for efficiency reasons
 * Only considers spots within 30 seconds of a reference spot
 * Only considers spots with SNR 6dB or more to secure relevance of spot
 * Only considers spots above 7MHz to reduce truncation noise
