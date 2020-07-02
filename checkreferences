@@ -1,7 +1,9 @@
 #!/bin/bash
+FOLDER=rbnfiles
+FILE=20200701.csv
+echo "Analysis based on file" $FILE "with" `wc -l < $FOLDER/$FILE` "spots."
 for skimmer in `tr '\n' ' ' < reference`; do
-#	echo "Analysing" ${skimmer}
-	./skimlist -q -f rbnfiles/20200701.csv -t ${skimmer} > result.tmp
+	./skimlist -q -f $FOLDER/$FILE -t ${skimmer} > result.tmp
 	grep deviation result.tmp 
 done
 rm -f result.tmp rbnfiles/*.zip
