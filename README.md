@@ -1,32 +1,33 @@
 # rbnskew
 Skew analysis for the RBN network
 
-Tools for analysing frequency accuracy of RBN skimmers.
+`skimlist` analyses a comma separated list of spots (formatted as the csv 
+files available from http://www.reversebeacon.net/raw_data/) to determine 
+the relative frequency error for all skimmers listed in the file. 
 
-Uses a set of trusted reference skimmers to calculate the average deviation.
+It uses a set of trusted GPSDO-controlled skimmers as reference and 
+calculates the average deviation in reported frequency for all spots 
+meeeting the criteria below.
 
-`offlineskew` analyses a selected skimmer and also provides a suggested adjustment 
-factor to be applied to the FreqCalibration parameter in SkimSrv.ini.
-SkimSrv.ini can be found in %appdata%\Afreet\Products\SkimSrv
+The adjustment factor listed is intended to be applied to the skimmer's 
+current value of the FreqCalibration parameter in SkimSrv.ini.
+`SkimSrv.ini` can be found in `%appdata%\Afreet\Products\SkimSrv`
 
-offlineskew -f "rbn csv file" -t "targeted skimmer" -d (verbose mode)
-
-`skimlist` does a similar analysis but for all skimmers with more 
-than 100 spots in the file. The produced list can optionally be sorted 
-by absolute average deviation.
-
-skimlist -f "rbn csv file" -d (verbose) -s (sort result)
+`skimlist -f "rbn csv file" -d (verbose) -s (sort result)`
 
 The analysis of skimlist has the following characteristics:
 
-* Only considers the 500 most recent spots at any time
-* Only includes spots less than 60 seconds apart from a reference spot
-* Only considers spots with more than 5dB SNR
-* Only considers spots above 7000kHz
-* Only considers spots with less than 0.5kHz absolute frequency error
-* Does not list skimmers with less than 100 spots 
+* Only considers the 500 most recent spots at any time for efficiency reasons
+* Only considers spots within 60 seconds of a reference spot
+* Only considers spots with more than 5dB SNR to secure relevance of spot
+* Only considers spots above 7000kHz to reduce truncation noise
+* Only considers spots with less than 0.5kHz absolute frequency error to avoid QSY spots
+* Does not list skimmers with less than 100 spots to guarantee statistical significance
+* Assumes a relative frequency error, i.e. originating solely from the skimmer's reference oscillator
 
+`offlineskew` is an experimental tool for more detailed analysis of a single skimmer. 
 
+`offlineskew -f "rbn csv file" -t "targeted skimmer" -d (verbose mode)`
 
 
 
