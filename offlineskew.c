@@ -30,7 +30,8 @@ int main(int argc, char *argv[]) {
 	char flag;
 	int referenceskimmers = sizeof(*referenceskimmer);
 	
-	struct Spot {
+	struct Spot 
+	{
 		char de[STRLEN];// Skimmer callsign
 		char dx[STRLEN];// Spotted call
 		time_t time;	// Spot timestamp in epoch format

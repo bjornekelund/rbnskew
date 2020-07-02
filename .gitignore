@@ -1,4 +1,7 @@
 *.o
 *.txt
 *.py
-
+rbnfiles
+*.log
+skimlist
+offlineskew
