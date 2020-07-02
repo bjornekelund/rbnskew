@@ -15,16 +15,16 @@ The adjustment factor listed is intended to be applied to the skimmer's
 current value of the FreqCalibration parameter in SkimSrv.ini.
 `SkimSrv.ini` can be found in `%appdata%\Afreet\Products\SkimSrv`
 
-`skimlist -f csvfile [-t callsign] [-d] (verbose) [-s] (sort result)`
+`skimlist -f csvfile [-t callsign] [-d] (verbose) [-s] (sort result) [-q] (quiet)`
 
 The analysis of skimlist has the following characteristics:
 
-* Only considers the 500 most recent spots at any time for efficiency reasons
-* Only considers spots within 60 seconds of a reference spot
-* Only considers spots with more than 5dB SNR to secure relevance of spot
-* Only considers spots above 7000kHz to reduce truncation noise
-* Only considers spots with less than 0.5kHz absolute frequency error to avoid QSY spots
-* Does not list skimmers with less than 100 spots to guarantee statistical significance
+* Only considers the 200 most recent spots at any time for efficiency reasons
+* Only considers spots within 30 seconds of a reference spot
+* Only considers spots with SNR 6dB or more to secure relevance of spot
+* Only considers spots above 7MHz to reduce truncation noise
+* Only considers spots with 0.5kHz or less absolute frequency error to avoid QSY spots
+* Ignores spots from skimmers with less than 100 spots to guarantee statistical significance
 * Assumes a relative frequency error, i.e. originating solely from the skimmer's reference oscillator
 
 `offlineskew` is old code and a development tool. Do not use. 

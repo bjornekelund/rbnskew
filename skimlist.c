@@ -9,14 +9,16 @@
 #include <ctype.h>
 
 #define STRLEN 32
-#define LINELEN 128
+#define LINELEN 256
 #define FMT "%Y-%m-%d %H:%M:%S"
-#define SPOTSWINDOW 500
-#define MAXSKIMMERS 1000
+#define SPOTSWINDOW 2000
+#define MAXSKIMMERS 200
 #define USAGE "Usage: %s -f filename -t callsign -d -s\n"
-#define MAXAPART 60 
+#define MAXAPART 30 
 #define MINSNR 6
 #define MINFREQ 7000
+#define MINSPOTS 100
+#define MAXERR 5
 
 struct Spot 
 {
@@ -40,21 +42,37 @@ struct Skimmer
 	time_t last; 		// Latest spot
 };
 
+// Print to stderr and also to stdout if piped
+void printboth(char *outstring, bool quiet)
+{
+	if (!quiet) 
+		fprintf(stderr, "%s", outstring);
+	
+	if (isatty(STDOUT_FILENO) == 0)
+		printf("%s", outstring);
+}
+
 int main(int argc, char *argv[]) {
-	char *referenceskimmer[10] = {"JF2IWL", "AC0C", "WB6BEE", "SM7IUN", 
-		"DF4UE", "K9IMM", "NW0W", "KM3T", "N2QT", "DF7GB" };
+	const int referenceskimmers = 23;
+	char *referenceskimmer[23] = 
+		{
+			"AC0C", "WB6BEE", "SM7IUN", "KM3T", // Trusted
+			"S55OO", "VE2WU", "BG4GOV3", // Benchmarks well
+			"3B8CW", "DO4DXA", "BA7QT", "OE9GHV", 
+			"AA4VV", "LU5FF", "R6YY", "G0KTN", "DL3DTH", "TF3Y", 
+			"W3OA", "LZ4UX", "CX6VM", "W1NT", "K7EG", "NN3RP"
+		}; 
     FILE *fp;
 	char filename[STRLEN] = "", target[STRLEN] = "";
 	int totalspots = 0, usedspots = 0, c, got, i, j, matches, spp = 0;
 	time_t starttime, stoptime, spottime, firstspot, lastspot;
 	struct tm *timeinfo, stime;
-	bool verbose = false, reference, sort = false, targeted = false;
+	bool verbose = false, reference, sort = false, targeted = false, quiet = false;
 	char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN];
 	char firsttimestring[STRLEN], lasttimestring[STRLEN];
 	char outstring[LINELEN];
-	int snr, delta, adelta, skimmers = 0, skimpos;
+	int snr, delta, adelta, skimmers = 0, skimpos, column;
 	float freq, apart;
-	int referenceskimmers = (int)sizeof(*referenceskimmer);	
 	
 	struct Spot pipeline[SPOTSWINDOW];
 	struct Skimmer skimmer[MAXSKIMMERS], temp;
@@ -62,7 +80,7 @@ int main(int argc, char *argv[]) {
 	for (i = 0; i < SPOTSWINDOW; i++)
 		strcpy(pipeline[i].dx, "");
 	
-    while ((c = getopt(argc, argv, "t:sdf:")) != -1)
+    while ((c = getopt(argc, argv, "qt:sdf:")) != -1)
     {
         switch (c)
         {
@@ -70,15 +88,20 @@ int main(int argc, char *argv[]) {
                 strcpy(filename, optarg);
                 break;
             case 't':
+				if (strlen(optarg) == 0)
+				{
+					fprintf(stderr, USAGE, argv[0]);
+					return 1;
+				}
 				for (i = 0; i < strlen(optarg) + 1; i++)
 					target[i] = toupper(optarg[i]);
-				// for (i = 0; i < referenceskimmers; i++)
-					// if (strcmp(referenceskimmer[i], target) == 0)
-						// referenceskimmer[i] = "";
 				targeted = true;
                 break;
 			case 'd':
 				verbose = true;
+				break;
+			case 'q':
+				quiet = true;
 				break;
 			case 's':
 				sort = true;
@@ -99,15 +122,35 @@ int main(int argc, char *argv[]) {
 
 	fp = fopen(filename, "r");
 
+	(void)time(&starttime);
+	timeinfo = localtime(&starttime);
+
 	if (verbose) 
 	{
-		(void)time(&starttime);
-		timeinfo = localtime(&starttime);
-		fprintf(stderr, "Starting at %s", asctime(timeinfo));
+		if (!quiet)
+			fprintf(stderr, "Starting at %s", asctime(timeinfo));
 	}
 	
 	if (isatty(STDOUT_FILENO) == 0)
 		printf("Skimmer accuracy analysis based on RBN offline data\n");
+
+	// List reference skimmers
+	strcpy(outstring, "Reference skimmers used: ");
+	printf("%s", outstring);
+	column = (int)strlen(outstring);
+	for (i = 0; i < referenceskimmers; i++)
+	{
+		sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i]);
+		printf("%s", outstring);
+		column += strlen(outstring);
+		if (column > 70)
+		{
+			printf("\n      ");
+			column = 6;
+		}
+	}
+	printf("\n");
+
 	
 	while (fgets(line, LINELEN, fp))
 	{
@@ -115,7 +158,7 @@ int main(int argc, char *argv[]) {
 		got = sscanf(line, "%[^,],%*[^,],%*[^,],%f,%*[^,],%[^,],%*[^,],%*[^,],%*[^,],%d,%[^,],%*s", 
 			de, &freq, dx, &snr, timestring);
 		
-		if (got == 5) // If parsing is successful
+		if (got == 5 && snr >= MINSNR) // If parsing is successful and SNR is ok
 		{ 
 			(void)strptime(timestring, FMT, &stime);
 			spottime = mktime(&stime);
@@ -134,15 +177,12 @@ int main(int argc, char *argv[]) {
 			}
 
 			if (reference) // If it is reference spot, use it to verify all un-analyzed, non-reference spots in the pipeline
-			{
-				if (verbose && false) 
-					fprintf(stderr, "Reference spot of %8s by %8s\n", dx, de);
-				
+			{		
 				for (i = 0; i < SPOTSWINDOW; i++)
 				{
-					if (!pipeline[i].analyzed && !pipeline[i].reference && freq > MINFREQ &&
-						strcmp(pipeline[i].dx, dx) == 0 && snr > MINSNR && 
-						abs(difftime(pipeline[i].time, spottime)) < MAXAPART && 
+					if (!pipeline[i].analyzed && !pipeline[i].reference && freq >= MINFREQ &&
+						strcmp(pipeline[i].dx, dx) == 0 && 
+						abs(difftime(pipeline[i].time, spottime)) <= MAXAPART && 
 						!(targeted && strcmp(pipeline[i].de, target) != 0))
 					{
 						delta = pipeline[i].freq - (int)round(freq * 10.0);
@@ -150,14 +190,14 @@ int main(int argc, char *argv[]) {
 
 						pipeline[i].analyzed = true; // To only analyze each spot once
 						
-						if (adelta < 5) // Only consider spots less than 0.5kHz off from reference skimmer
+						if (adelta <= MAXERR) // Only consider spots less than MAXERR off from reference skimmer
 						{
 							usedspots++;
 							
-							if (adelta > 2 && verbose) // Print if very deviating
+							if (adelta > 2 && verbose && !quiet) // Print if very deviating
 							{
 								stime = *localtime(&pipeline[i].time);
-								(void)strftime(timestring, STRLEN, FMT, &stime);
+								(void)strftime(timestring, STRLEN, FMT, &stime);						
 								fprintf(stderr, "Very deviating spot of %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
 									pipeline[i].dx, pipeline[i].de, pipeline[i].freq / 10.0, 
 									freq, delta / 10.0, timestring);
@@ -185,7 +225,7 @@ int main(int argc, char *argv[]) {
 							}
 							else // If new skimmer, create it
 							{
-								if (verbose)
+								if (verbose && !quiet)
 									fprintf(stderr, "Found new skimmer %s \n", pipeline[i].de);
 								strcpy(skimmer[skimmers].name, pipeline[i].de);
 								skimmer[skimmers].accdev = 100000.0 * delta / freq;
@@ -193,6 +233,10 @@ int main(int argc, char *argv[]) {
 								skimmer[skimmers].first = pipeline[i].time;
 								skimmer[skimmers].last = pipeline[i].time;
 								skimmers++;
+								if (skimmers > MAXSKIMMERS) {
+									fprintf(stderr, "Error: Skimmer count overflow (%d).\n", skimmers);
+									return 1;
+								}
 							}
 						}
 					}
@@ -246,9 +290,8 @@ int main(int argc, char *argv[]) {
 	// Present results
 	for (i = 0; i < skimmers; i++)
 	{
-		if (skimmer[i].count > 100)
+		if (skimmer[i].count > MINSPOTS)
 		{
-
 			printf("Skimmer %9s average deviation %+5.1fppm over %5d spots (%11.9f)\n", 
 				skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
 				);
@@ -261,20 +304,32 @@ int main(int argc, char *argv[]) {
 	stime = *localtime(&lastspot);
 	(void)strftime(lasttimestring, STRLEN, FMT, &stime);
 
-	sprintf(outstring, "A total of %d RBN spots between %s and %s.\n%d met the quality criteria for analysis.\n", 
-		totalspots, firsttimestring, lasttimestring, usedspots);
+	// Print summary
+	sprintf(outstring, "Processed a total of %d RBN spots between %s and %s.\n", 
+		totalspots, firsttimestring, lasttimestring);
+	printboth(outstring, quiet);
+	sprintf(outstring, "The average spot flow was %.1f spots per minute.\n", 60.0 * totalspots / difftime(lastspot, firstspot));
+	printboth(outstring, quiet);
+	sprintf(outstring, "%d spots met the following selection criteria:\n", usedspots);
+	printboth(outstring, quiet);
+	sprintf(outstring, " * Also spotted by reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
+	printboth(outstring, quiet);
+	sprintf(outstring, " * Timestamped %ds or less apart from reference skimmer spot. \n", MAXAPART);
+	printboth(outstring, quiet);
+	sprintf(outstring, " * SNR %ddB or higher. \n", MINSNR);
+	printboth(outstring, quiet);
+	sprintf(outstring, " * Frequency %dkHz or higher. \n", MINFREQ);
+	printboth(outstring, quiet);
+	sprintf(outstring, " * Deviates %.1fkHz or less from reference skimmer spot.\n", MAXERR / 10.0);
+	printboth(outstring, quiet);
+	sprintf(outstring, " * Spotted by skimmer with more than %d spots in file.\n", MINSPOTS);
+	printboth(outstring, quiet);
 
-	fprintf(stderr, "%s", outstring);
-	if (isatty(STDOUT_FILENO) == 0)
-		printf("%s", outstring);
+	(void)time(&stoptime);
+	timeinfo = localtime(&stoptime);
+	sprintf(outstring, "Total processing time was %.0f seconds\n", difftime(stoptime, starttime));
+	printboth(outstring, quiet);
 	
-	if (verbose)
-	{
-		(void)time(&stoptime);
-		timeinfo = localtime(&stoptime);
-		fprintf(stderr, "Execution took %.0f seconds\n", difftime(stoptime, starttime));
-	}
-
 	(void)fclose(fp);
 
 	return 0;
