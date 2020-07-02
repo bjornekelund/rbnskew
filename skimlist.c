@@ -11,9 +11,10 @@
 #define STRLEN 32
 #define LINELEN 128
 #define FMT "%Y-%m-%d %H:%M:%S"
-#define SPOTSWINDOW 200
+#define SPOTSWINDOW 500
 #define MAXSKIMMERS 1000
 #define USAGE "Usage: %s -f filename -t target_call -d \n"
+#define MAXAPART 60 
 
 struct Spot 
 {
@@ -43,14 +44,14 @@ int main(int argc, char *argv[]) {
     FILE *fp;
 	char filename[STRLEN] = "";
 	int totalspots = 0, usedspots = 0, c, got, i, j, matches, spp = 0;
-	time_t starttime, stoptime;
+	time_t starttime, stoptime, spottime;
 	struct tm *timeinfo, stime;
 	bool verbose = false, reference, sort = false;
 	char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN];
 	char firstimestring[STRLEN], lasttimestring[STRLEN];
 	char outstring[LINELEN];
 	int snr, delta, adelta, skimmers = 0, skimpos;
-	float freq;
+	float freq, apart;
 	int referenceskimmers = (int)sizeof(*referenceskimmer);	
 	
 	struct Spot pipeline[SPOTSWINDOW];
@@ -106,6 +107,9 @@ int main(int argc, char *argv[]) {
 		
 		if (got == 5) // If parsing is successful
 		{ 
+			(void)strptime(timestring, FMT, &stime);
+			spottime = mktime(&stime);
+
 			totalspots++;
 		
 			reference = false;
@@ -126,7 +130,8 @@ int main(int argc, char *argv[]) {
 				
 				for (i = 0; i < SPOTSWINDOW; i++)
 				{
-					if (strcmp(pipeline[i].dx, dx) == 0 && !pipeline[i].analyzed && !pipeline[i].reference)
+					if (!pipeline[i].analyzed && !pipeline[i].reference && strcmp(pipeline[i].dx, dx) == 0 && 
+						abs(difftime(pipeline[i].time, spottime)) < MAXAPART)
 					{
 						delta = pipeline[i].freq - (int)round(freq * 10.0);
 						adelta = delta > 0 ? delta : -delta;
@@ -141,8 +146,7 @@ int main(int argc, char *argv[]) {
 							{
 								stime = *localtime(&pipeline[i].time);
 								(void)strftime(timestring, STRLEN, FMT, &stime);
-								fprintf(stderr, "%s %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
-									adelta != 0 ? "Deviating spot of" : "Accurate spot of ", 
+								fprintf(stderr, "Very deviating spot of %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
 									pipeline[i].dx, pipeline[i].de, pipeline[i].freq / 10.0, 
 									freq, delta / 10.0, timestring);
 							}
@@ -158,7 +162,7 @@ int main(int argc, char *argv[]) {
 								}
 							}
 							
-							if (skimpos != -1) // if in the list
+							if (skimpos != -1) // if in the list, updae
 							{
 								skimmer[skimpos].accdev += 100000.0 * delta / freq;
 								skimmer[skimpos].count++;
@@ -167,7 +171,7 @@ int main(int argc, char *argv[]) {
 								if (pipeline[i].time < skimmer[skimpos].first)
 									skimmer[skimpos].first = pipeline[i].time;
 							}
-							else // If new skimmer
+							else // If new skimmer, create it
 							{
 								if (verbose)
 									fprintf(stderr, "Found new skimmer %s \n", pipeline[i].de);
@@ -182,26 +186,17 @@ int main(int argc, char *argv[]) {
 					}
 				}
 			}
-		
+			
+			// Save new spot in pipeline
 			strcpy(pipeline[spp].de, de);
 			strcpy(pipeline[spp].dx, dx);
 			pipeline[spp].freq = (int)round(freq * 10.0);
 			pipeline[spp].snr = snr;
 			pipeline[spp].reference = reference;
 			pipeline[spp].analyzed = false;			
-
-			(void)strptime(timestring, FMT, &stime);
-			pipeline[spp].time = mktime(&stime);
+			pipeline[spp].time = spottime;
 		
-			if (verbose && false)
-			{
-				stime = *localtime(&pipeline[spp].time);
-				(void)strftime(timestring, STRLEN, FMT, &stime);
-				fprintf(stderr, "[%6d] DE=%8s DX=%8s QRG=%8.1f SNR=%2ddB TIME=%s\n",
-					spp, pipeline[spp].de, pipeline[spp].dx, 
-					pipeline[spp].freq / 10.0, pipeline[spp].snr, timestring);
-				fprintf(stderr, "%s\n", line);
-			}
+			// Move pointer and wrap around at top of pipeline
 			spp = (spp + 1) % SPOTSWINDOW;
 		}
 	}
@@ -213,15 +208,14 @@ int main(int argc, char *argv[]) {
 		skimmer[i].absavdev = fabs(skimmer[i].avdev);
 	}
 
-	// Sort by absolute average deviation if required
-
+	// Sort by absolute average deviation if desired
 	if (sort)
 	{
 		for (i = 0; i < skimmers - 1; ++i)
 		{
 			for (j = 0; j < skimmers - 1 - i; ++j)
 			{
-				if (skimmer[j].absavdev < skimmer[j + 1].absavdev)
+				if (skimmer[j].absavdev > skimmer[j + 1].absavdev)
 				{
 					temp = skimmer[j + 1];
 					skimmer[j + 1] = skimmer[j];
@@ -234,7 +228,7 @@ int main(int argc, char *argv[]) {
 	// Present results
 	for (i = 0; i < skimmers; i++)
 	{
-		if (skimmer[i].count > 50)
+		if (skimmer[i].count > 100)
 		{
 			stime = *localtime(&skimmer[i].first);
 			(void)strftime(firstimestring, STRLEN, FMT, &stime);
@@ -242,7 +236,7 @@ int main(int argc, char *argv[]) {
 			stime = *localtime(&skimmer[i].last);
 			(void)strftime(lasttimestring, STRLEN, FMT, &stime);
 
-			printf("Skimmer %10s average deviation %+6.2fppm over %4d spots between %s and %s\n", 
+			printf("Skimmer %10s average deviation %+5.1fppm over %4d spots between %s and %s\n", 
 			skimmer[i].name, skimmer[i].avdev, skimmer[i].count, firstimestring, lasttimestring);
 		}
 	}
