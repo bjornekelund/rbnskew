@@ -31,14 +31,14 @@ multiply the currently used value with the factor.
 The analysis of skimlist has the following characteristics:
 
 * Only considers the 1000 most recent spots at any time for efficiency reasons
-* Only considers spots within 30 seconds of a reference spot
-* Only considers spots with SNR 6dB or more to secure relevance of spot
+* Only considers spots timestamped within 30 seconds of a reference spot
+* Only considers spots with SNR 10dB or more to secure relevance of spot
 * Only considers spots above 7MHz to reduce truncation noise
 * Only considers spots with 0.5kHz or less absolute frequency error to avoid QSY spots
 * Ignores spots from skimmers with less than 100 spots to guarantee statistical significance
 * Assumes a relative frequency error, i.e. originating solely from the skimmer's reference oscillator
 
-`offlineskew` is old code and a development tool. Do not use. 
+`offlineskew` is a development tool and contains old code. Do not use. 
 
 To run the code on your machine (Linux or Windows' Ubuntu emulator) the following steps are required:
 

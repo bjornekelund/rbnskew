@@ -1,9 +1,12 @@
 #!/bin/bash
 FOLDER=rbnfiles
 FILE=20200701.csv
+SKIMMERS=`grep -v '#' reference | tr '\n' ' '`
+#echo "Skimmers: " $SKIMMERS
 echo "Verification of reference skimmer integrity."
 echo "Analysis based on file" $FILE "with" `wc -l < $FOLDER/$FILE` "spots."
-for skimmer in `tr '\n' ' ' < reference`; do
+for skimmer in $SKIMMERS; do
+#	echo "Analyzing skimmer" ${skimmer}
 	./skimlist -q -f $FOLDER/$FILE -t ${skimmer} > result.tmp
 	grep deviation result.tmp 
 done

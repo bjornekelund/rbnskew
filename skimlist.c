@@ -8,17 +8,29 @@
 #include <unistd.h>
 #include <ctype.h>
 
+// Standard length of strings
 #define STRLEN 32
+// Standard length of lines
 #define LINELEN 256
+// Time format in RBN data file
 #define FMT "%Y-%m-%d %H:%M:%S"
+// Number of most recent spots considered in analysis
 #define SPOTSWINDOW 1000
+// Maximum number of skimmers supported
 #define MAXSKIMMERS 200
-#define USAGE "Usage: %s -f filename -t callsign -d -s\n"
+// Usage string
+#define USAGE "Usage: %s -f filename [-t callsign] [-d] [-s] [-q]\n"
+// Max number of seconds apart from a reference spot
 #define MAXAPART 30 
-#define MINSNR 6
+// Minimum SNR required for spot to be used
+#define MINSNR 10
+// Minimum frequency for spot to be used
 #define MINFREQ 7000
+// Minimum number of spots to be analyzed
 #define MINSPOTS 100
+// Maximum difference from reference spot times 100Hz 
 #define MAXERR 5
+// Name of file containing callsigns of reference skimmmers
 #define REFFILENAME "reference"
 
 struct Spot 
@@ -43,7 +55,7 @@ struct Skimmer
 	time_t last; 		// Latest spot
 };
 
-// Print to stderr and also to stdout if piped
+// Print to stderr. Print also to stdout if piped.
 void printboth(char *outstring, bool quiet)
 {
 	if (!quiet) 
@@ -120,8 +132,12 @@ int main(int argc, char *argv[]) {
 	{
 		if (sscanf(line, "%s", tempstring) == 1)
         {
-            strcpy(referenceskimmer[referenceskimmers], tempstring);
-			referenceskimmers++;
+			// Don't include comments or target call
+			if (tempstring[0] != '#' && strcmp(tempstring, target) != 0)
+			{
+				strcpy(referenceskimmer[referenceskimmers], tempstring);
+				referenceskimmers++;
+			}
         }
 	}
 	
@@ -175,14 +191,16 @@ int main(int argc, char *argv[]) {
 			// Check if this spot is by a reference skimmer
 			for (i = 0; i < referenceskimmers; i++)
 			{
-				if (strcmp(de, referenceskimmer[i]) == 0 && !(targeted && strcmp(de, target) == 0))
+				if (strcmp(de, referenceskimmer[i]) == 0)
 				{
 					reference = true;
 					break;
 				}
 			}
 
-			if (reference) // If it is reference spot, use it to verify all un-analyzed, non-reference spots in the pipeline
+			// If it is reference spot, use it to check all un-analyzed, 
+			// non-reference spots in the pipeline
+			if (reference) 
 			{		
 				for (i = 0; i < SPOTSWINDOW; i++)
 				{
@@ -200,11 +218,11 @@ int main(int argc, char *argv[]) {
 						{
 							usedspots++;
 							
-							if (adelta > 2 && verbose && !quiet) // Print if very deviating
+							if (adelta > 2 && verbose && !quiet) // Print outliers
 							{
 								stime = *localtime(&pipeline[i].time);
 								(void)strftime(timestring, STRLEN, FMT, &stime);						
-								fprintf(stderr, "Very deviating spot of %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
+								fprintf(stderr, "Outlier spot of %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
 									pipeline[i].dx, pipeline[i].de, pipeline[i].freq / 10.0, 
 									freq, delta / 10.0, timestring);
 							}
@@ -220,7 +238,7 @@ int main(int argc, char *argv[]) {
 								}
 							}
 							
-							if (skimpos != -1) // if in the list, updae
+							if (skimpos != -1) // if in the list, update it
 							{
 								skimmer[skimpos].accdev += 100000.0 * delta / freq;
 								skimmer[skimpos].count++;
@@ -262,6 +280,8 @@ int main(int argc, char *argv[]) {
 			spp = (spp + 1) % SPOTSWINDOW;
 		}
 	}
+	
+	(void)fclose(fp);
 
 	// Calculate statistics
 	firstspot = skimmer[0].first;
@@ -293,17 +313,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
-	// Present results
-	for (i = 0; i < skimmers; i++)
-	{
-		if (skimmer[i].count > MINSPOTS)
-		{
-			printf("Skimmer %9s average deviation %+5.1fppm over %5d spots (%11.9f)\n", 
-				skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
-				);
-		}
-	}
-	
 	stime = *localtime(&firstspot);
 	(void)strftime(firsttimestring, STRLEN, FMT, &stime);
 
@@ -316,27 +325,39 @@ int main(int argc, char *argv[]) {
 	printboth(outstring, quiet);
 	sprintf(outstring, "The average spot flow was %.0f spots per minute.\n", 60.0 * totalspots / difftime(lastspot, firstspot));
 	printboth(outstring, quiet);
-	sprintf(outstring, "%d spots met the following selection criteria:\n", usedspots);
+	sprintf(outstring, "%d spots were selected for analysis using the following criteria:\n", usedspots);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * Also spotted by reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
+	sprintf(outstring, " * Same callsign spotted also by a reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * Timestamped %ds or less apart from reference skimmer spot. \n", MAXAPART);
+	sprintf(outstring, " * Timestamped within %ds from the reference skimmer spot. \n", MAXAPART);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * SNR %ddB or higher. \n", MINSNR);
+	sprintf(outstring, " * Has an SNR %ddB or higher. \n", MINSNR);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * Frequency %dkHz or higher. \n", MINFREQ);
+	sprintf(outstring, " * Has a frequency of %dkHz or higher. \n", MINFREQ);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * Deviates %.1fkHz or less from reference skimmer spot.\n", MAXERR / 10.0);
+	sprintf(outstring, " * Deviates %.1fkHz or less from the reference skimmer spot.\n", MAXERR / 10.0);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * Spotted by skimmer with more than %d spots in file.\n", MINSPOTS);
+	sprintf(outstring, " * %d or more spots available from originating skimmer.\n", MINSPOTS);
 	printboth(outstring, quiet);
 
 	(void)time(&stoptime);
 	timeinfo = localtime(&stoptime);
 	sprintf(outstring, "Total processing time was %.0f seconds.\n", difftime(stoptime, starttime));
-	printboth(outstring, quiet);
+	if (isatty(STDOUT_FILENO) == 0)
+		printf("%s", outstring);
+		
+	// Present results
+	for (i = 0; i < skimmers; i++)
+	{
+		if (skimmer[i].count > MINSPOTS)
+		{
+			printf("Skimmer %9s average deviation %+5.1fppm over %5d spots (%11.9f)\n", 
+				skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
+				);
+		}
+	}
+
 	
-	(void)fclose(fp);
 
 	return 0;
 }

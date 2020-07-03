@@ -1,11 +1,9 @@
 gcc = gcc -ggdb
 
-all:			offlineskew skimlist
-
 skimlist:		skimlist.o Makefile
 				$(gcc) -o skimlist skimlist.o -lm
 
-skimlist.o:		skimlist.c
+skimlist.o:		skimlist.c Makefile
 				$(gcc) -c skimlist.c
 
 offlineskew:	offlineskew.o  Makefile
@@ -15,4 +13,4 @@ offlineskew.o:	offlineskew.c Makefile
 				$(gcc) -c offlineskew.c
 
 clean:
-				rm -f *.o
+				rm -f *.o 
