@@ -22,9 +22,9 @@ The script `getrbndata` downloads all RBN data for a selected month into the
 `rbnfiles` subfolder.
 
 The adjustment factor listed within parentheses is intended to be applied to
-the skimmer's current value of the FreqCalibration parameter in SkimSrv.ini.
-If it is 1.0, just replace it with the suggested factor. Otherwise,
-multiply the currently used value with the factor.
+the skimmer's current value of the `FreqCalibration` parameter in `SkimSrv.ini`.
+If it is the default 1.0, just replace it with the suggested factor. Otherwise,
+multiply the value currently used with the adjustment factor to get the corrected value.
 
 `SkimSrv.ini` can be found in `%appdata%\Afreet\Products\SkimSrv`
 
