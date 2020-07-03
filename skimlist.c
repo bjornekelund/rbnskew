@@ -179,87 +179,91 @@ int main(int argc, char *argv[]) {
 		// callsign,de_pfx,de_cont,freq,band,dx,dx_pfx,dx_cont,mode,db,date,speed,tx_mode
 		got = sscanf(line, "%[^,],%*[^,],%*[^,],%f,%*[^,],%[^,],%*[^,],%*[^,],%*[^,],%d,%[^,],%*s", 
 			de, &freq, dx, &snr, timestring);
-		
-		if (got == 5 && snr >= MINSNR) // If parsing is successful and SNR is ok
+
+		if (got == 5 ) // If parsing is successful 
 		{ 
-			(void)strptime(timestring, FMT, &stime);
-			spottime = mktime(&stime);
-
 			totalspots++;
-		
-			reference = false;
-			// Check if this spot is by a reference skimmer
-			for (i = 0; i < referenceskimmers; i++)
+
+			if (snr >= MINSNR) // If SNR is sufficient
 			{
-				if (strcmp(de, referenceskimmer[i]) == 0)
+				(void)strptime(timestring, FMT, &stime);
+				spottime = mktime(&stime);
+			
+				reference = false;
+				// Check if this spot is by a reference skimmer
+				for (i = 0; i < referenceskimmers; i++)
 				{
-					reference = true;
-					break;
-				}
-			}
-
-			// If it is reference spot, use it to check all un-analyzed, 
-			// non-reference spots in the pipeline
-			if (reference) 
-			{		
-				for (i = 0; i < SPOTSWINDOW; i++)
-				{
-					if (!pipeline[i].analyzed && !pipeline[i].reference && freq >= MINFREQ &&
-						strcmp(pipeline[i].dx, dx) == 0 && 
-						abs(difftime(pipeline[i].time, spottime)) <= MAXAPART && 
-						!(targeted && strcmp(pipeline[i].de, target) != 0))
+					if (strcmp(de, referenceskimmer[i]) == 0)
 					{
-						delta = pipeline[i].freq - (int)round(freq * 10.0);
-						adelta = delta > 0 ? delta : -delta;
+						reference = true;
+						break;
+					}
+				}
 
-						pipeline[i].analyzed = true; // To only analyze each spot once
-						
-						if (adelta <= MAXERR) // Only consider spots less than MAXERR off from reference skimmer
+				// If it is reference spot, use it to check all un-analyzed, 
+				// non-reference spots in the pipeline
+				if (reference) 
+				{		
+					for (i = 0; i < SPOTSWINDOW; i++)
+					{
+						if (!pipeline[i].analyzed && !pipeline[i].reference && freq >= MINFREQ &&
+							strcmp(pipeline[i].dx, dx) == 0 && 
+							abs(difftime(pipeline[i].time, spottime)) <= MAXAPART && 
+							!(targeted && strcmp(pipeline[i].de, target) != 0))
 						{
-							usedspots++;
-							
-							if (adelta > 2 && verbose && !quiet) // Print outliers
-							{
-								stime = *localtime(&pipeline[i].time);
-								(void)strftime(timestring, STRLEN, FMT, &stime);						
-								fprintf(stderr, "Outlier spot of %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
-									pipeline[i].dx, pipeline[i].de, pipeline[i].freq / 10.0, 
-									freq, delta / 10.0, timestring);
-							}
+							delta = pipeline[i].freq - (int)round(freq * 10.0);
+							adelta = delta > 0 ? delta : -delta;
 
-							// Check if this skimmer is already in list
-							skimpos = -1;
-							for (j = 0; j < skimmers; j++)
-							{
-								if (strcmp(pipeline[i].de, skimmer[j].name) == 0)
-								{
-									skimpos = j;
-									break;
-								}
-							}
+							pipeline[i].analyzed = true; // To only analyze each spot once
 							
-							if (skimpos != -1) // if in the list, update it
+							if (adelta <= MAXERR) // Only consider spots less than MAXERR off from reference skimmer
 							{
-								skimmer[skimpos].accdev += 100000.0 * delta / freq;
-								skimmer[skimpos].count++;
-								if (pipeline[i].time > skimmer[skimpos].last)
-									skimmer[skimpos].last = pipeline[i].time;
-								if (pipeline[i].time < skimmer[skimpos].first)
-									skimmer[skimpos].first = pipeline[i].time;
-							}
-							else // If new skimmer, create it
-							{
-								if (verbose && !quiet)
-									fprintf(stderr, "Found new skimmer %s \n", pipeline[i].de);
-								strcpy(skimmer[skimmers].name, pipeline[i].de);
-								skimmer[skimmers].accdev = 100000.0 * delta / freq;
-								skimmer[skimmers].count = 1;
-								skimmer[skimmers].first = pipeline[i].time;
-								skimmer[skimmers].last = pipeline[i].time;
-								skimmers++;
-								if (skimmers > MAXSKIMMERS) {
-									fprintf(stderr, "Error: Skimmer count overflow (%d).\n", skimmers);
-									return 1;
+								usedspots++;
+								
+								if (adelta > 2 && verbose && !quiet) // Print outliers
+								{
+									stime = *localtime(&pipeline[i].time);
+									(void)strftime(timestring, STRLEN, FMT, &stime);						
+									fprintf(stderr, 
+										"Outlier spot of %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
+										pipeline[i].dx, pipeline[i].de, pipeline[i].freq / 10.0, 
+										freq, delta / 10.0, timestring);
+								}
+
+								// Check if this skimmer is already in list
+								skimpos = -1;
+								for (j = 0; j < skimmers; j++)
+								{
+									if (strcmp(pipeline[i].de, skimmer[j].name) == 0)
+									{
+										skimpos = j;
+										break;
+									}
+								}
+								
+								if (skimpos != -1) // if in the list, update it
+								{
+									skimmer[skimpos].accdev += 100000.0 * delta / freq;
+									skimmer[skimpos].count++;
+									if (pipeline[i].time > skimmer[skimpos].last)
+										skimmer[skimpos].last = pipeline[i].time;
+									if (pipeline[i].time < skimmer[skimpos].first)
+										skimmer[skimpos].first = pipeline[i].time;
+								}
+								else // If new skimmer, create it
+								{
+									if (verbose && !quiet)
+										fprintf(stderr, "Found new skimmer %s \n", pipeline[i].de);
+									strcpy(skimmer[skimmers].name, pipeline[i].de);
+									skimmer[skimmers].accdev = 100000.0 * delta / freq;
+									skimmer[skimmers].count = 1;
+									skimmer[skimmers].first = pipeline[i].time;
+									skimmer[skimmers].last = pipeline[i].time;
+									skimmers++;
+									if (skimmers > MAXSKIMMERS) {
+										fprintf(stderr, "Error: Skimmer count overflow (%d).\n", skimmers);
+										return 1;
+									}
 								}
 							}
 						}
@@ -320,22 +324,22 @@ int main(int argc, char *argv[]) {
 	(void)strftime(lasttimestring, STRLEN, FMT, &stime);
 
 	// Print summary
-	sprintf(outstring, "Processed a total of %d RBN spots between %s and %s.\n", 
+	sprintf(outstring, "Processed a total of %d RBN spots (%s to %s).\n", 
 		totalspots, firsttimestring, lasttimestring);
 	printboth(outstring, quiet);
 	sprintf(outstring, "The average spot flow was %.0f spots per minute.\n", 60.0 * totalspots / difftime(lastspot, firstspot));
 	printboth(outstring, quiet);
 	sprintf(outstring, "%d spots were selected for analysis using the following criteria:\n", usedspots);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * Same callsign spotted also by a reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
+	sprintf(outstring, " * Same callsign spotted by a reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * Timestamped within %ds from the reference skimmer spot. \n", MAXAPART);
+	sprintf(outstring, " * Same callsign spotted by a reference skimmer within %ds. \n", MAXAPART);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * Has an SNR %ddB or higher. \n", MINSNR);
+	sprintf(outstring, " * SNR is %ddB or higher. \n", MINSNR);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * Has a frequency of %dkHz or higher. \n", MINFREQ);
+	sprintf(outstring, " * Frequency is %dkHz or higher. \n", MINFREQ);
 	printboth(outstring, quiet);
-	sprintf(outstring, " * Deviates %.1fkHz or less from the reference skimmer spot.\n", MAXERR / 10.0);
+	sprintf(outstring, " * Frequency deviation from the reference skimmer spot is %.1fkHz or less.\n", MAXERR / 10.0);
 	printboth(outstring, quiet);
 	sprintf(outstring, " * %d or more spots available from originating skimmer.\n", MINSPOTS);
 	printboth(outstring, quiet);
