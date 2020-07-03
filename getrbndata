@@ -1,14 +1,21 @@
 #!/bin/bash
-# get a full month of data
-MONTH="05"
+# get a full month of data, unpack and delete zip files
+YEAR="2020"
+MONTH="07"
 FOLDER="rbnfiles"
 mkdir -p $FOLDER
-for i in {01..31}
+for day in {01..31}
   do
-    FILE="2020"$MONTH$i
-    echo "Downloading:" $FILE"..."
+    FILE=$YEAR$MONTH$day
+#    echo "Downloading:" $FILE "..."
     wget --quiet --no-hsts http://www.reversebeacon.net/raw_data/dl.php?f=$FILE -O $FOLDER/$FILE.zip
-    gunzip < $FOLDER/$FILE.zip > $FOLDER/$FILE.csv
-    rm -f $FOLDER/$FILE.zip
+    FILESIZE=$(stat -c%s "$FOLDER/$FILE.zip")
+	if [[ $FILESIZE != "0" ]]; then
+		gunzip < $FOLDER/$FILE.zip > $FOLDER/$FILE.csv
+		echo $FILE".csv downloaded."
+#	else
+#		echo $FILE".csv did not exist."
+	fi
+	rm -f $FOLDER/$FILE.zip
   done
 exit
