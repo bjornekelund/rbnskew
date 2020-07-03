@@ -16,6 +16,6 @@ for day in {01..31}
 #	else
 #		echo $FILE".csv did not exist."
 	fi
-	rm -f $FOLDER/$FILE.zip
+  rm -f $FOLDER/$FILE.zip
   done
 exit
