@@ -8,7 +8,7 @@ echo "Verification of reference skimmer integrity."
 echo "Analysis based on file" $FILE "with" `wc -l < $FOLDER/$FILE` "spots."
 for skimmer in $SKIMMERS; do
 #	echo "Analyzing skimmer" $skimmer
-	./skimlist -q -f $FOLDER/$FILE -t $skimmer > result.tmp
+	./rbnskew -q -f $FOLDER/$FILE -t $skimmer > result.tmp
 	grep "average deviation" result.tmp 
 done
 rm -f result.tmp

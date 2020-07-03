@@ -1,7 +1,7 @@
 # rbnskew
 Skimmer skew analysis for the RBN network http://www.reversebeacon.net
 
-`skimlist` analyses a comma separated list of spots (formatted as the csv 
+`rbnskew` analyses a comma separated list of spots (formatted as the csv 
 files available from http://www.reversebeacon.net/raw_data) to determine
 the relative frequency error for all skimmers listed in the file. 
 
@@ -28,9 +28,9 @@ multiply the value currently used with the adjustment factor to get the correcte
 
 `SkimSrv.ini` can be found in `%appdata%\Afreet\Products\SkimSrv`
 
-`skimlist -f csvfile [-t callsign] [-d] (verbose) [-s] (sort result) [-q] (quiet)`
+`rbnskew -f csvfile [-t callsign] [-d] (verbose) [-s] (sort result) [-q] (quiet)`
 
-The analysis of skimlist has the following default characteristics:
+The analysis of rbnskew has the following default characteristics:
 
 * Only considers the 1000 most recent spots at any time for efficiency reasons
 * Only considers spots timestamped within 30 seconds of a reference spot
@@ -39,8 +39,6 @@ The analysis of skimlist has the following default characteristics:
 * Only considers spots with 0.5kHz or less absolute frequency error to avoid QSY spots
 * Ignores spots from skimmers with less than 100 spots to guarantee statistical significance
 * Assumes a relative frequency error, i.e. originating solely from the skimmer's reference oscillator
-
-`offlineskew` is a development tool and contains old code. Do not use. 
 
 To run the code on your machine (Linux or Windows' Ubuntu emulator) the following steps are required:
 

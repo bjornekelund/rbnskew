@@ -11,6 +11,6 @@ else
 	echo "Could not download "$FILE.csv
 fi
 rm -f $FOLDER/$FILE.zip
-./skimlist -q -f $FOLDER/$FILE.csv -s > $FILE.txt
+./rbnskew -q -f $FOLDER/$FILE.csv -s > $FILE.txt
 cat $FILE.txt
 exit

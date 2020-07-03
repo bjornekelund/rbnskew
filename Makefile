@@ -1,10 +1,10 @@
 gcc = gcc -ggdb
 
-skimlist:		skimlist.o Makefile
-				$(gcc) -o skimlist skimlist.o -lm
+rbnskew:		rbnskew.o Makefile
+				$(gcc) -o rbnskew rbnskew.o -lm
 
-skimlist.o:		skimlist.c Makefile
-				$(gcc) -c skimlist.c
+rbnskew.o:		rbnskew.c Makefile
+				$(gcc) -c rbnskew.c
 
 offlineskew:	offlineskew.o  Makefile
 				$(gcc) -o offlineskew offlineskew.o -lm

@@ -3,5 +3,6 @@
 *.py
 rbnfiles
 *.log
-skimlist
+*.tmp
+rbnskew
 offlineskew
