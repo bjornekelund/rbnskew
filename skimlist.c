@@ -16,8 +16,10 @@
 #define FMT "%Y-%m-%d %H:%M:%S"
 // Number of most recent spots considered in analysis
 #define SPOTSWINDOW 1000
+// Maximum number of reference skimmers
+#define MAXREF 50
 // Maximum number of skimmers supported
-#define MAXSKIMMERS 200
+#define MAXSKIMMERS 400
 // Usage string
 #define USAGE "Usage: %s -f filename [-t callsign] [-d] [-s] [-q]\n"
 // Max number of seconds apart from a reference spot
@@ -67,7 +69,7 @@ void printboth(char *outstring, bool quiet)
 
 int main(int argc, char *argv[]) {
 	int referenceskimmers = 0;
-	char referenceskimmer[128][STRLEN];
+	char referenceskimmer[MAXREF][STRLEN];
     FILE *fp, *fr;
 	char filename[STRLEN] = "", target[STRLEN] = "";
 	int totalspots = 0, usedspots = 0, c, got, i, j, matches, spp = 0;
@@ -83,8 +85,9 @@ int main(int argc, char *argv[]) {
 	struct Spot pipeline[SPOTSWINDOW];
 	struct Skimmer skimmer[MAXSKIMMERS], temp;
 
+	// Avoid that unitialized entries in pipeline are used
 	for (i = 0; i < SPOTSWINDOW; i++)
-		strcpy(pipeline[i].dx, "");
+		pipeline[i].analyzed = true;
 	
     while ((c = getopt(argc, argv, "qt:sdf:")) != -1)
     {
@@ -137,6 +140,11 @@ int main(int argc, char *argv[]) {
 			{
 				strcpy(referenceskimmer[referenceskimmers], tempstring);
 				referenceskimmers++;
+				if (referenceskimmers > MAXREF) {
+					fprintf(stderr, "Overflow: More than %d reference skimmers defined.\n", MAXREF);
+					return 1;
+				}
+
 			}
         }
 	}
@@ -184,38 +192,41 @@ int main(int argc, char *argv[]) {
 		{ 
 			totalspots++;
 
-			if (snr >= MINSNR) // If SNR is sufficient
+			if (snr >= MINSNR && freq >= MINFREQ) // If SNR is sufficient and frequency OK
 			{
 				(void)strptime(timestring, FMT, &stime);
 				spottime = mktime(&stime);
 			
 				reference = false;
-				// Check if this spot is by a reference skimmer
+				// Check if this spot is from a reference skimmer
 				for (i = 0; i < referenceskimmers; i++)
 				{
 					if (strcmp(de, referenceskimmer[i]) == 0)
 					{
 						reference = true;
-						break;
+						// break;
 					}
 				}
-
+				
 				// If it is reference spot, use it to check all un-analyzed, 
 				// non-reference spots in the pipeline
 				if (reference) 
 				{		
 					for (i = 0; i < SPOTSWINDOW; i++)
 					{
-						if (!pipeline[i].analyzed && !pipeline[i].reference && freq >= MINFREQ &&
+						if (!pipeline[i].analyzed && !pipeline[i].reference && 
 							strcmp(pipeline[i].dx, dx) == 0 && 
 							abs(difftime(pipeline[i].time, spottime)) <= MAXAPART && 
 							!(targeted && strcmp(pipeline[i].de, target) != 0))
 						{
 							delta = pipeline[i].freq - (int)round(freq * 10.0);
 							adelta = delta > 0 ? delta : -delta;
-
-							pipeline[i].analyzed = true; // To only analyze each spot once
 							
+							// if (pipeline[i].reference || pipeline[i].analyzed)
+								// fprintf(stderr, "Error!\n");
+							
+							pipeline[i].analyzed = true; // To only analyze each spot once							
+
 							if (adelta <= MAXERR) // Only consider spots less than MAXERR off from reference skimmer
 							{
 								usedspots++;
@@ -250,18 +261,18 @@ int main(int argc, char *argv[]) {
 									if (pipeline[i].time < skimmer[skimpos].first)
 										skimmer[skimpos].first = pipeline[i].time;
 								}
-								else // If new skimmer, create it
+								else // If new skimmer, add it to list
 								{
-									if (verbose && !quiet)
-										fprintf(stderr, "Found new skimmer %s \n", pipeline[i].de);
 									strcpy(skimmer[skimmers].name, pipeline[i].de);
 									skimmer[skimmers].accdev = 100000.0 * delta / freq;
 									skimmer[skimmers].count = 1;
 									skimmer[skimmers].first = pipeline[i].time;
 									skimmer[skimmers].last = pipeline[i].time;
 									skimmers++;
+									if (verbose && !quiet)
+										fprintf(stderr, "Found skimmer #%d: %s \n", skimmers, pipeline[i].de);
 									if (skimmers > MAXSKIMMERS) {
-										fprintf(stderr, "Error: Skimmer count overflow (%d).\n", skimmers);
+										fprintf(stderr, "Overflow: More than %d skimmers found.\n", MAXSKIMMERS);
 										return 1;
 									}
 								}
@@ -269,19 +280,19 @@ int main(int argc, char *argv[]) {
 						}
 					}
 				}
-			}
+
+				// Save new spot in pipeline
+				strcpy(pipeline[spp].de, de);
+				strcpy(pipeline[spp].dx, dx);
+				pipeline[spp].freq = (int)round(freq * 10.0);
+				pipeline[spp].snr = snr;
+				pipeline[spp].reference = reference;
+				pipeline[spp].analyzed = false;			
+				pipeline[spp].time = spottime;
 			
-			// Save new spot in pipeline
-			strcpy(pipeline[spp].de, de);
-			strcpy(pipeline[spp].dx, dx);
-			pipeline[spp].freq = (int)round(freq * 10.0);
-			pipeline[spp].snr = snr;
-			pipeline[spp].reference = reference;
-			pipeline[spp].analyzed = false;			
-			pipeline[spp].time = spottime;
-		
-			// Move pointer and wrap around at top of pipeline
-			spp = (spp + 1) % SPOTSWINDOW;
+				// Move pointer and wrap around at top of pipeline
+				spp = (spp + 1) % SPOTSWINDOW;
+			}
 		}
 	}
 	
@@ -327,7 +338,8 @@ int main(int argc, char *argv[]) {
 	sprintf(outstring, "Processed a total of %d RBN spots (%s to %s).\n", 
 		totalspots, firsttimestring, lasttimestring);
 	printboth(outstring, quiet);
-	sprintf(outstring, "The average spot flow was %.0f spots per minute.\n", 60.0 * totalspots / difftime(lastspot, firstspot));
+	sprintf(outstring, "The average spot flow was %.0f spots per minute from %d active skimmers.\n", 
+		60.0 * totalspots / difftime(lastspot, firstspot), skimmers);
 	printboth(outstring, quiet);
 	sprintf(outstring, "%d spots were selected for analysis using the following criteria:\n", usedspots);
 	printboth(outstring, quiet);
