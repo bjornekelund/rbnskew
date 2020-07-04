@@ -22,6 +22,8 @@ reference skimmers to verify that they can still be trusted.
 The script `getrbndata` downloads all RBN data for a selected month into the
 `rbnfiles` subfolder.
 
+The script `yesterday` downloads yesterday's RBN data and runs a full analysis on it.
+
 The adjustment factor listed within parentheses is intended to be applied to
 the skimmer's current value of the `FreqCalibration` parameter in `SkimSrv.ini`.
 If it is the default 1.0, just replace it with the suggested factor. Otherwise,
