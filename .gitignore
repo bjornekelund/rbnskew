@@ -1,8 +1,7 @@
 *.o
 *.txt
-*.py
 rbnfiles
 *.log
 *.tmp
 rbnskew
-offlineskew
+
