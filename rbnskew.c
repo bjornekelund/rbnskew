@@ -154,11 +154,8 @@ int main(int argc, char *argv[]) {
     (void)time(&starttime);
     timeinfo = localtime(&starttime);
 
-    if (verbose)
-    {
-        if (!quiet)
-            fprintf(stderr, "Starting at %s", asctime(timeinfo));
-    }
+    if (verbose && !quiet)
+        fprintf(stderr, "Starting at %s", asctime(timeinfo));
 
     if (isatty(STDOUT_FILENO) == 0)
         printf("Skimmer accuracy analysis based on RBN offline data.\n");
