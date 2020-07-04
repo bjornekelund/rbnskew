@@ -12,11 +12,12 @@ meeeting the criteria below.
 The trusted skimmers are listed in the file `reference`. One callsign per line.
 Comment lines are allowed and start with "#". 
 
-For a more rapid analysis, the analysis can be done for only a selected call,  
+For a quicker rapid analysis, the analysis can be done for only a selected call,
 using the -t option.
 
 This option is for instance used  by the script `checkreferences` which walks through
-the current list of reference skimmers and checks each of them against the others.
+the current list of reference skimmers and checks each of them against the other
+reference skimmers to verify that they can still be trusted.
 
 The script `getrbndata` downloads all RBN data for a selected month into the
 `rbnfiles` subfolder.
