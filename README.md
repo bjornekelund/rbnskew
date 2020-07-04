@@ -31,7 +31,7 @@ multiply the value currently used with the adjustment factor to get the correcte
 
 `rbnskew -f csvfile [-t callsign] [-d] (verbose) [-s] (sort result) [-q] (quiet)`
 
-The analysis of rbnskew has the following default characteristics:
+The analysis algorithm has the following default characteristics:
 
 * Only considers the 1000 most recent spots at any time for efficiency reasons
 * Only considers spots timestamped within 30 seconds of a reference spot
@@ -49,4 +49,4 @@ To run the code on your machine (Linux or Windows' Ubuntu emulator) the followin
 `$ git clone https://github.com/bjornekelund/rbnskew`\
 `$ cd rbnskew`\
 `$ make`
-
+`$ ./rbnskew -f test.csv`
