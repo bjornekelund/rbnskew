@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
     while (fgets(line, LINELEN, fp))
     {
         // callsign,de_pfx,de_cont,freq,band,dx,dx_pfx,dx_cont,mode,db,date,speed,tx_mode
-        got = sscanf(line, "%[^,],%*[^,],%*[^,],%f,%*[^,],%[^,],%*[^,],%*[^,],%*[^,],%d,%[^,],%*s", 
+        got = sscanf(line, "%[^,],%*[^,],%*[^,],%f,%*[^,],%[^,],%*[^,],%*[^,],%*[^,],%d,%[^,],%*s",
             de, &freq, dx, &snr, timestring);
 
         if (got == 5 ) // If parsing is successful
@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
                     if (strcmp(de, referenceskimmer[i]) == 0)
                     {
                         reference = true;
-                        // break;
+                        break;
                     }
                 }
 
@@ -231,10 +231,10 @@ int main(int argc, char *argv[]) {
                                 if (adelta > 2 && verbose && !quiet) // Print outliers
                                 {
                                     stime = *localtime(&pipeline[i].time);
-                                    (void)strftime(timestring, STRLEN, FMT, &stime);                        
+                                    (void)strftime(timestring, STRLEN, FMT, &stime);
                                     fprintf(stderr,
                                         "Outlier spot of %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
-                                        pipeline[i].dx, pipeline[i].de, pipeline[i].freq / 10.0, 
+                                        pipeline[i].dx, pipeline[i].de, pipeline[i].freq / 10.0,
                                         freq, delta / 10.0, timestring);
                                 }
 
