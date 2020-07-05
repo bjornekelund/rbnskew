@@ -7,7 +7,7 @@ FILESIZE=$(stat -c%s rbndata.zip)
 if [[ $FILESIZE != "0" ]]; then
     gunzip < rbndata.zip > rbndata.csv
     echo "Downloaded yesterday's "$((`wc -l < rbndata.csv` - 2))" spots into rbndata.csv."
-    echo "To improve the accuracy of a skimmer, multiply the current value of" > rbnskew.txt
+    echo "To improve the accuracy of your skimmer, multiply the current value of" > rbnskew.txt
     echo "FreqCalibration in SkimSrv.ini with the adjustment factor below." >> rbnskew.txt
     echo >> rbnskew.txt
     cd ..
