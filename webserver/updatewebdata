@@ -29,6 +29,7 @@ if [[ $FILESIZE != "0" ]]; then
     cp temp2.txt rbnskew2.txt
     echo "Updated web data in rbnskew2.txt."
     ./upload
+    echo "Uploaded to web hosting."
 else
     echo "Could not download yesterday's RBN data."
 fi
