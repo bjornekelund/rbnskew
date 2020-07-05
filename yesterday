@@ -2,15 +2,16 @@
 # get a full month of data, unpack and delete zip files
 FOLDER="rbnfiles"
 FILE=`date --date="1 days ago" +%Y%m%d`
+mkdir -p $FOLDER
 wget --quiet --no-hsts http://www.reversebeacon.net/raw_data/dl.php?f=$FILE -O $FOLDER/$FILE.zip
 FILESIZE=$(stat -c%s "$FOLDER/$FILE.zip")
 if [[ $FILESIZE != "0" ]]; then
     gunzip < $FOLDER/$FILE.zip > $FOLDER/$FILE.csv
-    echo "Downloaded yesterday's RBN data into file $FILE".csv
+    echo "Downloaded yesterday's RBN data into file $FOLDER/$FILE".csv
 else
     echo "Could not download "$FILE.csv
 fi
 rm -f $FOLDER/$FILE.zip
 ./rbnskew -q -f $FOLDER/$FILE.csv -s > $FILE.txt
-cat $FILE.txt
+echo "Stored analysis result in" $FILE.txt
 exit
