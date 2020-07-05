@@ -1,0 +1,22 @@
+#!/bin/bash
+# Get yesterday's RBN data and run a full analysis on it
+cd /home/pi/rbnskew/webserver
+FILE=`date --date="1 days ago" +%Y%m%d`
+wget --quiet --no-hsts http://www.reversebeacon.net/raw_data/dl.php?f=$FILE -O rbndata.zip
+FILESIZE=$(stat -c%s rbndata.zip)
+if [[ $FILESIZE != "0" ]]; then
+    gunzip < rbndata.zip > rbndata.csv
+    echo "Downloaded yesterday's "$((`wc -l < rbndata.csv` - 2))" spots into rbndata.csv."
+    echo "To improve the accuracy of a skimmer, multiply the current value of" > rbnskew.txt
+    echo "FreqCalibration in SkimSrv.ini with the adjustment factor below." >> rbnskew.txt
+    echo >> rbnskew.txt
+    cd ..
+    ./rbnskew -q -f webserver/rbndata.csv | grep -v "Total processing" >> webserver/rbnskew.txt
+    cd webserver
+    echo >> rbnskew.txt
+    echo "Page last updated "`date -u` >> rbnskew.txt
+    echo "Stored analysis result in "rbnskew.txt"."
+else
+    echo "Could not download yesterday's RBN data."
+fi
+exit
