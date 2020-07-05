@@ -305,22 +305,19 @@ int main(int argc, char *argv[]) {
         skimmer[i].absavdev = fabs(skimmer[i].avdev);
     }
 
-    // Sort by absolute average deviation if desired
-    if (sort)
-    {
-        for (i = 0; i < skimmers - 1; ++i)
-        {
-            for (j = 0; j < skimmers - 1 - i; ++j)
-            {
-                if (skimmer[j].absavdev > skimmer[j + 1].absavdev)
-                {
-                    temp = skimmer[j + 1];
-                    skimmer[j + 1] = skimmer[j];
-                    skimmer[j] = temp;
-                }
-            }
-        }
-    }
+    // Sort by callsign, or average deviation if desired
+	for (i = 0; i < skimmers - 1; ++i)
+	{
+		for (j = 0; j < skimmers - 1 - i; ++j)
+		{
+			if (sort ? skimmer[j].absavdev > skimmer[j + 1].absavdev : strcmp(skimmer[j].name, skimmer[j + 1].name) > 0)
+			{
+				temp = skimmer[j + 1];
+				skimmer[j + 1] = skimmer[j];
+				skimmer[j] = temp;
+			}
+		}
+	}
 
     // Print summary
     stime = *localtime(&firstspot);
@@ -380,7 +377,7 @@ int main(int argc, char *argv[]) {
     {
         if (skimmer[i].count >= MINSPOTS)
         {
-            printf("Skimmer %9s average deviation %+5.1fppm over %5d spots (%11.9f)\n", 
+            printf("Skimmer %-9s average deviation %+5.1fppm over %5d spots (%11.9f)\n", 
                 skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
                 );
         }
