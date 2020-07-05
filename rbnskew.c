@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     int totalspots = 0, usedspots = 0, c, got, i, j, spp = 0;
     time_t starttime, stoptime, spottime, firstspot, lastspot;
     struct tm *timeinfo, stime;
-    bool verbose = false, reference, sort = false, targeted = false, quiet = false;
+    bool verbose = false, worst = false, reference, sort = false, targeted = false, quiet = false;
     char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN];
     char firsttimestring[STRLEN], lasttimestring[STRLEN];
     char outstring[LINELEN], tempstring[STRLEN];
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < SPOTSWINDOW; i++)
         pipeline[i].analyzed = true;
 
-    while ((c = getopt(argc, argv, "qt:sdf:")) != -1)
+    while ((c = getopt(argc, argv, "wqt:sdf:")) != -1)
     {
         switch (c)
         {
@@ -108,6 +108,9 @@ int main(int argc, char *argv[]) {
                 break;
             case 'd':
                 verbose = true;
+                break;
+            case 'w':
+                worst = true;
                 break;
             case 'q':
                 quiet = true;
@@ -315,7 +318,8 @@ int main(int argc, char *argv[]) {
     {
         for (j = 0; j < skimmers - 1 - i; ++j)
         {
-            if (sort ? skimmer[j].absavdev > skimmer[j + 1].absavdev : strcmp(skimmer[j].name, skimmer[j + 1].name) > 0)
+            if (sort ? (worst ? skimmer[j].absavdev < skimmer[j + 1].absavdev : skimmer[j].absavdev > skimmer[j + 1].absavdev )
+                : strcmp(skimmer[j].name, skimmer[j + 1].name) > 0)
             {
                 temp = skimmer[j + 1];
                 skimmer[j + 1] = skimmer[j];
