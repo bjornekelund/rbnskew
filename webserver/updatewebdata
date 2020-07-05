@@ -7,15 +7,28 @@ FILESIZE=$(stat -c%s rbndata.zip)
 if [[ $FILESIZE != "0" ]]; then
     gunzip < rbndata.zip > rbndata.csv
     echo "Downloaded yesterday's "$((`wc -l < rbndata.csv` - 2))" spots into rbndata.csv."
-    echo "To improve the accuracy of your skimmer, multiply the current value of" > rbnskew.txt
-    echo "FreqCalibration in SkimSrv.ini with the adjustment factor below." >> rbnskew.txt
-    echo >> rbnskew.txt
+    echo "To improve the accuracy of your skimmer, multiply the current value of" > temp.txt
+    echo "FreqCalibration in SkimSrv.ini with the adjustment factor below." >> temp.txt
+    echo >> temp.txt
     cd ..
-    ./rbnskew -q -f webserver/rbndata.csv | sed "/processing/c\ " >> webserver/rbnskew.txt
+    ./rbnskew -q -f webserver/rbndata.csv | sed "/processing/c\ " >> webserver/temp.txt
     cd webserver
-    echo >> rbnskew.txt
-    echo "Page last updated "`date -u` >> rbnskew.txt
+    echo >> temp.txt
+    echo "Page last updated "`date -u` >> temp.txt
+    cp temp.txt rbnskew.txt
     echo "Updated web data in rbnskew.txt."
+#
+    echo "To improve the accuracy of your skimmer, multiply the current value of" > temp2.txt
+    echo "FreqCalibration in SkimSrv.ini with the adjustment factor below." >> temp2.txt
+    echo >> temp2.txt
+    cd ..
+    ./rbnskew -q -s -w -f webserver/rbndata.csv | sed "/processing/c\ " >> webserver/temp2.txt
+    cd webserver
+    echo >> temp2.txt
+    echo "Page last updated "`date -u` >> temp2.txt
+    cp temp2.txt rbnskew2.txt
+    echo "Updated web data in rbnskew2.txt."
+    ./upload
 else
     echo "Could not download yesterday's RBN data."
 fi
