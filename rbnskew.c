@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     FILE *fp, *fr;
     char filename[STRLEN] = "", target[STRLEN] = "";
     int totalspots = 0, usedspots = 0, c, got, i, j, spp = 0;
-    time_t starttime, stoptime, spottime, firstspot, lastspot;
+    time_t starttime, stoptime, spottime, firstspot = 2147483648, lastspot = 1;
     struct tm *timeinfo, stime;
     bool verbose = false, reference, sort = false, targeted = false, quiet = false;
     char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN];
@@ -171,8 +171,8 @@ int main(int argc, char *argv[]) {
         column += strlen(outstring);
         if (column > 70)
         {
-            printf("\n      ");
-            column = 6;
+            printf("\n    ");
+            column = 5;
         }
     }
     printf(".\n");
@@ -189,10 +189,13 @@ int main(int argc, char *argv[]) {
         {
             totalspots++;
 
+            (void)strptime(timestring, FMT, &stime);
+            spottime = mktime(&stime);
+            if (spottime > lastspot) lastspot = spottime;
+            if (spottime < firstspot) firstspot = spottime;
+
             if (snr >= MINSNR && freq >= MINFREQ) // If SNR is sufficient and frequency OK
             {
-                (void)strptime(timestring, FMT, &stime);
-                spottime = mktime(&stime);
 
                 reference = false;
                 // Check if this spot is from a reference skimmer
@@ -296,16 +299,10 @@ int main(int argc, char *argv[]) {
     (void)fclose(fp);
 
     // Calculate statistics
-    firstspot = skimmer[0].first;
-    lastspot = skimmer[0].last;
     for (i = 0; i < skimmers; i++)
     {
         skimmer[i].avdev = skimmer[i].accdev / skimmer[i].count;
         skimmer[i].absavdev = fabs(skimmer[i].avdev);
-        if (skimmer[i].first < firstspot)
-            firstspot = skimmer[i].first;
-        if (skimmer[i].last > lastspot)
-            lastspot = skimmer[i].last;
     }
 
     // Sort by absolute average deviation if desired
@@ -325,31 +322,50 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // Print summary
     stime = *localtime(&firstspot);
     (void)strftime(firsttimestring, STRLEN, FMT, &stime);
-
     stime = *localtime(&lastspot);
     (void)strftime(lasttimestring, STRLEN, FMT, &stime);
-
-    // Print summary
-    sprintf(outstring, "Processed a total of %d RBN spots (%s to %s).\n", 
+    sprintf(outstring, "%d RBN spots processed (%s to %s).\n", 
         totalspots, firsttimestring, lasttimestring);
     printboth(outstring, quiet);
-    sprintf(outstring, "The average spot flow was %.0f spots per minute from %d active skimmers.\n", 
-        60.0 * totalspots / difftime(lastspot, firstspot), skimmers);
+
+    if (targeted) {
+        stime = *localtime(&skimmer[0].first);
+        (void)strftime(firsttimestring, STRLEN, FMT, &stime);
+        stime = *localtime(&skimmer[0].last);
+        (void)strftime(lasttimestring, STRLEN, FMT, &stime);
+        sprintf(outstring, "The selected skimmer produced an average of %.0f qualified spots per hour\n    between %s and %s.\n", 
+            3600.0 * skimmer[0].count / difftime(skimmer[0].last, skimmer[0].first), firsttimestring, lasttimestring);
+    }
+    else 
+        sprintf(outstring, "The average spot flow was %.0f spots per minute from %d active skimmers.\n", 
+        60 * totalspots / difftime(lastspot, firstspot), skimmers);
     printboth(outstring, quiet);
-    sprintf(outstring, "%d spots were selected for analysis using the following criteria:\n", usedspots);
+
+    sprintf(outstring, "%d spots qualified for analysis by meeting the following criteria:\n", 
+        (targeted && usedspots <= MINSPOTS) ? 0 : usedspots);
     printboth(outstring, quiet);
+
+    if (targeted) 
+        printboth(" * Spotted by the selected skimmer.\n", quiet);
+
     sprintf(outstring, " * Same callsign spotted by a reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
     printboth(outstring, quiet);
+
     sprintf(outstring, " * Same callsign spotted by a reference skimmer within %ds. \n", MAXAPART);
     printboth(outstring, quiet);
+
     sprintf(outstring, " * SNR is %ddB or higher. \n", MINSNR);
     printboth(outstring, quiet);
+
     sprintf(outstring, " * Frequency is %dkHz or higher. \n", MINFREQ);
     printboth(outstring, quiet);
+
     sprintf(outstring, " * Frequency deviation from the reference skimmer spot is %.1fkHz or less.\n", MAXERR / 10.0);
     printboth(outstring, quiet);
+
     sprintf(outstring, " * %d or more spots available from originating skimmer.\n", MINSPOTS);
     printboth(outstring, quiet);
 
@@ -362,7 +378,7 @@ int main(int argc, char *argv[]) {
     // Present results
     for (i = 0; i < skimmers; i++)
     {
-        if (skimmer[i].count > MINSPOTS)
+        if (skimmer[i].count >= MINSPOTS)
         {
             printf("Skimmer %9s average deviation %+5.1fppm over %5d spots (%11.9f)\n", 
                 skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0

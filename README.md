@@ -15,9 +15,9 @@ Comment lines are allowed and start with "#".
 For a quicker rapid analysis, the analysis can be done for only a selected call,
 using the -t option.
 
-This option is for instance used  by the script `checkreferences` which walks through
-the current list of reference skimmers and checks each of them against the other
-reference skimmers to verify that they can still be trusted.
+This option is for instance used  by the script `checkreferences` which uses 
+yesterday's RBN data analyze each reference skimmer against the other reference 
+skimmers to verify that they can still all be trusted.
 
 The script `getrbndata` downloads all RBN data for a selected month into the
 `rbnfiles` subfolder.

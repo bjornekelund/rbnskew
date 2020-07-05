@@ -1,14 +1,44 @@
 #!/bin/bash
+# Download yesterday's RBN data and check all the current 
+# reference skimmers against eachother
 #set -x
-FOLDER=rbnfiles
-FILE=20200702.csv
-SKIMMERS=`grep -v '#' reference | tr '\n' ' '`
-#echo "Skimmers: " $SKIMMERS
-echo "Verification of reference skimmer integrity."
-echo "Analysis based on file" $FILE "with" `wc -l < $FOLDER/$FILE` "spots."
-for skimmer in $SKIMMERS; do
-#     echo "Analyzing skimmer" $skimmer
-    ./rbnskew -q -f $FOLDER/$FILE -t $skimmer > result.tmp
-    grep "average deviation" result.tmp 
-done
-rm -f result.tmp
+FOLDER="rbnfiles"
+FILE=`date --date="1 days ago" +%Y%m%d`
+mkdir -p $FOLDER
+wget --quiet --no-hsts http://www.reversebeacon.net/raw_data/dl.php?f=$FILE -O $FOLDER/$FILE.zip
+FILESIZE=$(stat -c%s "$FOLDER/$FILE.zip")
+if [[ $FILESIZE != "0" ]]; then
+    gunzip < $FOLDER/$FILE.zip > $FOLDER/$FILE.csv
+    echo "Verification of reference skimmer integrity."
+    echo "Downloaded yesterday's RBN data ("$((`wc -l < $FOLDER/$FILE.csv` - 2))" spots) into "$FOLDER/$FILE.csv"."
+    rm -f $FOLDER/$FILE.zip
+    SKIMMERS=`grep -v '#' reference | tr '\n' ' '`
+    #echo "Skimmers: " $SKIMMERS
+#    echo "Analysis based on file" $FILE "with" `wc -l < $FOLDER/$FILE.csv` "spots."
+    for skimmer in $SKIMMERS; do
+#         echo "Analyzing skimmer" $skimmer "with file" $FOLDER/$FILE.csv
+        ./rbnskew -q -f $FOLDER/$FILE.csv -t $skimmer > result.tmp
+        RESULT=`grep "average deviation" result.tmp`
+        if [[ $RESULT != "" ]]; then
+            echo "$RESULT"
+        else
+            echo "Skimmer" $skimmer " - no spots"
+        fi
+    done
+    rm -f result.tmp
+else
+    echo "Unable to download yesterday's RBN data."
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+FILE=20200704.csv

@@ -12,7 +12,8 @@ for day in {01..31}
     FILESIZE=$(stat -c%s "$FOLDER/$FILE.zip")
     if [[ $FILESIZE != "0" ]]; then
         gunzip < $FOLDER/$FILE.zip > $FOLDER/$FILE.csv
-        echo $FILE".csv downloaded."
+        echo "Downloaded "$FOLDER/$FILE.csv" with "$((`wc -l < $FOLDER/$FILE.csv` - 2))" spots."
+#        echo $FILE".csv downloaded."
 #     else
 #         echo $FILE".csv did not exist."
     fi
