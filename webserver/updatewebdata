@@ -11,11 +11,11 @@ if [[ $FILESIZE != "0" ]]; then
     echo "FreqCalibration in SkimSrv.ini with the adjustment factor below." >> rbnskew.txt
     echo >> rbnskew.txt
     cd ..
-    ./rbnskew -q -f webserver/rbndata.csv | grep -v "Total processing" >> webserver/rbnskew.txt
+    ./rbnskew -q -f webserver/rbndata.csv | sed "/processing/c\ " >> webserver/rbnskew.txt
     cd webserver
     echo >> rbnskew.txt
     echo "Page last updated "`date -u` >> rbnskew.txt
-    echo "Stored analysis result in "rbnskew.txt"."
+    echo "Updated web data in rbnskew.txt."
 else
     echo "Could not download yesterday's RBN data."
 fi
