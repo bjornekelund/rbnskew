@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     FILE *fp, *fr;
     char filename[STRLEN] = "", target[STRLEN] = "";
     int totalspots = 0, usedspots = 0, c, got, i, j, spp = 0;
-    time_t starttime, stoptime, spottime, firstspot = 2147483648, lastspot = 1;
+    time_t starttime, stoptime, spottime, firstspot, lastspot;
     struct tm *timeinfo, stime;
     bool verbose = false, reference, sort = false, targeted = false, quiet = false;
     char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN];
@@ -268,6 +268,11 @@ int main(int argc, char *argv[]) {
                                     skimmer[skimmers].count = 1;
                                     skimmer[skimmers].first = pipeline[i].time;
                                     skimmer[skimmers].last = pipeline[i].time;
+                                    if (skimmers == 0)
+                                    {
+                                        firstspot = pipeline[i].time;
+                                        lastspot = pipeline[i].time;
+                                    }
                                     skimmers++;
                                     if (verbose && !quiet)
                                         fprintf(stderr, "Found skimmer #%d: %s \n", skimmers, pipeline[i].de);
@@ -306,18 +311,18 @@ int main(int argc, char *argv[]) {
     }
 
     // Sort by callsign, or average deviation if desired
-	for (i = 0; i < skimmers - 1; ++i)
-	{
-		for (j = 0; j < skimmers - 1 - i; ++j)
-		{
-			if (sort ? skimmer[j].absavdev > skimmer[j + 1].absavdev : strcmp(skimmer[j].name, skimmer[j + 1].name) > 0)
-			{
-				temp = skimmer[j + 1];
-				skimmer[j + 1] = skimmer[j];
-				skimmer[j] = temp;
-			}
-		}
-	}
+    for (i = 0; i < skimmers - 1; ++i)
+    {
+        for (j = 0; j < skimmers - 1 - i; ++j)
+        {
+            if (sort ? skimmer[j].absavdev > skimmer[j + 1].absavdev : strcmp(skimmer[j].name, skimmer[j + 1].name) > 0)
+            {
+                temp = skimmer[j + 1];
+                skimmer[j + 1] = skimmer[j];
+                skimmer[j] = temp;
+            }
+        }
+    }
 
     // Print summary
     stime = *localtime(&firstspot);
