@@ -34,6 +34,8 @@
 #define MAXERR 5
 // Name of file containing callsigns of reference skimmmers
 #define REFFILENAME "reference"
+// Mode of spots
+#define MODE "CW"
 
 struct Spot 
 {
@@ -76,7 +78,7 @@ int main(int argc, char *argv[]) {
     time_t starttime, stoptime, spottime, firstspot, lastspot;
     struct tm *timeinfo, stime;
     bool verbose = false, worst = false, reference, sort = false, targeted = false, quiet = false;
-    char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN];
+    char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN], mode[STRLEN];
     char firsttimestring[STRLEN], lasttimestring[STRLEN];
     char outstring[LINELEN], tempstring[STRLEN];
     int snr, delta, adelta, skimmers = 0, skimpos, column;
@@ -185,10 +187,10 @@ int main(int argc, char *argv[]) {
     while (fgets(line, LINELEN, fp))
     {
         // callsign,de_pfx,de_cont,freq,band,dx,dx_pfx,dx_cont,mode,db,date,speed,tx_mode
-        got = sscanf(line, "%[^,],%*[^,],%*[^,],%f,%*[^,],%[^,],%*[^,],%*[^,],%*[^,],%d,%[^,],%*s",
-            de, &freq, dx, &snr, timestring);
+        got = sscanf(line, "%[^,],%*[^,],%*[^,],%f,%*[^,],%[^,],%*[^,],%*[^,],%*[^,],%d,%[^,],%*[^,],%s",
+            de, &freq, dx, &snr, timestring, mode);
 
-        if (got == 5 ) // If parsing is successful
+        if (got == 6 ) // If parsing is successful
         {
             totalspots++;
 
@@ -197,7 +199,7 @@ int main(int argc, char *argv[]) {
             if (spottime > lastspot) lastspot = spottime;
             if (spottime < firstspot) firstspot = spottime;
 
-            if (snr >= MINSNR && freq >= MINFREQ) // If SNR is sufficient and frequency OK
+            if (snr >= MINSNR && freq >= MINFREQ && strcmp(mode, MODE) == 0) // If SNR is sufficient and frequency OK and mode is right
             {
 
                 reference = false;
@@ -356,10 +358,13 @@ int main(int argc, char *argv[]) {
     if (targeted)
         printboth(" * Spotted by the selected skimmer.\n", quiet);
 
-    sprintf(outstring, " * Same callsign spotted by a reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
+    sprintf(outstring, " * Mode of spot is %s.\n" , MODE);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Same callsign spotted by a reference skimmer within %ds. \n", MAXAPART);
+    sprintf(outstring, " * Also spotted by a reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
+    printboth(outstring, quiet);
+
+    sprintf(outstring, " * Also spotted by a reference skimmer within %ds. \n", MAXAPART);
     printboth(outstring, quiet);
 
     sprintf(outstring, " * SNR is %ddB or higher. \n", MINSNR);
@@ -368,10 +373,10 @@ int main(int argc, char *argv[]) {
     sprintf(outstring, " * Frequency is %dkHz or higher. \n", MINFREQ);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Frequency deviation from the reference skimmer spot is %.1fkHz or less.\n", MAXERR / 10.0);
+    sprintf(outstring, " * Frequency deviation from reference skimmer is %.1fkHz or less.\n", MAXERR / 10.0);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * %d or more spots available from originating skimmer.\n", MINSPOTS);
+    sprintf(outstring, " * Originating skimmer has %d or more spots in data set.\n", MINSPOTS);
     printboth(outstring, quiet);
 
     (void)time(&stoptime);
