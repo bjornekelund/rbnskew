@@ -23,14 +23,14 @@
 // Usage string
 #define USAGE "Usage: %s -f filename [-t callsign] [-d] [-s] [-q]\n"
 // Max number of seconds apart from a reference spot
-#define MAXAPART 30 
+#define MAXAPART 30
 // Minimum SNR required for spot to be used
 #define MINSNR 10
 // Minimum frequency for spot to be used
 #define MINFREQ 7000
 // Minimum number of spots to be analyzed
 #define MINSPOTS 100
-// Maximum difference from reference spot times 100Hz 
+// Maximum difference from reference spot times 100Hz
 #define MAXERR 5
 // Name of file containing callsigns of reference skimmmers
 #define REFFILENAME "reference"
@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
         sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i]);
         printf("%s", outstring);
         column += strlen(outstring);
-        if (column > 70)
+        if (column > 60 && i < referenceskimmers - 1)
         {
             printf("\n    ");
             column = 5;
@@ -333,8 +333,7 @@ int main(int argc, char *argv[]) {
     (void)strftime(firsttimestring, STRLEN, FMT, &stime);
     stime = *localtime(&lastspot);
     (void)strftime(lasttimestring, STRLEN, FMT, &stime);
-    sprintf(outstring, "%d RBN spots processed (%s to %s).\n", 
-        totalspots, firsttimestring, lasttimestring);
+    sprintf(outstring, "%d RBN spots processed (%s to %s).\n", totalspots, firsttimestring, lasttimestring);
     printboth(outstring, quiet);
 
     if (targeted) {
@@ -345,16 +344,16 @@ int main(int argc, char *argv[]) {
         sprintf(outstring, "The selected skimmer produced an average of %.0f qualified spots per hour\n    between %s and %s.\n", 
             3600.0 * skimmer[0].count / difftime(skimmer[0].last, skimmer[0].first), firsttimestring, lasttimestring);
     }
-    else 
-        sprintf(outstring, "The average spot flow was %.0f spots per minute from %d active skimmers.\n", 
+    else
+        sprintf(outstring, "The average spot flow was %.0f spots per minute from %d active skimmers.\n",
         60 * totalspots / difftime(lastspot, firstspot), skimmers);
     printboth(outstring, quiet);
 
-    sprintf(outstring, "%d spots qualified for analysis by meeting the following criteria:\n", 
+    sprintf(outstring, "%d spots qualified for analysis by meeting the following criteria:\n",
         (targeted && usedspots <= MINSPOTS) ? 0 : usedspots);
     printboth(outstring, quiet);
 
-    if (targeted) 
+    if (targeted)
         printboth(" * Spotted by the selected skimmer.\n", quiet);
 
     sprintf(outstring, " * Same callsign spotted by a reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
@@ -386,7 +385,7 @@ int main(int argc, char *argv[]) {
     {
         if (skimmer[i].count >= MINSPOTS)
         {
-            printf("Skimmer %-9s average deviation %+5.1fppm over %5d spots (%11.9f)\n", 
+            printf("Skimmer %-9s average deviation %+5.1fppm over %5d spots (%11.9f)\n",
                 skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
                 );
         }
