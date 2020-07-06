@@ -6,7 +6,8 @@ wget --quiet --no-hsts http://www.reversebeacon.net/raw_data/dl.php?f=$FILE -O r
 FILESIZE=$(stat -c%s rbndata.zip)
 if [[ $FILESIZE != "0" ]]; then
     gunzip < rbndata.zip > rbndata.csv
-    echo "Downloaded yesterday's "$((`wc -l < rbndata.csv` - 2))" spots into rbndata.csv."
+    echo "Current time is "`date -u`  
+    echo "Downloaded yesterday's "$((`wc -l < rbndata.csv` - 2))" spots into rbndata.csv"
     echo "To improve the accuracy of your skimmer, multiply the current value of" > temp.txt
     echo "FreqCalibration in SkimSrv.ini with the adjustment factor below." >> temp.txt
     echo >> temp.txt
@@ -16,7 +17,7 @@ if [[ $FILESIZE != "0" ]]; then
     echo >> temp.txt
     echo "Page last updated "`date -u` >> temp.txt
     cp temp.txt rbnskew.txt
-    echo "Updated web data in rbnskew.txt."
+    echo "Updated web data in rbnskew.txt"
 #
     echo "To improve the accuracy of your skimmer, multiply the current value of" > temp2.txt
     echo "FreqCalibration in SkimSrv.ini with the adjustment factor below." >> temp2.txt
@@ -27,10 +28,10 @@ if [[ $FILESIZE != "0" ]]; then
     echo >> temp2.txt
     echo "Page last updated "`date -u` >> temp2.txt
     cp temp2.txt rbnskew2.txt
-    echo "Updated web data in rbnskew2.txt."
+    echo "Updated web data in rbnskew2.txt"
     ./upload
-    echo "Uploaded to web hosting."
+    echo "Uploaded to web hosting"
 else
-    echo "Could not download yesterday's RBN data."
+    echo "Could not download yesterday's RBN data!"
 fi
 exit
