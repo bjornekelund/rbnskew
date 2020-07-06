@@ -25,11 +25,11 @@
 // Max number of seconds apart from a reference spot
 #define MAXAPART 30
 // Minimum SNR required for spot to be used
-#define MINSNR 10
+#define MINSNR 6
 // Minimum frequency for spot to be used
 #define MINFREQ 7000
 // Minimum number of spots to be analyzed
-#define MINSPOTS 100
+#define MINSPOTS 50
 // Maximum difference from reference spot times 100Hz
 #define MAXERR 5
 // Name of file containing callsigns of reference skimmmers
@@ -78,10 +78,10 @@ int main(int argc, char *argv[]) {
     time_t starttime, stoptime, spottime, firstspot, lastspot;
     struct tm *timeinfo, stime;
     bool verbose = false, worst = false, reference, sort = false, targeted = false, quiet = false;
-    char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN], mode[STRLEN];
+    char line[LINELEN], de[STRLEN], dx[STRLEN], timestring[STRLEN], mode[STRLEN], *spotmode = "CW";
     char firsttimestring[STRLEN], lasttimestring[STRLEN];
     char outstring[LINELEN], tempstring[STRLEN];
-    int snr, delta, adelta, skimmers = 0, skimpos, column;
+    int snr, delta, adelta, skimmers = 0, skimpos, column, minspots = MINSPOTS;
     float freq;
 
     struct Spot pipeline[SPOTSWINDOW];
@@ -91,14 +91,14 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < SPOTSWINDOW; i++)
         pipeline[i].analyzed = true;
 
-    while ((c = getopt(argc, argv, "wqt:sdf:")) != -1)
+    while ((c = getopt(argc, argv, "wqt:sdf:m:r")) != -1)
     {
         switch (c)
         {
-            case 'f':
+            case 'f': // Filename
                 strcpy(filename, optarg);
                 break;
-            case 't':
+            case 't': // Callsign selected for analysis
                 if (strlen(optarg) == 0)
                 {
                     fprintf(stderr, USAGE, argv[0]);
@@ -108,17 +108,23 @@ int main(int argc, char *argv[]) {
                     target[i] = toupper(optarg[i]);
                 targeted = true;
                 break;
-            case 'd':
+            case 'd': // Verbose debug mode
                 verbose = true;
                 break;
-            case 'w':
+            case 'w': // Sort with worst offender at top
                 worst = true;
                 break;
-            case 'q':
+            case 'q': // Quiet, do not print to stderr
                 quiet = true;
                 break;
-            case 's':
+            case 's': // Sort on ppm deviation
                 sort = true;
+                break;
+            case 'm': // Sort on ppm deviation
+                minspots = atoi(optarg);
+                break;
+            case 'r': // RTTY mode
+                spotmode = "RTTY";
                 break;
             case '?':
                 fprintf(stderr, USAGE, argv[0]);
@@ -199,7 +205,8 @@ int main(int argc, char *argv[]) {
             if (spottime > lastspot) lastspot = spottime;
             if (spottime < firstspot) firstspot = spottime;
 
-            if (snr >= MINSNR && freq >= MINFREQ && strcmp(mode, MODE) == 0) // If SNR is sufficient and frequency OK and mode is right
+            // If SNR is sufficient and frequency OK and mode is right
+			if (snr >= MINSNR && freq >= MINFREQ && strcmp(mode, spotmode) == 0) 
             {
 
                 reference = false;
@@ -352,13 +359,13 @@ int main(int argc, char *argv[]) {
     printboth(outstring, quiet);
 
     sprintf(outstring, "%d spots qualified for analysis by meeting the following criteria:\n",
-        (targeted && usedspots <= MINSPOTS) ? 0 : usedspots);
+        (targeted && usedspots <= minspots) ? 0 : usedspots);
     printboth(outstring, quiet);
 
     if (targeted)
         printboth(" * Spotted by the selected skimmer.\n", quiet);
 
-    sprintf(outstring, " * Mode of spot is %s.\n" , MODE);
+    sprintf(outstring, " * Mode of spot is %s.\n" , spotmode);
     printboth(outstring, quiet);
 
     sprintf(outstring, " * Also spotted by a reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
@@ -376,7 +383,7 @@ int main(int argc, char *argv[]) {
     sprintf(outstring, " * Frequency deviation from reference skimmer is %.1fkHz or less.\n", MAXERR / 10.0);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Originating skimmer has %d or more spots in data set.\n", MINSPOTS);
+    sprintf(outstring, " * Originating skimmer has %d or more spots in data set.\n", minspots);
     printboth(outstring, quiet);
 
     (void)time(&stoptime);
@@ -388,7 +395,7 @@ int main(int argc, char *argv[]) {
     // Present results
     for (i = 0; i < skimmers; i++)
     {
-        if (skimmer[i].count >= MINSPOTS)
+        if (skimmer[i].count >= minspots)
         {
             printf("Skimmer %-9s average deviation %+5.1fppm over %5d spots (%11.9f)\n",
                 skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
