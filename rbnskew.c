@@ -383,7 +383,7 @@ int main(int argc, char *argv[]) {
     sprintf(outstring, " * Frequency deviation from reference skimmer is %.1fkHz or less.\n", MAXERR / 10.0);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Originating skimmer has %d or more spots in data set.\n", minspots);
+    sprintf(outstring, " * At least %d spots from originating skimmer in data set.\n", minspots);
     printboth(outstring, quiet);
 
     (void)time(&stoptime);
