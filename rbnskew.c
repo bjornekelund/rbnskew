@@ -164,6 +164,7 @@ int main(int argc, char *argv[])
                 if (referenceskimmers >= MAXREF) 
                 {
                     fprintf(stderr, "Overflow: More than %d reference skimmers defined.\n", MAXREF);
+                    (void)fclose(fr);
                     return 1;
                 }
 
@@ -297,6 +298,7 @@ int main(int argc, char *argv[])
                                         fprintf(stderr, "Found skimmer #%d: %s \n", skimmers, pipeline[i].de);
                                     if (skimmers > MAXSKIMMERS) {
                                         fprintf(stderr, "Overflow: More than %d skimmers found.\n", MAXSKIMMERS);
+                                        (void)fclose(fp);
                                         return 1;
                                     }
                                     

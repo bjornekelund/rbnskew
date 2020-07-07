@@ -1,6 +1,6 @@
 cc			= gcc
 gcc			= ${cc} -Wall -ggdb
-lint		= splint -unrecog -warnposix -bufferoverflowhigh -formatconst -compdef -nullpass -usedef
+lint		= cppcheck
 
 rbnskew:	rbnskew.o Makefile
 			$(gcc) -o rbnskew rbnskew.o -lm
