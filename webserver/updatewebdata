@@ -1,6 +1,6 @@
 #!/bin/bash
 # Get yesterday's RBN data and run a full analysis on it
-cd /home/pi/rbnskew/webserver
+[ -d "/home/pi/rbnskew/webserver" ] && cd /home/pi/rbnskew/webserver
 FILE=`date -u --date="1 days ago" +%Y%m%d`
 echo "---"
 echo "Job started "`date -u "+%F %T" `
