@@ -36,4 +36,5 @@ if [[ $FILESIZE != "0" ]]; then
 else
     echo "Could not download yesterday's RBN data!"
 fi
+echo "Job ended "`date -u "+%F %T" `
 exit
