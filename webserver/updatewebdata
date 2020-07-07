@@ -14,7 +14,7 @@ if [[ $FILESIZE != "0" ]]; then
     echo "FreqCalibration in SkimSrv.ini with the adjustment factor below." >> temp.txt
     echo >> temp.txt
     cd ..
-    ./rbnskew -q -f webserver/rbndata.csv | sed "/processing/c\ " >> webserver/temp.txt
+    ./rbnskew -q -f webserver/rbndata.csv | sed "/processing/c\ " | grep -v "accuracy an" >> webserver/temp.txt
     cd webserver
     echo >> temp.txt
     echo "Page last updated "`date -u` >> temp.txt
@@ -25,7 +25,7 @@ if [[ $FILESIZE != "0" ]]; then
     echo "FreqCalibration in SkimSrv.ini with the adjustment factor below." >> temp2.txt
     echo >> temp2.txt
     cd ..
-    ./rbnskew -q -w -f webserver/rbndata.csv | sed "/processing/c\ " >> webserver/temp2.txt
+    ./rbnskew -q -w -f webserver/rbndata.csv | sed "/processing/c\ " | grep -v "accuracy an" >> webserver/temp2.txt
     cd webserver
     echo >> temp2.txt
     echo "Page last updated "`date -u` >> temp2.txt
