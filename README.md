@@ -19,8 +19,8 @@ This option is for instance used  by the script `checkreferences` which uses
 yesterday's RBN data analyze each reference skimmer against the other reference 
 skimmers to verify that they can still all be trusted.
 
-The script `getrbndata` downloads all RBN data for a selected month into the
-`rbnfiles` subfolder.
+The script `getrbndata` downloads all RBN data for a selected month (that does not 
+already exist) into the `rbnfiles` subfolder.
 
 The script `yesterday` downloads yesterday's RBN data and runs a full analysis on it.
 
@@ -33,25 +33,25 @@ multiply the value currently used with the adjustment factor to get the correcte
 
 `rbnskew -f csvfile [-t callsign] [-d] (verbose) [-s/-w] (sort result) [-q] (quiet)`
 
--t file\
+ `-t file`\
 	Loads RBN spot data set from file.
 	
--d\
-	Debug mode, lots of output.
+`-d`\
+    Debug mode, lots of output.
 	
--s/-w\
-	Sorting by average deviation. -s for lowest first, -w for highest first.\
+`-s` and `-w`\
+    Sorting by average deviation. -s for lowest first, -w for highest first.\
 	
--q\
+`-q`\
 	Quiet mode. Does not print to stderr, only to stdout.
 	
--r\
+`-r`\
 	Only consider RTTY spots.
 	
--m N\
+`-m N`\
 	Set minimum number of spots from skimmer to include it in analysis.
 	
--n N\
+`-n N`\
 	Set minimum SNR required for spot to qualify.
 
 The analysis algorithm has the following default characteristics:
