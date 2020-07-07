@@ -1,7 +1,7 @@
 #!/bin/bash
 # Get yesterday's RBN data and run a full analysis on it
 cd /home/pi/rbnskew/webserver
-FILE=`date --date="1 days ago" +%Y%m%d`
+FILE=`date -u --date="1 days ago" +%Y%m%d`
 echo "---"
 echo "Job started "`date -u "+%F %T" `
 echo "Downloading RBN data for "`date -u --date="1 days ago" +%Y-%m-%d`
