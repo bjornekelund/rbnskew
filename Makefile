@@ -1,10 +1,15 @@
-gcc = gcc -Wall
+cc			= gcc
+gcc			= ${cc} -Wall
+lint		= splint -unrecog -warnposix -bufferoverflowhigh -formatconst -compdef -nullpass -usedef
 
 rbnskew:	rbnskew.o Makefile
-		$(gcc) -o rbnskew rbnskew.o -lm
+			$(gcc) -o rbnskew rbnskew.o -lm
 
 rbnskew.o:	rbnskew.c Makefile
-		$(gcc) -c rbnskew.c
+			$(gcc) -c rbnskew.c
 
 clean:
-		rm -f *.o
+			rm -f *.o
+
+lint: 
+			${lint} rbnskew.c
