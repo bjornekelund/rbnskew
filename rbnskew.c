@@ -72,19 +72,16 @@ int main(int argc, char *argv[])
         time_t last;       // Latest spot
     };
 
-    int referenceskimmers = 0;
-    char referenceskimmer[MAXREF][STRLEN];
-    FILE *fp, *fr;
-    char filename[STRLEN] = "", target[STRLEN] = "";
-    int totalspots = 0, usedspots = 0, c, got, i, j, spp = 0, refspots = 0, minsnr = MINSNR;
-    time_t starttime, stoptime, spottime, firstspot, lastspot;
+    FILE   *fp, *fr;
+    time_t starttime, stoptime, firstspot, lastspot;
     struct tm *timeinfo, stime;
-    bool verbose = false, worst = false, reference, sort = false, targeted = false, quiet = false;
-    char line[LINELEN] = "", de[STRLEN], dx[STRLEN], timestring[STRLEN], mode[STRLEN], *spotmode = "CW";
-    char firsttimestring[STRLEN], lasttimestring[STRLEN];
-    char outstring[LINELEN], tempstring[STRLEN];
-    int snr, delta, adelta, skimmers = 0, skimpos, column, minspots = MINSPOTS;
-    float freq;
+    char   filename[STRLEN] = "", target[STRLEN] = "", line[LINELEN] = "",
+           outstring[LINELEN], referenceskimmer[MAXREF][STRLEN], *spotmode = "CW";
+    bool   verbose = false, worst = false, reference, sort = false, 
+           targeted = false, quiet = false;
+    int    i, j, referenceskimmers = 0, totalspots = 0, usedspots = 0, c,
+           spp = 0, refspots = 0, minsnr = MINSNR, skimmers = 0, 
+           minspots = MINSPOTS;
 
     struct Spot pipeline[SPOTSWINDOW];
     struct Skimmer skimmer[MAXSKIMMERS], temp;
@@ -156,6 +153,7 @@ int main(int argc, char *argv[])
     
     while (fgets(line, LINELEN, fr) != NULL)
     {
+        char tempstring[LINELEN];
         if (sscanf(line, "%s", tempstring) == 1)
         {
             // Don't include comments or target call
@@ -194,8 +192,13 @@ int main(int argc, char *argv[])
 
     while (fgets(line, LINELEN, fp) != NULL)
     {
+        char de[STRLEN], dx[STRLEN], timestring[STRLEN], mode[STRLEN];
+        double freq;
+        int snr;
+        time_t spottime;
+        
         // callsign,de_pfx,de_cont,freq,band,dx,dx_pfx,dx_cont,mode,db,date,speed,tx_mode
-        got = sscanf(line, "%[^,],%*[^,],%*[^,],%f,%*[^,],%[^,],%*[^,],%*[^,],%*[^,],%d,%[^,],%*[^,],%s",
+        int got = sscanf(line, "%[^,],%*[^,],%*[^,],%lf,%*[^,],%[^,],%*[^,],%*[^,],%*[^,],%d,%[^,],%*[^,],%s",
             de, &freq, dx, &snr, timestring, mode);
 
         if (got == 6 ) // If parsing is successful
@@ -242,8 +245,8 @@ int main(int argc, char *argv[])
                             abs((int)difftime(pipeline[i].time, spottime)) <= MAXAPART &&
                             !(targeted && strcmp(pipeline[i].de, target) != 0))
                         {
-                            delta = pipeline[i].freq - (int)round(freq * 10.0);
-                            adelta = delta > 0 ? delta : -delta;
+                            int delta = pipeline[i].freq - (int)round(freq * 10.0);
+                            int adelta = delta > 0 ? delta : -delta;
 
                             pipeline[i].analyzed = true; // To only analyze each spot once
 
@@ -263,7 +266,7 @@ int main(int argc, char *argv[])
                                 }
 
                                 // Check if this skimmer is already in list
-                                skimpos = -1;
+                                int skimpos = -1;
                                 for (j = 0; j < skimmers; j++)
                                 {
                                     if (strcmp(pipeline[i].de, skimmer[j].name) == 0)
@@ -345,7 +348,7 @@ int main(int argc, char *argv[])
     // List reference skimmers
     strcpy(outstring, "Reference skimmers: ");
     printf("%s", outstring);
-    column = (int)strlen(outstring);
+    int column = (int)strlen(outstring);
     for (i = 0; i < referenceskimmers; i++)
     {
         sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i]);
@@ -360,6 +363,7 @@ int main(int argc, char *argv[])
     printf(".\n");
 
     // Print results 
+    char firsttimestring[STRLEN], lasttimestring[STRLEN];
     stime = *localtime(&firstspot);
     (void)strftime(firsttimestring, STRLEN, FMT, &stime);
     stime = *localtime(&lastspot);
