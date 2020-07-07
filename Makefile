@@ -1,5 +1,5 @@
 cc			= gcc
-gcc			= ${cc} -Wall
+gcc			= ${cc} -Wall -ggdb
 lint		= splint -unrecog -warnposix -bufferoverflowhigh -formatconst -compdef -nullpass -usedef
 
 rbnskew:	rbnskew.o Makefile
