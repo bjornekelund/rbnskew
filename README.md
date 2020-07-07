@@ -40,7 +40,7 @@ multiply the value currently used with the adjustment factor to get the correcte
     Debug mode, lots of output.
 	
 `-s` and `-w`\
-    Sorting by average deviation. -s for lowest first, -w for highest first.\
+    Sorting by average deviation. -s for lowest first, -w for highest first.
 	
 `-q`\
 	Quiet mode. Does not print to stderr, only to stdout.
