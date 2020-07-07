@@ -171,23 +171,6 @@ int main(int argc, char *argv[]) {
     if (isatty(STDOUT_FILENO) == 0)
         printf("Skimmer accuracy analysis based on RBN offline data.\n");
 
-    // List reference skimmers
-    strcpy(outstring, "Reference skimmers used: ");
-    printf("%s", outstring);
-    column = (int)strlen(outstring);
-    for (i = 0; i < referenceskimmers; i++)
-    {
-        sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i]);
-        printf("%s", outstring);
-        column += strlen(outstring);
-        if (column > 60 && i < referenceskimmers - 1)
-        {
-            printf("\n    ");
-            column = 5;
-        }
-    }
-    printf(".\n");
-
     fp = fopen(filename, "r");
 
     while (fgets(line, LINELEN, fp))
@@ -339,7 +322,24 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Print summary
+    // List reference skimmers
+    strcpy(outstring, "Reference skimmers: ");
+    printf("%s", outstring);
+    column = (int)strlen(outstring);
+    for (i = 0; i < referenceskimmers; i++)
+    {
+        sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i]);
+        printf("%s", outstring);
+        column += strlen(outstring);
+        if (column > 60 && i < referenceskimmers - 1)
+        {
+            printf("\n  ");
+            column = 5;
+        }
+    }
+    printf(".\n");
+
+    // Print results 
     stime = *localtime(&firstspot);
     (void)strftime(firsttimestring, STRLEN, FMT, &stime);
     stime = *localtime(&lastspot);
@@ -347,7 +347,7 @@ int main(int argc, char *argv[]) {
     sprintf(outstring, "%d RBN spots processed (%s to %s).\n", totalspots, firsttimestring, lasttimestring);
     printboth(outstring, quiet);
 
-    sprintf(outstring, "%d spots (%.1f%% of total) were by a reference skimmer.\n", refspots, 100.0 * refspots / totalspots);
+    sprintf(outstring, "  of which %d spots (%.1f%%) were reference spots.\n", refspots, 100.0 * refspots / totalspots);
     printboth(outstring, quiet);
 
     if (targeted) {
