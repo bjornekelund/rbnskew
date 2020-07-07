@@ -36,6 +36,8 @@
 #define REFFILENAME "reference"
 // Mode of spots
 #define MODE "CW"
+// Max size of dataset
+# define MAXSET 10000000
 
 // Print to stderr. Print also to stdout if piped.
 static void printboth(char *outstring, bool quiet)
@@ -49,6 +51,16 @@ static void printboth(char *outstring, bool quiet)
 
 int main(int argc, char *argv[])
 {
+    struct RawSpot
+    {
+        char de[STRLEN];         // Skimmer callsign
+        char dx[STRLEN];         // Spotted call
+        time_t time;             // Spot timestamp in epoch format
+        char timestring[STRLEN]; // Spot timestamp in ascii
+        int snr;                 // SNR for spotcount
+        int freq;                // 10x spot frequency
+        char mode[STRLEN];       // Transmission mode
+    };   
 
     struct Spot 
     {
@@ -67,6 +79,7 @@ int main(int argc, char *argv[])
         double accdev;     // Accumulated deviation in ppm
         double avdev;      // Average deviation in ppm
         double absavdev;   // Absolute average deviation in ppm
+        double sd;         // Standard deviation
         int count;         // Number of analyzed spots
         time_t first;      // Earliest spot
         time_t last;       // Latest spot
@@ -76,21 +89,26 @@ int main(int argc, char *argv[])
     char referenceskimmer[MAXREF][STRLEN];
     FILE *fp, *fr;
     char filename[STRLEN] = "", target[STRLEN] = "";
-    int totalspots = 0, usedspots = 0, c, got, i, j, spp = 0, refspots = 0, minsnr = MINSNR;
-    time_t starttime, stoptime, spottime, firstspot, lastspot;
+    int totalspots = 0, usedspots = 0, c, got, spp = 0, refspots = 0, minsnr = MINSNR;
+    time_t starttime, stoptime, firstspot, lastspot;
+    // time_t spottime;
     struct tm *timeinfo, stime;
     bool verbose = false, worst = false, reference, sort = false, targeted = false, quiet = false;
-    char line[LINELEN] = "", de[STRLEN], dx[STRLEN], timestring[STRLEN], mode[STRLEN], *spotmode = "CW";
+    char line[LINELEN] = "";
+    // char de[STRLEN], dx[STRLEN], timestring[STRLEN], mode[STRLEN];
+    char *spotmode = "CW";
     char firsttimestring[STRLEN], lasttimestring[STRLEN];
     char outstring[LINELEN], tempstring[STRLEN];
-    int snr, delta, adelta, skimmers = 0, skimpos, column, minspots = MINSPOTS;
-    float freq;
+    // int int, freq, ;
+    int delta, adelta, skimmers = 0, skimpos, column, minspots = MINSPOTS, rawspot;
+    // float freq;
 
-    struct Spot pipeline[SPOTSWINDOW];
-    struct Skimmer skimmer[MAXSKIMMERS], temp;
+    static struct RawSpot dataset[MAXSET];
+    static struct Spot pipeline[SPOTSWINDOW];
+    static struct Skimmer skimmer[MAXSKIMMERS], temp;
 
     // Avoid that unitialized entries in pipeline are used
-    for (i = 0; i < SPOTSWINDOW; i++)
+    for (int i = 0; i < SPOTSWINDOW; i++)
         pipeline[i].analyzed = true;
 
     while ((c = getopt(argc, argv, "wqt:sdf:m:rn:")) != -1)
@@ -106,7 +124,7 @@ int main(int argc, char *argv[])
                     fprintf(stderr, USAGE, argv[0]);
                     return 1;
                 }
-                for (i = 0; i < (int)strlen(optarg) + 1; i++)
+                for (int i = 0; i < (int)strlen(optarg) + 1; i++)
                     target[i] = toupper(optarg[i]);
                 targeted = true;
                 break;
@@ -194,6 +212,11 @@ int main(int argc, char *argv[])
 
     while (fgets(line, LINELEN, fp) != NULL)
     {
+        char de[STRLEN], dx[STRLEN], timestring[STRLEN], mode[STRLEN];
+        int snr;
+        time_t spottime;
+        float freq;
+
         // callsign,de_pfx,de_cont,freq,band,dx,dx_pfx,dx_cont,mode,db,date,speed,tx_mode
         got = sscanf(line, "%[^,],%*[^,],%*[^,],%f,%*[^,],%[^,],%*[^,],%*[^,],%*[^,],%d,%[^,],%*[^,],%s",
             de, &freq, dx, &snr, timestring, mode);
@@ -202,6 +225,14 @@ int main(int argc, char *argv[])
         {
             (void)strptime(timestring, FMT, &stime);
             spottime = mktime(&stime);
+
+            strcpy(dataset[totalspots].de, de);
+            strcpy(dataset[totalspots].dx, dx);
+            dataset[totalspots].freq = freq * 10;
+            dataset[totalspots].snr = snr;
+            dataset[totalspots].time = spottime;
+            strcpy(dataset[totalspots].timestring, timestring);
+            strcpy(dataset[totalspots].mode, mode);            
 
             if (totalspots++ == 0) // If first spot
             {
@@ -214,15 +245,30 @@ int main(int argc, char *argv[])
                 firstspot = spottime < firstspot ? spottime : firstspot;
             }
 
-            // If SNR is sufficient and frequency OK and mode is right
-            if (snr >= minsnr && freq >= MINFREQ && strcmp(mode, spotmode) == 0) 
+            if (totalspots >= MAXSET) 
             {
+                fprintf(stderr, "Overflow: More than %d spots in data set.\n", MAXSET);
+                return 1;
+            }
 
+        }
+    }
+
+    // Go through raw data twice, second time only to calculate standard deviation
+    for (int iteration = 1; iteration <= 2; iteration++) 
+    {
+        for (rawspot = 0; rawspot < totalspots; rawspot++)
+        {
+            char timestring[STRLEN];
+            
+            // If SNR is sufficient and frequency OK and mode is right
+            if (dataset[rawspot].snr >= minsnr && dataset[rawspot].freq >= MINFREQ * 10 && strcmp(spotmode, dataset[rawspot].mode) == 0) 
+            {
                 reference = false;
                 // Check if this spot is from a reference skimmer
-                for (i = 0; i < referenceskimmers; i++)
+                for (int i = 0; i < referenceskimmers; i++)
                 {
-                    if (strcmp(de, referenceskimmer[i]) == 0)
+                    if (strcmp(dataset[rawspot].de, referenceskimmer[i]) == 0)
                     {
                         reference = true;
                         break;
@@ -232,39 +278,40 @@ int main(int argc, char *argv[])
                 // If it is reference spot, use it to check all un-analyzed,
                 // non-reference spots in the pipeline
                 if (reference)
-                {
+                {               
+                    // fprintf(stderr, "Found reference spot %s\n", dataset[rawspot].de);
                     refspots++;
                     
-                    for (i = 0; i < SPOTSWINDOW; i++)
+                    for (int i = 0; i < SPOTSWINDOW; i++)
                     {
                         if (!pipeline[i].analyzed && !pipeline[i].reference &&
-                            strcmp(pipeline[i].dx, dx) == 0 &&
-                            abs((int)difftime(pipeline[i].time, spottime)) <= MAXAPART &&
+                            strcmp(pipeline[i].dx, dataset[rawspot].dx) == 0 &&
+                            abs((int)difftime(pipeline[i].time, dataset[rawspot].time)) <= MAXAPART &&
                             !(targeted && strcmp(pipeline[i].de, target) != 0))
                         {
-                            delta = pipeline[i].freq - (int)round(freq * 10.0);
+                            delta = pipeline[i].freq - dataset[rawspot].freq;
                             adelta = delta > 0 ? delta : -delta;
 
                             pipeline[i].analyzed = true; // To only analyze each spot once
 
                             if (adelta <= MAXERR) // Only consider spots less than MAXERR off from reference skimmer
                             {
-                                usedspots++;
+                                // if (iteration == 1)
+                                    // usedspots++;
 
                                 // Print outliers if in debug mode
-                                if (adelta > 2 && verbose && !quiet) 
+                                if (adelta > 2 && verbose && !quiet && iteration == 1) 
                                 {
                                     stime = *localtime(&pipeline[i].time);
                                     (void)strftime(timestring, STRLEN, FMT, &stime);
-                                    fprintf(stderr,
-                                        "Outlier spot of %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
+                                    fprintf(stderr, "Outlier spot of %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
                                         pipeline[i].dx, pipeline[i].de, pipeline[i].freq / 10.0,
-                                        freq, delta / 10.0, timestring);
+                                        dataset[rawspot].freq / 10.0, delta / 10.0, dataset[rawspot].timestring);
                                 }
 
                                 // Check if this skimmer is already in list
                                 skimpos = -1;
-                                for (j = 0; j < skimmers; j++)
+                                for (int j = 0; j < skimmers; j++)
                                 {
                                     if (strcmp(pipeline[i].de, skimmer[j].name) == 0)
                                     {
@@ -273,64 +320,79 @@ int main(int argc, char *argv[])
                                     }
                                 }
 
-                                if (skimpos != -1) // if in the list, update it
+                                if (iteration == 1) 
                                 {
-                                    skimmer[skimpos].accdev += 100000.0 * delta / freq;
-                                    skimmer[skimpos].count++;
-                                    if (pipeline[i].time > skimmer[skimpos].last)
-                                        skimmer[skimpos].last = pipeline[i].time;
-                                    if (pipeline[i].time < skimmer[skimpos].first)
-                                        skimmer[skimpos].first = pipeline[i].time;
-                                }
-                                else // If new skimmer, add it to list
-                                {
-                                    strcpy(skimmer[skimmers].name, pipeline[i].de);
-                                    skimmer[skimmers].accdev = 100000.0 * delta / freq;
-                                    skimmer[skimmers].count = 1;
-                                    skimmer[skimmers].first = pipeline[i].time;
-                                    skimmer[skimmers].last = pipeline[i].time;
-                                    skimmers++;
-                                    if (verbose && !quiet)
-                                        fprintf(stderr, "Found skimmer #%d: %s \n", skimmers, pipeline[i].de);
-                                    if (skimmers > MAXSKIMMERS) {
-                                        fprintf(stderr, "Overflow: More than %d skimmers found.\n", MAXSKIMMERS);
-                                        return 1;
+                                    usedspots++;
+
+                                    if (skimpos != -1) // if in the list, update it
+                                    {
+                                        skimmer[skimpos].accdev += 1000000.0 * delta / dataset[rawspot].freq;
+                                        skimmer[skimpos].count++;
+                                        if (pipeline[i].time > skimmer[skimpos].last)
+                                            skimmer[skimpos].last = pipeline[i].time;
+                                        if (pipeline[i].time < skimmer[skimpos].first)
+                                            skimmer[skimpos].first = pipeline[i].time;
                                     }
-                                    
+                                    else // If new skimmer, add it to list
+                                    {
+                                        strcpy(skimmer[skimmers].name, pipeline[i].de);
+                                        skimmer[skimmers].accdev = 1000000.0 * delta / dataset[rawspot].freq;
+                                        skimmer[skimmers].count = 1;
+                                        skimmer[skimmers].first = pipeline[i].time;
+                                        skimmer[skimmers].last = pipeline[i].time;
+                                        skimmer[skimmers].sd = 0.0;
+                                        skimmers++;
+                                        if (verbose && !quiet)
+                                            fprintf(stderr, "Found skimmer #%d: %s \n", skimmers, pipeline[i].de);
+                                        if (skimmers > MAXSKIMMERS) 
+                                        {
+                                            fprintf(stderr, "Overflow: More than %d skimmers found.\n", MAXSKIMMERS);
+                                            return 1;
+                                        }
+                                    }
                                 }
+                                else // Iteration 2
+                                {
+                                    // Calculating the average every time is a little wasteful but simple
+                                    skimmer[skimpos].avdev = skimmer[skimpos].accdev / skimmer[skimpos].count;
+                                    skimmer[skimpos].absavdev = fabs(skimmer[skimpos].avdev);
+                                    // We know skimmer is in the list with index skimpos
+                                    double diff = 1000000.0 * delta / dataset[rawspot].freq - skimmer[skimpos].avdev;
+                                    skimmer[skimpos].sd += diff * diff;
+                                }                                                                        
                             }
                         }
                     }
                 }
 
                 // Save new spot in pipeline
-                strcpy(pipeline[spp].de, de);
-                strcpy(pipeline[spp].dx, dx);
-                pipeline[spp].freq = (int)round(freq * 10.0);
-                pipeline[spp].snr = snr;
+                strcpy(pipeline[spp].de, dataset[rawspot].de);
+                strcpy(pipeline[spp].dx, dataset[rawspot].dx);
+                pipeline[spp].freq = dataset[rawspot].freq;
+                pipeline[spp].snr = dataset[rawspot].snr;
                 pipeline[spp].reference = reference;
                 pipeline[spp].analyzed = false;
-                pipeline[spp].time = spottime;
+                pipeline[spp].time = dataset[rawspot].time  ;
 
                 // Move pointer and wrap around at top of pipeline
                 spp = (spp + 1) % SPOTSWINDOW;
             }
         }
     }
-
+    
     (void)fclose(fp);
 
-    // Calculate statistics
-    for (i = 0; i < skimmers; i++)
-    {
-        skimmer[i].avdev = skimmer[i].accdev / skimmer[i].count;
-        skimmer[i].absavdev = fabs(skimmer[i].avdev);
-    }
+    // // Calculate statistics
+    // for (int i = 0; i < skimmers; i++)
+    // {
+        // skimmer[i].avdev = skimmer[i].accdev / skimmer[i].count;
+        // skimmer[i].absavdev = fabs(skimmer[i].avdev);
+    // }
 
     // Sort by callsign, or average deviation if desired
-    for (i = 0; i < skimmers - 1; ++i)
+    for (int i = 0; i < skimmers - 1; ++i)
     {
-        for (j = 0; j < skimmers - 1 - i; ++j)
+        for (int j = 0; j < skimmers - 1 - i; ++j)
         {
             if (sort ? (worst ? skimmer[j].absavdev < skimmer[j + 1].absavdev : skimmer[j].absavdev > skimmer[j + 1].absavdev )
                 : strcmp(skimmer[j].name, skimmer[j + 1].name) > 0)
@@ -346,7 +408,7 @@ int main(int argc, char *argv[])
     strcpy(outstring, "Reference skimmers: ");
     printf("%s", outstring);
     column = (int)strlen(outstring);
-    for (i = 0; i < referenceskimmers; i++)
+    for (int i = 0; i < referenceskimmers; i++)
     {
         sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i]);
         printf("%s", outstring);
@@ -418,15 +480,15 @@ int main(int argc, char *argv[])
         printf("%s", outstring);
 
     // Present results
-    for (i = 0; i < skimmers; i++)
+    for (int i = 0; i < skimmers; i++)
     {
         if (skimmer[i].count >= minspots)
         {
-            printf("Skimmer %-9s average deviation %+5.1fppm over %5d spots (%11.9f)\n",
-                skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
+            printf("Skimmer %-9s average deviation %+5.1fppm (std %3.1f) over %5d spots (%11.9f)\n",
+                skimmer[i].name, skimmer[i].avdev, sqrt(skimmer[i].sd / skimmer[i].count), skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
                 );
         }
     }
 
     return 0;
-}
+};
