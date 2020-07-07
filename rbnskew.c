@@ -189,7 +189,7 @@ int main(int argc, char *argv[]) {
             if (spottime < firstspot) firstspot = spottime;
 
             // If SNR is sufficient and frequency OK and mode is right
-			if (snr >= MINSNR && freq >= MINFREQ && strcmp(mode, spotmode) == 0) 
+            if (snr >= MINSNR && freq >= MINFREQ && strcmp(mode, spotmode) == 0) 
             {
 
                 reference = false;
@@ -208,8 +208,8 @@ int main(int argc, char *argv[]) {
                 if (reference)
                 {
                     refspots++;
-					
-					for (i = 0; i < SPOTSWINDOW; i++)
+                    
+                    for (i = 0; i < SPOTSWINDOW; i++)
                     {
                         if (!pipeline[i].analyzed && !pipeline[i].reference &&
                             strcmp(pipeline[i].dx, dx) == 0 &&
