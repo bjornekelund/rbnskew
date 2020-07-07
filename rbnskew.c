@@ -113,13 +113,14 @@ int main(int argc, char *argv[])
             case 'd': // Verbose debug mode
                 verbose = true;
                 break;
-            case 'w': // Sort with worst offender at top
+            case 'w': // Sort on ppm deviation, worst first
+                sort = true;
                 worst = true;
                 break;
             case 'q': // Quiet, do not print to stderr
                 quiet = true;
                 break;
-            case 's': // Sort on ppm deviation
+            case 's': // Sort on ppm deviation, best first
                 sort = true;
                 break;
             case 'm': // Sort on ppm deviation
