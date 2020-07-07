@@ -4,9 +4,11 @@ rbnfiles
 *.log
 *.tmp
 rbnskew
+*~
 webserver/*.csv
 webserver/*.txt
 webserver/*.zip
+webserver/*~
 doit
 webserver/upload
 obsolete
