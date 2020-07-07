@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     char referenceskimmer[MAXREF][STRLEN];
     FILE *fp, *fr;
     char filename[STRLEN] = "", target[STRLEN] = "";
-    int totalspots = 0, usedspots = 0, c, got, i, j, spp = 0, refspots = 0;
+    int totalspots = 0, usedspots = 0, c, got, i, j, spp = 0, refspots = 0, minsnr = MINSNR;
     time_t starttime, stoptime, spottime, firstspot, lastspot;
     struct tm *timeinfo, stime;
     bool verbose = false, worst = false, reference, sort = false, targeted = false, quiet = false;
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < SPOTSWINDOW; i++)
         pipeline[i].analyzed = true;
 
-    while ((c = getopt(argc, argv, "wqt:sdf:m:r")) != -1)
+    while ((c = getopt(argc, argv, "wqt:sdf:m:rn:")) != -1)
     {
         switch (c)
         {
@@ -123,8 +123,11 @@ int main(int argc, char *argv[])
             case 's': // Sort on ppm deviation, best first
                 sort = true;
                 break;
-            case 'm': // Sort on ppm deviation
+            case 'm': // Minimum number of spots to consider skimmer
                 minspots = atoi(optarg);
+                break;
+            case 'n': // Minimum SNR to consider spot
+                minsnr = atoi(optarg);
                 break;
             case 'r': // RTTY mode
                 spotmode = "RTTY";
@@ -212,7 +215,7 @@ int main(int argc, char *argv[])
             }
 
             // If SNR is sufficient and frequency OK and mode is right
-            if (snr >= MINSNR && freq >= MINFREQ && strcmp(mode, spotmode) == 0) 
+            if (snr >= minsnr && freq >= MINFREQ && strcmp(mode, spotmode) == 0) 
             {
 
                 reference = false;
@@ -396,7 +399,7 @@ int main(int argc, char *argv[])
     sprintf(outstring, " * Also spotted by a reference skimmer within %ds. \n", MAXAPART);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * SNR is %ddB or higher. \n", MINSNR);
+    sprintf(outstring, " * SNR is %ddB or higher. \n", minsnr);
     printboth(outstring, quiet);
 
     sprintf(outstring, " * Frequency is %dkHz or higher. \n", MINFREQ);

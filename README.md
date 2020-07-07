@@ -31,7 +31,28 @@ multiply the value currently used with the adjustment factor to get the correcte
 
 `SkimSrv.ini` can be found in `%appdata%\Afreet\Products\SkimSrv`
 
-`rbnskew -f csvfile [-t callsign] [-d] (verbose) [-s] (sort result) [-q] (quiet)`
+`rbnskew -f csvfile [-t callsign] [-d] (verbose) [-s/-w] (sort result) [-q] (quiet)`
+
+-t file\
+	Loads RBN spot data set from file.
+	
+-d\
+	Debug mode, lots of output.
+	
+-s/-w\
+	Sorting by average deviation. -s for lowest first, -w for highest first.\
+	
+-q\
+	Quiet mode. Does not print to stderr, only to stdout.
+	
+-r\
+	Only consider RTTY spots.
+	
+-m N\
+	Set minimum number of spots from skimmer to include it in analysis.
+	
+-n N\
+	Set minimum SNR required for spot to qualify.
 
 The analysis algorithm has the following default characteristics:
 
