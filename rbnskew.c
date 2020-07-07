@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     char referenceskimmer[MAXREF][STRLEN];
     FILE *fp, *fr;
     char filename[STRLEN] = "", target[STRLEN] = "";
-    int totalspots = 0, usedspots = 0, c, got, i, j, spp = 0;
+    int totalspots = 0, usedspots = 0, c, got, i, j, spp = 0, refspots = 0;
     time_t starttime, stoptime, spottime, firstspot, lastspot;
     struct tm *timeinfo, stime;
     bool verbose = false, worst = false, reference, sort = false, targeted = false, quiet = false;
@@ -224,7 +224,9 @@ int main(int argc, char *argv[]) {
                 // non-reference spots in the pipeline
                 if (reference)
                 {
-                    for (i = 0; i < SPOTSWINDOW; i++)
+                    refspots++;
+					
+					for (i = 0; i < SPOTSWINDOW; i++)
                     {
                         if (!pipeline[i].analyzed && !pipeline[i].reference &&
                             strcmp(pipeline[i].dx, dx) == 0 &&
@@ -343,6 +345,9 @@ int main(int argc, char *argv[]) {
     stime = *localtime(&lastspot);
     (void)strftime(lasttimestring, STRLEN, FMT, &stime);
     sprintf(outstring, "%d RBN spots processed (%s to %s).\n", totalspots, firsttimestring, lasttimestring);
+    printboth(outstring, quiet);
+
+    sprintf(outstring, "%d spots (%.1f%% of total) were by a reference skimmer.\n", refspots, 100.0 * refspots / totalspots);
     printboth(outstring, quiet);
 
     if (targeted) {
