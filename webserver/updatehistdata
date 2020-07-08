@@ -1,0 +1,94 @@
+#!/bin/bash
+# Download yesterday's RBN data and check all the current 
+# reference skimmers against eachother
+#set -x
+echo "Job started "`date -u "+%F %T"`
+[ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
+#DATADATE=`date -u --date="1 days ago" +%Y-%m-%d`
+FOLDER="webserver"
+
+AWKC=""
+
+FILE1=`date -u --date="1 days ago" +%Y-%m-%d`
+FILE2=`date -u --date="2 days ago" +%Y-%m-%d`
+FILE3=`date -u --date="3 days ago" +%Y-%m-%d`
+FILE4=`date -u --date="4 days ago" +%Y-%m-%d`
+FILE5=`date -u --date="5 days ago" +%Y-%m-%d`
+
+cd $FOLDER
+rm -f history.txt
+for filename in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5; do
+    gawk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,10) " " $3; }}' $filename.txt >> history.txt
+done
+#echo "Skimmer      $FILE5  $FILE4  $FILE3  $FILE2  $FILE1"
+#echo "-------------------------------------------------------------------\n"
+gawk '
+{
+  array[$1][$2] = $3;
+  call = $1;
+}
+END {
+	printf("   Skimmer");
+    for (i in array[call]) {
+	  printf("%12s", i);
+    }
+  printf("\n----------------------------------------------------------------------\n");
+}' history.txt > rbnhist.txt
+gawk '
+{
+  array[$1][$2] = $3;
+  call = $1;
+}
+END {
+  for (i in array) {
+	printf("%9s ", i);
+    if (isarray(array[i])) {
+      for (j in array[i]) {
+        printf("%+10.1f  ", array[i][j]);
+      }
+	  printf("\n");
+    }
+}}' history.txt | sort -k 2 >> rbnhist.txt
+more rbnhist.txt	
+
+exit
+
+
+
+echo "---"
+echo "Reference skimmer integrity analysis."
+#echo "Downloading RBN data for "`date -u --date="1 days ago" +%Y-%m-%d`
+wget --quiet --no-hsts http://www.reversebeacon.net/raw_data/dl.php?f=$FILE -O $FOLDER/rbnref.zip
+FILESIZE=$(stat -c%s $FOLDER/rbnref.zip)
+if [[ $FILESIZE != "0" ]]; then
+    gunzip < $FOLDER/rbnref.zip > $FOLDER/rbnref.csv
+    echo "Downloaded yesterday's "$((`wc -l < $FOLDER/rbnref.csv` - 2))" spots into rbnref.csv" 
+    echo "Verification of reference skimmer integrity." > $FOLDER/rbnref.txt
+	echo "Based on "$((`wc -l < $FOLDER/rbnref.csv` - 2))" RBN spots from "$DATADATE"." >> $FOLDER/rbnref.txt
+	echo >> $FOLDER/rbnref.txt
+    SKIMMERS=`grep -v '#' reference | tr '\n' ' '`
+    # echo "Skimmers: " $SKIMMERS
+    # echo "Analysis based on file "$FOLDER"/rbnref.csv with" `wc -l < $FOLDER/rbnref.csv` "lines."
+	echo "  Skimmer   [ppm]  Spots    Adjustment " >> $FOLDER/rbnref.txt
+	echo "  -------------------------------------" >> $FOLDER/rbnref.txt
+    for skimmer in $SKIMMERS; do
+         # echo "Analyzing skimmer" $skimmer "with file" $FOLDER/rbnref.csv
+        ./rbnskew -q -f $FOLDER/rbnref.csv -t $skimmer > $FOLDER/result.tmp
+        RESULT=`grep "#" $FOLDER/result.tmp`
+        if [[ $RESULT != "" ]]; then
+            echo "$RESULT" >> $FOLDER/rbnref.txt
+        else
+            echo "Skimmer" $skimmer " - no spots" >> $FOLDER/rbnref.txt
+        fi
+    done
+	echo >> $FOLDER/rbnref.txt
+	echo "Last updated "`date -u "+%F %T"` >> $FOLDER/rbnref.txt
+    echo "Updated web data in rbnref.txt"
+    cd $FOLDER
+	./upload
+    echo "Uploaded to web hosting"
+else
+    echo "Could not download yesterday's RBN data!"
+fi
+echo "Job ended "`date -u "+%F %T" `
+exit
