@@ -2,6 +2,7 @@
 # Use save analysis results from the last five days
 # to assemble a table sorted by skimmer callsign
 #set -x
+echo "---"
 echo "Job started "`date -u "+%F %T"`
 [ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
 #DATADATE=`date -u --date="1 days ago" +%Y-%m-%d`
@@ -17,7 +18,7 @@ FILE5=`date -u --date="5 days ago" +%Y-%m-%d`
 
 cd $FOLDER
 rm -f history.txt
-echo "Doing "$FILE1 $FILE2 $FILE3 $FILE4 $FILE5;
+echo "Updating historical data for "$FILE1 $FILE2 $FILE3 $FILE4 $FILE5;
 for filename in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5; do
     gawk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,10) " " $3; }}' $filename.txt >> history.txt
 done
