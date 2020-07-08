@@ -34,6 +34,8 @@
 #define MAXERR 5
 // Name of file containing callsigns of reference skimmmers
 #define REFFILENAME "reference"
+// Name of file containing callsigns of RTTY reference skimmmers
+#define RREFFILENAME "rreference"
 // Mode of spots
 #define MODE "CW"
 
@@ -76,9 +78,10 @@ int main(int argc, char *argv[])
     time_t starttime, stoptime, firstspot, lastspot;
     struct tm *timeinfo, stime;
     char   filename[STRLEN] = "", target[STRLEN] = "", line[LINELEN] = "",
-           outstring[LINELEN], referenceskimmer[MAXREF][STRLEN], *spotmode = "CW";
+           outstring[LINELEN], referenceskimmer[MAXREF][STRLEN], *spotmode = "CW",
+		   *reffilename = REFFILENAME;
     bool   verbose = false, worst = false, reference, sort = false, 
-           targeted = false, quiet = false;
+           targeted = false, quiet = false, forweb = false;
     int    i, j, referenceskimmers = 0, totalspots = 0, usedspots = 0, c,
            spp = 0, refspots = 0, minsnr = MINSNR, skimmers = 0, 
            minspots = MINSPOTS;
@@ -90,7 +93,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < SPOTSWINDOW; i++)
         pipeline[i].analyzed = true;
 
-    while ((c = getopt(argc, argv, "hqt:sdf:m:rn:")) != -1)
+    while ((c = getopt(argc, argv, "whqt:sdf:m:rn:")) != -1)
     {
         switch (c)
         {
@@ -110,6 +113,9 @@ int main(int argc, char *argv[])
             case 'd': // Verbose debug mode
                 verbose = true;
                 break;
+            case 'w': // Format for web
+                forweb = true;
+                break;
             case 'h': // Sort on ppm deviation, worst first
                 sort = true;
                 worst = true;
@@ -128,6 +134,7 @@ int main(int argc, char *argv[])
                 break;
             case 'r': // RTTY mode
                 spotmode = "RTTY";
+				reffilename = RREFFILENAME;
                 break;
             case '?':
                 fprintf(stderr, USAGE, argv[0]);
@@ -143,11 +150,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    fr = fopen(REFFILENAME, "r");
+    fr = fopen(reffilename, "r");
 
     if (fr == NULL) 
     {
-        fprintf(stderr, "Can not open file \"%s\". Abort.\n", REFFILENAME);
+        fprintf(stderr, "Can not open file \"%s\". Abort.\n", reffilename);
         return 1;
     }
     
@@ -179,9 +186,6 @@ int main(int argc, char *argv[])
 
     if (verbose && !quiet)
         fprintf(stderr, "Starting at %s", asctime(timeinfo));
-
-    if (isatty(STDOUT_FILENO) == 0)
-        printf("Skimmer accuracy analysis based on RBN offline data.\n");
 
     fp = fopen(filename, "r");
     
@@ -347,6 +351,15 @@ int main(int argc, char *argv[])
         }
     }
 
+	if (forweb) 
+	{
+		printf("To improve the accuracy of your skimmer, multiply the current\n");
+		printf("value of FreqCalibration in SkimSrv.ini/CwSkimmer.ini with\n");
+		printf("the suggested adjustment factor within parentheses below.\n\n");
+	}
+	else if (isatty(STDOUT_FILENO) == 0)
+        printf("Skimmer accuracy analysis based on RBN offline data.\n\n");
+
     // List reference skimmers
     strcpy(outstring, "Reference skimmers: ");
     printf("%s", outstring);
@@ -362,7 +375,7 @@ int main(int argc, char *argv[])
             column = 5;
         }
     }
-    printf(".\n");
+    printf(".\n\n");
 
     // Print results 
     char firsttimestring[STRLEN], lasttimestring[STRLEN];
@@ -370,7 +383,7 @@ int main(int argc, char *argv[])
     (void)strftime(firsttimestring, STRLEN, FMT, &stime);
     stime = *localtime(&lastspot);
     (void)strftime(lasttimestring, STRLEN, FMT, &stime);
-    sprintf(outstring, "%d RBN spots processed (%s to %s).\n", totalspots, firsttimestring, lasttimestring);
+    sprintf(outstring, "%d RBN spots processed (%s to %s)\n", totalspots, firsttimestring, lasttimestring);
     printboth(outstring, quiet);
 
     sprintf(outstring, "  of which %d spots (%.1f%%) were reference spots.\n", refspots, 100.0 * refspots / totalspots);
@@ -385,12 +398,26 @@ int main(int argc, char *argv[])
             3600.0 * skimmer[0].count / difftime(skimmer[0].last, skimmer[0].first), firsttimestring, lasttimestring);
     }
     else
-        sprintf(outstring, "The average spot flow was %.0f spots per minute from %d active skimmers.\n",
-        60 * totalspots / difftime(lastspot, firstspot), skimmers);
+	{
+        sprintf(outstring, "The average total spot flow was %.0f per minute with %d active %s skimmers.\n",
+        60 * totalspots / difftime(lastspot, firstspot), skimmers, spotmode);
+	}
     printboth(outstring, quiet);
 
-    sprintf(outstring, "%d spots qualified for analysis by meeting the following criteria:\n",
-        (targeted && usedspots <= minspots) ? 0 : usedspots);
+    int qualskimcount = 0;
+    for (i = 0; i < skimmers; i++)
+    {
+        if (skimmer[i].count >= minspots)
+        {
+			qualskimcount++;
+        }
+    }
+
+	if (forweb)
+		printf("\n");
+	
+    sprintf(outstring, "%d spots from %d skimmers qualified for analysis by meeting the following criteria:\n",
+        (targeted && usedspots <= minspots) ? 0 : usedspots, qualskimcount);
     printboth(outstring, quiet);
 
     if (targeted)
@@ -417,11 +444,17 @@ int main(int argc, char *argv[])
     sprintf(outstring, " * At least %d spots from same skimmer in data set.\n", minspots);
     printboth(outstring, quiet);
 
-    (void)time(&stoptime);
-    timeinfo = localtime(&stoptime);
-    sprintf(outstring, "Total processing time was %.0f seconds.\n", difftime(stoptime, starttime));
-    if (isatty(STDOUT_FILENO) == 0)
-        printf("%s", outstring);
+	(void)time(&stoptime);
+
+	if (forweb)
+	{
+		printf("\n");
+	}
+	else if (isatty(STDOUT_FILENO) == 0)
+	{
+		sprintf(outstring, "Total processing time was %.0f seconds.\n\n", difftime(stoptime, starttime));
+		printboth(outstring, quiet);
+	}
 
     // Present results
     for (i = 0; i < skimmers; i++)
@@ -433,6 +466,12 @@ int main(int argc, char *argv[])
                 );
         }
     }
+	
+	if (forweb)
+	{
+		strftime(outstring, LINELEN, "%Y-%m-%d %H:%M UTC", gmtime(&stoptime));
+		printf("\nLast updated %s\n", outstring);
+	}
 
     return 0;
 }
