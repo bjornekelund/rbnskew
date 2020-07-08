@@ -43,8 +43,8 @@ END {
 	  printf("\n");
     }
 }}' history.txt > rbnhist.txt
-more rbnhist.txt
-#./upload
+#more rbnhist.txt
+./upload
 echo "Uploaded to web hosting"
 echo "Job ended "`date -u "+%F %T" `
 exit
