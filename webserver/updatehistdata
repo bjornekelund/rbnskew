@@ -1,6 +1,6 @@
 #!/bin/bash
-# Download yesterday's RBN data and check all the current 
-# reference skimmers against eachother
+# Use save analysis results from the last five days
+# to assemble a table sorted by skimmer callsign
 #set -x
 echo "Job started "`date -u "+%F %T"`
 [ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
