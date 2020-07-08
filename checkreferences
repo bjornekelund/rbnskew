@@ -15,10 +15,12 @@ if [[ $FILESIZE != "0" ]]; then
     SKIMMERS=`grep -v '#' reference | tr '\n' ' '`
     #echo "Skimmers: " $SKIMMERS
 #    echo "Analysis based on file" $FILE "with" `wc -l < $FOLDER/$FILE.csv` "spots."
+	echo "  Skimmer   [ppm]  Spots    Adjustment "
+	echo "  -------------------------------------"
     for skimmer in $SKIMMERS; do
 #         echo "Analyzing skimmer" $skimmer "with file" $FOLDER/$FILE.csv
         ./rbnskew -q -f $FOLDER/$FILE.csv -t $skimmer > result.tmp
-        RESULT=`grep "average deviation" result.tmp`
+        RESULT=`grep "#" result.tmp`
         if [[ $RESULT != "" ]]; then
             echo "$RESULT"
         else
