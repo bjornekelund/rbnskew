@@ -31,7 +31,7 @@ multiply the value currently used with the adjustment factor to get the correcte
 
 `SkimSrv.ini` can be found in `%appdata%\Afreet\Products\SkimSrv`
 
-`rbnskew -f csvfile [-t callsign] [-dslqr] [-m N] [-n N]`
+`rbnskew -f csvfile [-t callsign] [-dslqrw] [-m N] [-n N]`
 
  `-t file`\
 	Loads RBN spot data set from file.
@@ -41,6 +41,9 @@ multiply the value currently used with the adjustment factor to get the correcte
 	
 `-s` and `-h`\
     Sorting by average deviation. -s for lowest first, -h for highest first.
+	
+`-w`\
+	Format output for web publication. 
 	
 `-q`\
 	Quiet mode. Does not print to stderr, only to stdout.

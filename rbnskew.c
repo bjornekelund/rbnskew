@@ -21,7 +21,7 @@
 // Maximum number of skimmers supported
 #define MAXSKIMMERS 400
 // Usage string
-#define USAGE "Usage: %s -f filename [-dshqr] [-t callsign]\n"
+#define USAGE "Usage: %s -f filename [-dshqrw] [-t callsign] [-n minspots]\n"
 // Max number of seconds apart from a reference spot
 #define MAXAPART 30
 // Minimum SNR required for spot to be used
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     struct Skimmer
     {
         char name[STRLEN]; // Skimmer callsign
-        double accdev;     // Accumulated deviation in ppm
+        double accdev;     // Accumulated absolute deviation 
         double avdev;      // Average deviation in ppm
         double absavdev;   // Absolute average deviation in ppm
         int count;         // Number of analyzed spots
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < SPOTSWINDOW; i++)
         pipeline[i].analyzed = true;
 
-    while ((c = getopt(argc, argv, "whqt:sdf:m:rn:")) != -1)
+    while ((c = getopt(argc, argv, "dshqrwt:f:m:n:")) != -1)
     {
         switch (c)
         {
@@ -283,7 +283,7 @@ int main(int argc, char *argv[])
 
                                 if (skimpos != -1) // if in the list, update it
                                 {
-                                    skimmer[skimpos].accdev += 100000.0 * delta / freq;
+                                    skimmer[skimpos].accdev += pipeline[i].freq / (10.0 * freq);
                                     skimmer[skimpos].count++;
                                     if (pipeline[i].time > skimmer[skimpos].last)
                                         skimmer[skimpos].last = pipeline[i].time;
@@ -293,7 +293,7 @@ int main(int argc, char *argv[])
                                 else // If new skimmer, add it to list
                                 {
                                     strcpy(skimmer[skimmers].name, pipeline[i].de);
-                                    skimmer[skimmers].accdev = 100000.0 * delta / freq;
+                                    skimmer[skimmers].accdev = pipeline[i].freq / (10.0 * freq);
                                     skimmer[skimmers].count = 1;
                                     skimmer[skimmers].first = pipeline[i].time;
                                     skimmer[skimmers].last = pipeline[i].time;
@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
     // Calculate statistics
     for (i = 0; i < skimmers; i++)
     {
-        skimmer[i].avdev = skimmer[i].accdev / skimmer[i].count;
+        skimmer[i].avdev = 1000000.0 * (skimmer[i].accdev / skimmer[i].count - 1.0);
         skimmer[i].absavdev = fabs(skimmer[i].avdev);
     }
 
@@ -462,8 +462,7 @@ int main(int argc, char *argv[])
         if (skimmer[i].count >= minspots)
         {
             printf("Skimmer %-9s average deviation %+5.1fppm over %5d spots (%11.9f)\n",
-                skimmer[i].name, skimmer[i].avdev, skimmer[i].count, 1.0 + skimmer[i].avdev / 1000000.0
-                );
+                skimmer[i].name, skimmer[i].avdev, skimmer[i].count, skimmer[i].accdev / skimmer[i].count);
         }
     }
 	
