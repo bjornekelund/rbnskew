@@ -305,7 +305,6 @@ int main(int argc, char *argv[])
                                         (void)fclose(fp);
                                         return 1;
                                     }
-                                    
                                 }
                             }
                         }
@@ -351,7 +350,7 @@ int main(int argc, char *argv[])
         }
     }
 
-	if (forweb) 
+	if (forweb)
 	{
 		// printf("To improve the accuracy of your skimmer, multiply the current\n");
 		// printf("value of FreqCalibration in SkimSrv.ini/CwSkimmer.ini with\n");
@@ -377,7 +376,7 @@ int main(int argc, char *argv[])
     }
     printf(".\n\n");
 
-    // Print results 
+    // Print results
     char firsttimestring[STRLEN], lasttimestring[STRLEN];
     stime = *localtime(&firstspot);
     (void)strftime(firsttimestring, STRLEN, FMT, &stime);
@@ -415,7 +414,7 @@ int main(int argc, char *argv[])
 
 	if (forweb)
 		printf("\n");
-	
+
     sprintf(outstring, "%d spots from %d skimmers qualified for analysis by meeting\nthe following criteria:\n",
         (targeted && usedspots <= minspots) ? 0 : usedspots, qualskimcount);
     printboth(outstring, quiet);
@@ -459,7 +458,7 @@ int main(int argc, char *argv[])
     // Present results for each skimmer
 	printf("  Skimmer   [ppm]  Spots    Adjustment \n");
 	printf("  -------------------------------------\n");
-	
+
     for (i = 0; i < skimmers; i++)
     {
         if (skimmer[i].count >= minspots)
@@ -468,10 +467,10 @@ int main(int argc, char *argv[])
                 skimmer[i].name, skimmer[i].avdev, skimmer[i].count, skimmer[i].accdev / skimmer[i].count);
         }
     }
-	
+
 	if (forweb)
 	{
-		strftime(outstring, LINELEN, "%Y-%m-%d %H:%M UTC", gmtime(&stoptime));
+		strftime(outstring, LINELEN, "%Y-%m-%d %H:%M:%S UTC", gmtime(&stoptime));
 		printf("\nLast updated %s\n", outstring);
 	}
 

@@ -34,7 +34,7 @@ if [[ $FILESIZE != "0" ]]; then
         fi
     done
 	echo >> $FOLDER/rbnref.txt
-	echo "Last updated "`date -u "+%F %T"` >> $FOLDER/rbnref.txt
+	echo "Last updated "`date -u "+%F %T"`" UTC" >> $FOLDER/rbnref.txt
     echo "Updated web data in rbnref.txt"
     cd $FOLDER
 	./upload

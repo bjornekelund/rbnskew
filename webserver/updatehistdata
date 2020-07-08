@@ -57,7 +57,7 @@ END {
     }
 }}' history.txt | sort >> rbnhist.txt
 echo >> rbnhist.txt
-echo "Last updated "`date -u "+%F %T"` >> rbnhist.txt
+echo "Last updated "`date -u "+%F %T"`" UTC" >> rbnhist.txt
 
 #more rbnhist.txt
 ./upload
