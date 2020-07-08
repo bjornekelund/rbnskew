@@ -49,8 +49,8 @@ END {
 	  printf("\n");
     }
 }}' history.txt | sort -k 2 >> rbnhist.txt
-more rbnhist.txt	
-
+#more rbnhist.tx
+./upload
 exit
 
 
