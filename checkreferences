@@ -29,16 +29,3 @@ if [[ $FILESIZE != "0" ]]; then
 else
     echo "Unable to download yesterday's RBN data."
 fi
-
-
-
-
-
-
-
-
-
-
-
-
-FILE=20200704.csv
