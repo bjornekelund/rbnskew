@@ -13,9 +13,9 @@ if [[ $FILESIZE != "0" ]]; then
     gunzip < $FOLDER/rbndata.zip > $FOLDER/rbndata.csv
     echo "Downloaded yesterday's "$((`wc -l < $FOLDER/rbndata.csv` - 2))" spots into rbndata.csv"
     ./rbnskew -wq -f $FOLDER/rbndata.csv | sed "/processing/c\ " | grep -v "accuracy an" > $SAVEFILE
-	cp $SAVEFILE $FOLDER/rbnskew.txt
+	tr "#" " " < $SAVEFILE > $FOLDER/rbnskew.txt
     echo "Updated web data in rbnskew.txt and saved result in "$SAVEFILE
-    ./rbnskew -wqh -f $FOLDER/rbndata.csv | sed "/processing/c\ " | grep -v "accuracy an" > $FOLDER/rbnskew2.txt
+    ./rbnskew -wqh -f $FOLDER/rbndata.csv | sed "/processing/c\ " | grep -v "accuracy an" | tr "#" " " > $FOLDER/rbnskew2.txt
     echo "Updated web data in rbnskew2.txt"
 #    ./rbnskew -wqr -f $FOLDER/rbndata.csv | sed "/processing/c\ " | grep -v "accuracy an" > $FOLDER/rbnskewr.txt
 #    echo "Updated web data in rbnskewr.txt"

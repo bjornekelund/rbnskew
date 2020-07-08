@@ -31,7 +31,7 @@ multiply the value currently used with the adjustment factor to get the correcte
 
 `SkimSrv.ini` can be found in `%appdata%\Afreet\Products\SkimSrv`
 
-`rbnskew -f csvfile [-t callsign] [-dslqrw] [-m N] [-n N]`
+`rbnskew -f csvfile [-t callsign] [-dshqrw] [-m N] [-n N]`
 
  `-t file`\
 	Loads RBN spot data set from file.

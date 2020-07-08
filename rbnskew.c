@@ -353,9 +353,9 @@ int main(int argc, char *argv[])
 
 	if (forweb) 
 	{
-		printf("To improve the accuracy of your skimmer, multiply the current\n");
-		printf("value of FreqCalibration in SkimSrv.ini/CwSkimmer.ini with\n");
-		printf("the suggested adjustment factor listed below.\n\n");
+		// printf("To improve the accuracy of your skimmer, multiply the current\n");
+		// printf("value of FreqCalibration in SkimSrv.ini/CwSkimmer.ini with\n");
+		// printf("the suggested adjustment factor listed below.\n\n");
 	}
 	else if (isatty(STDOUT_FILENO) == 0)
         printf("Skimmer accuracy analysis based on RBN offline data.\n\n");

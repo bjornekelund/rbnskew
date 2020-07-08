@@ -15,8 +15,8 @@ FILESIZE=$(stat -c%s $FOLDER/rbnref.zip)
 if [[ $FILESIZE != "0" ]]; then
     gunzip < $FOLDER/rbnref.zip > $FOLDER/rbnref.csv
     echo "Downloaded yesterday's "$((`wc -l < $FOLDER/rbnref.csv` - 2))" spots into rbnref.csv" 
-    echo "Verification of reference skimmer integrity." > $FOLDER/rbnref.txt
-	echo "Based on "$((`wc -l < $FOLDER/rbnref.csv` - 2))" RBN spots from "$DATADATE"." >> $FOLDER/rbnref.txt
+    # echo "Verification of reference skimmer integrity." > $FOLDER/rbnref.txt
+	echo "Based on "$((`wc -l < $FOLDER/rbnref.csv` - 2))" RBN spots from "$DATADATE"." > $FOLDER/rbnref.txt
 	echo >> $FOLDER/rbnref.txt
     SKIMMERS=`grep -v '#' reference | tr '\n' ' '`
     # echo "Skimmers: " $SKIMMERS
@@ -28,7 +28,7 @@ if [[ $FILESIZE != "0" ]]; then
         ./rbnskew -q -f $FOLDER/rbnref.csv -t $skimmer > $FOLDER/result.tmp
         RESULT=`grep "#" $FOLDER/result.tmp`
         if [[ $RESULT != "" ]]; then
-            echo "$RESULT" >> $FOLDER/rbnref.txt
+            echo "$RESULT" | tr "#" " " >> $FOLDER/rbnref.txt
         else
             echo "Skimmer" $skimmer " - no spots" >> $FOLDER/rbnref.txt
         fi

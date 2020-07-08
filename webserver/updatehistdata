@@ -27,22 +27,38 @@ gawk '
   call = $1;
 }
 END {
-  printf("  Skimmer  ");
+  printf("Skimmer    ");
+  j = 0  
+  for (datestring in array[call]) {
+    date[j++] = substr(datestring, 3, 8);
+  }
+  for (j = 4; j >= 0; j--) {
+    printf("%10s", date[j]);
+  }    
+  printf("\n-------------------------------------------------------------\n");
+}' history.txt > rbnhist.txt
+gawk '
+{
+  array[$1][$2] = $3;
+  call = $1;
+}
+END {
   j = 0  
   for (datestring in array[call]) {
     date[j++] = datestring;
-    printf("%8s", substr(datestring, 6, 5));
   }
-  printf("\n----------------------------------------------------\n");
   for (i in array) {
-	printf("%9s  ", i);
+	printf("%-9s", i);
     if (isarray(array[i])) {
-      for (j = 0; j < 6; j++) {
-        printf("%8s", array[i][date[j]]);
+      for (j = 4; j >= 0; j--) {
+        printf("%10s", array[i][date[j]]);
       }
 	  printf("\n");
     }
-}}' history.txt > rbnhist.txt
+}}' history.txt | sort >> rbnhist.txt
+echo >> rbnhist.txt
+echo "Last updated "`date -u "+%F %T"` >> rbnhist.txt
+
 #more rbnhist.txt
 ./upload
 echo "Uploaded to web hosting"
