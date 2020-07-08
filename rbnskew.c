@@ -355,7 +355,7 @@ int main(int argc, char *argv[])
 	{
 		printf("To improve the accuracy of your skimmer, multiply the current\n");
 		printf("value of FreqCalibration in SkimSrv.ini/CwSkimmer.ini with\n");
-		printf("the suggested adjustment factor within parentheses below.\n\n");
+		printf("the suggested adjustment factor listed below.\n\n");
 	}
 	else if (isatty(STDOUT_FILENO) == 0)
         printf("Skimmer accuracy analysis based on RBN offline data.\n\n");
@@ -371,7 +371,7 @@ int main(int argc, char *argv[])
         column += strlen(outstring);
         if (column > 60 && i < referenceskimmers - 1)
         {
-            printf("\n  ");
+            printf("\n");
             column = 5;
         }
     }
@@ -383,10 +383,10 @@ int main(int argc, char *argv[])
     (void)strftime(firsttimestring, STRLEN, FMT, &stime);
     stime = *localtime(&lastspot);
     (void)strftime(lasttimestring, STRLEN, FMT, &stime);
-    sprintf(outstring, "%d RBN spots processed (%s to %s)\n", totalspots, firsttimestring, lasttimestring);
+    sprintf(outstring, "%d RBN spots between %s and %s\n", totalspots, firsttimestring, lasttimestring);
     printboth(outstring, quiet);
 
-    sprintf(outstring, "  of which %d spots (%.1f%%) were reference spots.\n", refspots, 100.0 * refspots / totalspots);
+    sprintf(outstring, "processed of which %d spots (%.1f%%) were reference spots.\n", refspots, 100.0 * refspots / totalspots);
     printboth(outstring, quiet);
 
     if (targeted) {
@@ -399,7 +399,7 @@ int main(int argc, char *argv[])
     }
     else
 	{
-        sprintf(outstring, "The average total spot flow was %.0f per minute with %d active %s skimmers.\n",
+        sprintf(outstring, "The average total spot flow was %.0f per minute with %d active\n%s skimmers.\n",
         60 * totalspots / difftime(lastspot, firstspot), skimmers, spotmode);
 	}
     printboth(outstring, quiet);
@@ -416,7 +416,7 @@ int main(int argc, char *argv[])
 	if (forweb)
 		printf("\n");
 	
-    sprintf(outstring, "%d spots from %d skimmers qualified for analysis by meeting the following criteria:\n",
+    sprintf(outstring, "%d spots from %d skimmers qualified for analysis by meeting\nthe following criteria:\n",
         (targeted && usedspots <= minspots) ? 0 : usedspots, qualskimcount);
     printboth(outstring, quiet);
 
@@ -426,7 +426,7 @@ int main(int argc, char *argv[])
     sprintf(outstring, " * Mode of spot is %s.\n" , spotmode);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Also spotted by a reference skimmer within the %d most recent spots.\n", SPOTSWINDOW);
+    sprintf(outstring, " * Also spotted by a reference skimmer within %d most recent spots.\n", SPOTSWINDOW);
     printboth(outstring, quiet);
 
     sprintf(outstring, " * Also spotted by a reference skimmer within %ds. \n", MAXAPART);
@@ -456,12 +456,15 @@ int main(int argc, char *argv[])
 		printboth(outstring, quiet);
 	}
 
-    // Present results
+    // Present results for each skimmer
+	printf("  Skimmer   [ppm]  Spots    Adjustment \n");
+	printf("  -------------------------------------\n");
+	
     for (i = 0; i < skimmers; i++)
     {
         if (skimmer[i].count >= minspots)
         {
-            printf("Skimmer %-9s average deviation %+5.1fppm over %5d spots (%11.9f)\n",
+            printf("# %-9s %+5.1f %6d %13.9f\n",
                 skimmer[i].name, skimmer[i].avdev, skimmer[i].count, skimmer[i].accdev / skimmer[i].count);
         }
     }
