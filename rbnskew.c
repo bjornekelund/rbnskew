@@ -21,7 +21,7 @@
 // Maximum number of skimmers supported
 #define MAXSKIMMERS 400
 // Usage string
-#define USAGE "Usage: %s -f filename [-t callsign] [-d] [-s] [-q]\n"
+#define USAGE "Usage: %s -f filename [-dshqr] [-t callsign]\n"
 // Max number of seconds apart from a reference spot
 #define MAXAPART 30
 // Minimum SNR required for spot to be used
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < SPOTSWINDOW; i++)
         pipeline[i].analyzed = true;
 
-    while ((c = getopt(argc, argv, "wqt:sdf:m:rn:")) != -1)
+    while ((c = getopt(argc, argv, "hqt:sdf:m:rn:")) != -1)
     {
         switch (c)
         {
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
             case 'd': // Verbose debug mode
                 verbose = true;
                 break;
-            case 'w': // Sort on ppm deviation, worst first
+            case 'h': // Sort on ppm deviation, worst first
                 sort = true;
                 worst = true;
                 break;
