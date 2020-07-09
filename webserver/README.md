@@ -9,13 +9,15 @@ As written, they will run a Raspberry Pi under Raspbian.
 To execute them periodically, add them to the Pi's crontab. To run them hourly:
 
 ```
-10 * * * * /home/pi/rbnskew/webserver/updaterefdata >> /home/pi/webrbnskew.log 2>&1
-20 * * * * /home/pi/rbnskew/webserver/updatewebdata >> /home/pi/webrbnskew.log 2>&1
-30 * * * * /home/pi/rbnskew/webserver/updatehistdata >> /home/pi/webrbnskew.log 2>&1
+10 * * * * /home/pi/rbnskew/webserver/updatewebdata >> /home/pi/webrbnskew.log 2>&1
+20 * * * * /home/pi/rbnskew/webserver/updatehistdata >> /home/pi/webrbnskew.log 2>&1
+30 * * * * /home/pi/rbnskew/webserver/updaterefdata >> /home/pi/webrbnskew.log 2>&1
 ```
 
-Please that `updatewebdata` must be run before `updatehistdata` since the
+Note that `updatewebdata` must be run before `updatehistdata` since the
 latter relies on the output from the former when the date changes. 
+`updaterefdata` should be run last since it can take a very long time 
+to run after a busy day like a major contest. 
 
 It is also possible to embed the text file in a Wordpress page using
 the *Insert PHP Code Snippet* plugin and the body code from the PHP scripts above. 
