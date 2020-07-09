@@ -181,7 +181,8 @@ int main(int argc, char *argv[])
     (void)strftime(lasttimestring, LINELEN, FMT, &stime);
 
     printf("RBN data between %s and %s.\n", firsttimestring, lasttimestring);
-    printf("%d spots with %d unique calls from %d active skimmers.\n", totalspots, totalskimmers, totalcalls);
+    printf("%d spots with %d unique callsigns from %d active skimmers.\n", 
+        totalspots, totalcalls, totalskimmers);
 
     printf("\n        Unique callsigns spotted per continent and band\n");
     printf("----------------------------------------------------------\n");
