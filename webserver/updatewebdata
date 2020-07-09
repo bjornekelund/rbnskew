@@ -1,6 +1,11 @@
 #!/bin/bash
 # Get yesterday's RBN data and run a full analysis on it
+# Put result in files rbnskew.txt, rbnskew2.txt, and rbnskewr.txt
+# and upload them to web host. 
+
+# Move to correct folder to allow cron execution on RPi
 [ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
+
 FILE=`date -u --date="1 days ago" +%Y%m%d`
 FOLDER="webserver"
 SAVEFILE=$FOLDER/`date -u --date="1 days ago" +%Y-%m-%d`.txt

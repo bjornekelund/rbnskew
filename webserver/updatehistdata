@@ -1,28 +1,32 @@
 #!/bin/bash
 # Use save analysis results from the last five days
 # to assemble a table sorted by skimmer callsign
+# Resulting file rbnhist.txt is uploaded to web host.
 #set -x
+
 echo "---"
 echo "Job started "`date -u "+%F %T"`
-[ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
-#DATADATE=`date -u --date="1 days ago" +%Y-%m-%d`
+
 FOLDER="webserver"
+FILES="`date -u --date="1 days ago" +%Y-%m-%d` `date -u --date="2 days ago" +%Y-%m-%d`\
+ `date -u --date="3 days ago" +%Y-%m-%d` `date -u --date="4 days ago" +%Y-%m-%d`\
+ `date -u --date="5 days ago" +%Y-%m-%d`"
 
-AWKC=""
-
-FILE1=`date -u --date="1 days ago" +%Y-%m-%d`
-FILE2=`date -u --date="2 days ago" +%Y-%m-%d`
-FILE3=`date -u --date="3 days ago" +%Y-%m-%d`
-FILE4=`date -u --date="4 days ago" +%Y-%m-%d`
-FILE5=`date -u --date="5 days ago" +%Y-%m-%d`
+# Move to correct folder to allow cron execution on RPi
+[ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
 
 cd $FOLDER
 rm -f history.txt
+
 echo "Updating historical data for:"
-echo  "     $FILE1, $FILE2, $FILE3, $FILE4, and $FILE5"
-for filename in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5; do
-    gawk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,10) " " $3; }}' $filename.txt >> history.txt
+echo  " $FILES"
+
+for file in $FILES; do
+    gawk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,10) " " $3; }}' $file.txt >> history.txt
 done
+
+# Produce header of output file
+# Print data in reverse chronological order to newest data is to the left
 gawk '
 {
   array[$1][$2] = $3;
@@ -39,6 +43,9 @@ END {
   }    
   printf("\n-------------------------------------------------------------\n");
 }' history.txt > rbnhist.txt
+
+# Produce meat of output file
+# Print data in reverse chronological order to newest data is to the left
 gawk '
 {
   array[$1][$2] = $3;
@@ -58,6 +65,7 @@ END {
 	  printf("\n");
     }
 }}' history.txt | sort >> rbnhist.txt
+
 echo >> rbnhist.txt
 echo "Last updated "`date -u "+%F %T"`" UTC" >> rbnhist.txt
 
