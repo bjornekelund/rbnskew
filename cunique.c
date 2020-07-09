@@ -90,12 +90,12 @@ int main(int argc, char *argv[])
     }
 
     fp = fopen(filename, "r");
-    
-    if (fp == NULL) 
+
+    if (fp == NULL)
     {
         fprintf(stderr, "Can not open file \"%s\". Abort.\n", filename);
         return 1;
-    }  
+    }
 
     while (fgets(line, LINELEN, fp) != NULL)
     {
@@ -103,18 +103,18 @@ int main(int argc, char *argv[])
              timestring[STRLEN], decall[STRLEN];
         int snr;
         double freq;
-        
+
         // printf("%s", line);
-        
+
         int got = sscanf(line, "%[^,],%*[^,],%[^,],%lf,%[^,],%[^,],%*[^,],%[^,],%*[^,],%d,%[^,],%*[^,],%s",
             decall, decont, &freq, band, dxcall, dxcont, &snr, timestring, mode);
 
         if (got == 9) // If parsing is successful
         {
             int bandindex = strindex(band, bandname, MAXBANDS);
-            int decontindex = strindex(decont, contname, MAXCONT);         
+            int decontindex = strindex(decont, contname, MAXCONT);
             int dxcontindex = strindex(dxcont, contname, MAXCONT);
-            
+
             (void)strptime(timestring, FMT, &stime);
             time_t spottime = mktime(&stime);
 
@@ -132,11 +132,12 @@ int main(int argc, char *argv[])
             }
 
             totalspots++;
-            
+
             if (dxcontindex != -1 && decontindex != -1 && bandindex != -1)
             {
                 // Check if new dx call for band and continent
-                if (strindex(dxcall, bandarray[dxcontindex][bandindex].call, bandarray[dxcontindex][bandindex].callcount) == -1) 
+                if (strindex(dxcall, bandarray[dxcontindex][bandindex].call, 
+                    bandarray[dxcontindex][bandindex].callcount) == -1)
                 {
                     // printf("New call %s\n", dxcall);
                     strcpy(bandarray[dxcontindex][bandindex].call[bandarray[dxcontindex][bandindex].callcount++], dxcall);
@@ -147,9 +148,10 @@ int main(int argc, char *argv[])
                 {
                     strcpy(callarray[totalcalls++], dxcall);
                 }
-                
+
                 // Check if new skimmer for band and continent
-                if (strindex(decall, bandarray[decontindex][bandindex].skimmer, bandarray[decontindex][bandindex].skimcount) == -1)
+                if (strindex(decall, bandarray[decontindex][bandindex].skimmer, 
+                    bandarray[decontindex][bandindex].skimcount) == -1)
                 {
                     // printf("New skimmer %s\n", decall);
                     strcpy(bandarray[decontindex][bandindex].skimmer[bandarray[decontindex][bandindex].skimcount++], decall);
@@ -161,7 +163,7 @@ int main(int argc, char *argv[])
                     // printf("New skimmer %s\n", decall);
                     strcpy(skimarray[totalskimmers++], decall);
                 }
-            }      
+            }
             else
             {
                 // printf("Ignored: %s", line);
@@ -177,22 +179,23 @@ int main(int argc, char *argv[])
     stime = *localtime(&lastspot);
     (void)strftime(lasttimestring, STRLEN, FMT, &stime);
 
-    
     printf("RBN data between %s and %s.\n", firsttimestring, lasttimestring);
     printf("%d spots from %d active skimmers with %d unique calls.\n", totalspots, totalskimmers, totalcalls);
- 
+
     printf("\n        Unique callsigns spotted per continent and band\n");
+    printf("----------------------------------------------------------\n");
     #define LEFTCOL "%-3s"
     #define COLS "%5s"
     #define COLN "%5d"
+
     printf(LEFTCOL, "");
     for (int i = 0; i < MAXBANDS; i++)
     {
         printf(COLS, bandname[i]);
     }
     printf("\n");
-    
-    for (int i = 0; i < MAXCONT; i++) 
+
+    for (int i = 0; i < MAXCONT; i++)
     {
         printf(LEFTCOL, contname[i]);
         for (int j = 0; j < MAXBANDS; j++)
@@ -202,15 +205,16 @@ int main(int argc, char *argv[])
         printf("\n");
     }
 
-    printf("\n\n        Active skimmers per continent and band\n");
+    printf("\n        Active skimmers per continent and band\n");
+    printf("----------------------------------------------------------\n");
     printf(LEFTCOL, "");
     for (int i = 0; i < MAXBANDS; i++)
     {
         printf(COLS, bandname[i]);
     }
     printf("\n");
-    
-    for (int i = 0; i < MAXCONT; i++) 
+
+    for (int i = 0; i < MAXCONT; i++)
     {
         printf(LEFTCOL, contname[i]);
         for (int j = 0; j < MAXBANDS; j++)

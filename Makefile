@@ -1,23 +1,23 @@
-cc		= gcc
-gcc		= ${cc} -Wall -ggdb
+cc			= gcc
+gcc			= ${cc} -Wall -O2
 lint		= cppcheck
 
 all: 		rbnskew cunique
 
 cunique:	cunique.o Makefile
-		$(gcc) -o cunique cunique.o -lm
+			$(gcc) -o cunique cunique.o -lm
 
 rbnskew:	rbnskew.o Makefile
-		$(gcc) -o rbnskew rbnskew.o -lm
+			$(gcc) -o rbnskew rbnskew.o -lm
 
 cunique.o:	cunique.c Makefile
-		$(gcc) -c cunique.c
+			$(gcc) -c cunique.c
 
 rbnskew.o:	rbnskew.c Makefile
-		$(gcc) -c rbnskew.c
+			$(gcc) -c rbnskew.c
 
 clean:
 		rm -f *.o
 
 lint:
-		${lint} rbnskew.c
+			${lint} rbnskew.c
