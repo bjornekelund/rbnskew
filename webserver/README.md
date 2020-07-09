@@ -5,7 +5,8 @@ the simple PHP scripts `rbnref.php`, `rbnhist.php`, and `rbnskew.php`.
 It is also possible to embed the text file in a Wordpress page using
 the *Insert PHP Code Snippet* plugin and the body code from the PHP scripts above. 
 
-```<?php
+```
+<?php
     echo "<pre>";
     echo file_get_contents("rbnhist.txt");
     echo "</pre>";
@@ -14,24 +15,19 @@ the *Insert PHP Code Snippet* plugin and the body code from the PHP scripts abov
 
 You also need a script called `upload` that uploads the three files `rbnskew.txt`, 
 `rbnref.txt`, and `rbnhist.txt` to the web host. This file is not included in the 
-repo since it unfortunately must contain user ID and password to the web site.
+repo since it unfortunately must contain sensitive information in plain text. 
 
 For a hosting service supporting FTP, this file could look like this:
 
-```#!/bin/sh\
-HOST='ftpcluster.myhosting.com'
-USER='myusername'
-PASSWD='mypassword'
-FILE1='rbnskew.txt'
-FILE2='rbnref.txt'
-FILE3='rbnhist.txt'
-ftp -n $HOST <<END_SCRIPT
-quote USER $USER
-quote PASS $PASSWD
+```
+#!/bin/sh
+ftp -n ftpcluster.myhosting.com <<END_SCRIPT
+quote USER myusername
+quote PASS mypassword
 cd mywebpage.com/public_html
-put $FILE1
-put $FILE2
-put $FILE3
+put rbnskew.txt
+put rbnref.txt
+put rbnhist.txt
 quit
 END_SCRIPT
 exit 0
