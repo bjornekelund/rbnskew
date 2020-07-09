@@ -4,7 +4,8 @@ in text form to a web server for display using the simple PHP
 scripts `rbnref.php`, `rbnhist.php`, and `rbnskew.php`.
 
 The three scripts are `updatewebdata`, `updaterefdata`, and `updatehistdata`. 
-As written, they will run a Raspberry Pi under Raspbian. 
+As written, they will run a Raspberry Pi under Raspbian. They are intended to be 
+run in the folder above to avoid having local copies of `reference` and `rreference`.
 
 To execute them periodically, add them to the Pi's crontab. To run them hourly:
 
