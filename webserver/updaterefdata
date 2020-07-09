@@ -1,7 +1,7 @@
 #!/bin/bash
 # Download yesterday's RBN data and check all the current 
 # reference skimmers against eachother
-set -x
+#set -x
 # Move to correct folder to allow cron execution on RPi
 [ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
 
@@ -23,7 +23,7 @@ if [[ $FILESIZE != "0" ]]; then
     echo "Downloaded yesterday's "$((`wc -l < $FOLDER/rbnref.csv` - 2))" spots into rbnref.csv" 
 	echo "Based on "$((`wc -l < $FOLDER/rbnref.csv` - 2))" RBN spots from "$DATADATE"." > $FOLDER/rbnref.txt
 	echo >> $FOLDER/rbnref.txt
-    SKIMMERS=`grep -v '#' reference | tr '\n' ' '`
+    SKIMMERS=`cat reference | sort | grep -v '#' | tr '\n' ' '`
     echo "Skimmers: " $SKIMMERS
     # echo "Analysis based on file "$FOLDER"/rbnref.csv with" `wc -l < $FOLDER/rbnref.csv` "lines."
 	echo "  Skimmer   [ppm]  Spots    Adjustment " >> $FOLDER/rbnref.txt
