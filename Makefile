@@ -1,5 +1,5 @@
 cc			= gcc
-gcc			= ${cc} -Wall -O2
+gcc			= ${cc} -Wall
 lint		= cppcheck
 
 all: 		rbnskew cunique

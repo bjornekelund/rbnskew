@@ -8,8 +8,8 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#define STRLEN 32
-#define LINELEN 256
+#define STRLEN 16
+#define LINELEN 128
 #define USAGE "Usage: %s -f filename\n"
 #define FMT "%Y-%m-%d %H:%M:%S"
 
@@ -19,13 +19,13 @@
 #define BANDS { "6m", "10m", "12m", "15m", "17m", "20m", "30m", "40m", "60m", "80m", "160m" }
 #define MAXBANDS 11
 
-#define MAXCALLS 10000
+#define MAXCALLS 12000
 #define MAXSKIMMERS 400
 
 int main(int argc, char *argv[])
 {
     FILE   *fp;
-    char   filename[STRLEN] = "", line[LINELEN] = "";
+    char   filename[LINELEN] = "", line[LINELEN] = "";
     int c, totalspots = 0;
     time_t firstspot, lastspot;
     struct tm stime;
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     static char skimarray[MAXSKIMMERS][STRLEN];
     int totalskimmers = 0;
 
-    static char callarray[MAXCALLS * MAXBANDS][STRLEN];
+    static char callarray[4 * MAXCALLS][STRLEN];
     int totalcalls = 0;
 
     static struct Bandcount bandarray[MAXCONT][MAXBANDS];
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     while (fgets(line, LINELEN, fp) != NULL)
     {
         char band[STRLEN], decont[STRLEN], dxcall[STRLEN], dxcont[STRLEN], mode[STRLEN],
-             timestring[STRLEN], decall[STRLEN];
+             timestring[LINELEN], decall[STRLEN];
         int snr;
         double freq;
 
@@ -174,11 +174,11 @@ int main(int argc, char *argv[])
 
     (void)fclose(fp);
 
-    char firsttimestring[STRLEN], lasttimestring[STRLEN];
+    char firsttimestring[LINELEN], lasttimestring[LINELEN];
     stime = *localtime(&firstspot);
-    (void)strftime(firsttimestring, STRLEN, FMT, &stime);
+    (void)strftime(firsttimestring, LINELEN, FMT, &stime);
     stime = *localtime(&lastspot);
-    (void)strftime(lasttimestring, STRLEN, FMT, &stime);
+    (void)strftime(lasttimestring, LINELEN, FMT, &stime);
 
     printf("RBN data between %s and %s.\n", firsttimestring, lasttimestring);
     printf("%d spots from %d active skimmers with %d unique calls.\n", totalspots, totalskimmers, totalcalls);
