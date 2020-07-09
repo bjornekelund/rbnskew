@@ -1,7 +1,9 @@
 #!/bin/bash
-# Use save analysis results from the last five days
+# Uses saved analysis results from the last five days
 # to assemble a table sorted by skimmer callsign
 # Resulting file rbnhist.txt is uploaded to web host.
+# updatewebdata creates the required result files.
+# These have be to manually created before the first run.
 #set -x
 
 echo "---"

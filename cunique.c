@@ -8,35 +8,10 @@
 #include <unistd.h>
 #include <ctype.h>
 
-// Standard length of strings
 #define STRLEN 32
-// Standard length of lines
 #define LINELEN 256
-// Time format in RBN data file
+#define USAGE "Usage: %s -f filename\n"
 #define FMT "%Y-%m-%d %H:%M:%S"
-// Number of most recent spots considered in analysis
-#define SPOTSWINDOW 1000
-// Maximum number of reference skimmers
-#define MAXREF 50
-// Maximum number of skimmers supported
-// Usage string
-#define USAGE "Usage: %s -f filename [-dshqrw] [-t callsign] [-n minsnr] [-m minspots] [-x maxsec]\n"
-// Max number of seconds apart from a reference spot
-#define MAXAPART 30
-// Minimum SNR required for spot to be used
-#define MINSNR 6
-// Minimum frequency for spot to be used
-#define MINFREQ 7000
-// Minimum number of spots to be analyzed
-#define MINSPOTS 50
-// Maximum difference from reference spot times 100Hz
-#define MAXERR 5
-// Name of file containing callsigns of reference skimmmers
-#define REFFILENAME "reference"
-// Name of file containing callsigns of RTTY reference skimmmers
-#define RREFFILENAME "rreference"
-// Mode of spots
-#define MODE "CW"
 
 #define CONTINENTS {"AF", "AS", "EU", "NA", "OC", "SA" }
 #define MAXCONT 6
@@ -51,7 +26,6 @@ int main(int argc, char *argv[])
 {
     FILE   *fp;
     char   filename[STRLEN] = "", line[LINELEN] = "";
-           // outstring[LINELEN];
     int c;
    
     struct Bandcount {
@@ -67,9 +41,23 @@ int main(int argc, char *argv[])
     char skimarray[MAXSKIMMERS][STRLEN];
     int totalskimmers = 0;
     char callarray[MAXCALLS * MAXBANDS][STRLEN];
-    int totalcalls;
-    
+    int totalcalls = 0, totalspots = 0;
+    time_t firstspot, lastspot;    
+    struct tm stime;
+
     static struct Bandcount bandarray[MAXCONT][MAXBANDS];
+
+    int strindex(char *string, char array[][STRLEN], int size)
+    {
+        for (int i = 0; i < size; i++) 
+        {
+            if (strcmp(string, array[i]) == 0) 
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     for (int i = 0; i < MAXCONT; i++) 
     {
@@ -123,101 +111,52 @@ int main(int argc, char *argv[])
 
         if (got == 9) // If parsing is successful
         {
-            // printf("got=%d\n", got);
-
-            // printf("band=%-5s freq=%10.1f dxcall=%-10s decont=%-4s dxcont=%-4s mode=%-4s\n", band, freq, dxcall, decont, dxcont, mode);
-
-            int bandindex = -1;
-            for (int i = 0; i < MAXBANDS; i++) 
-            {
-                if (strcmp(band, bandname[i]) == 0) 
-                {
-                    bandindex = i;
-                    break;
-                }
-            }
+            int bandindex = strindex(band, bandname, MAXBANDS);
+            int decontindex = strindex(decont, contname, MAXCONT);         
+            int dxcontindex = strindex(dxcont, contname, MAXCONT);
             
-            int decontindex = -1;
-            for (int i = 0; i < MAXCONT; i++) 
+            (void)strptime(timestring, FMT, &stime);
+            time_t spottime = mktime(&stime);
+
+            if (totalspots == 0)
             {
-                if (strcmp(decont, contname[i]) == 0) 
-                {
-                    decontindex = i;
-                    break;
-                }
+                firstspot = spottime;
+                lastspot = spottime;
             }
-            
-            int dxcontindex = -1;
-            for (int i = 0; i < MAXCONT; i++) 
+            else
             {
-                if (strcmp(dxcont, contname[i]) == 0) 
-                {
-                    dxcontindex = i;
-                    break;
-                }
+                if (spottime > lastspot)
+                    lastspot = spottime;
+                if (spottime < firstspot)
+                    firstspot = spottime;
             }
+
+            totalspots++;
             
             if (dxcontindex != -1 && decontindex != -1 && bandindex != -1)
             {
                 // Check if new dx call for band and continent
-                bool new = true;
-                for (int i = 0; i < bandarray[dxcontindex][bandindex].callcount; i++)
-                {
-                    if (strcmp(bandarray[dxcontindex][bandindex].call[i], dxcall) == 0)
-                    {
-                        new = false;
-                        break;
-                    }
-                }
-                if (new) 
+                if (strindex(dxcall, bandarray[dxcontindex][bandindex].call, bandarray[dxcontindex][bandindex].callcount) == -1) 
                 {
                     // printf("New call %s\n", dxcall);
                     strcpy(bandarray[dxcontindex][bandindex].call[bandarray[dxcontindex][bandindex].callcount++], dxcall);
                 }
-                // printf("callcount=%d\n", bandarray[dxcontindex][bandindex].callcount);
-                
+
                 // Check if new dx call for any band
-                for (int i = 0; i < totalcalls; i++)
-                {
-                    if (strcmp(callarray[i], dxcall) == 0)
-                    {
-                        new = false;
-                        break;
-                    }
-                }
-                if (new) 
+                if (strindex(dxcall, callarray, totalcalls) == -1)
                 {
                     strcpy(callarray[totalcalls++], dxcall);
                 }
-
+                
                 // Check if new skimmer for band and continent
-                new = true;
-                for (int i = 0; i < bandarray[decontindex][bandindex].skimcount; i++)
-                {
-                    if (strcmp(bandarray[decontindex][bandindex].skimmer[i], decall) == 0)
-                    {
-                        new = false;
-                        break;
-                    }
-                }
-                if (new) 
+                if (strindex(decall, bandarray[decontindex][bandindex].skimmer, bandarray[decontindex][bandindex].skimcount) == -1)
                 {
                     // printf("New skimmer %s\n", decall);
                     strcpy(bandarray[decontindex][bandindex].skimmer[bandarray[decontindex][bandindex].skimcount++], decall);
                 }
-                // printf("Slutet på loopen\n");
 
                 // Check if new skimmer for any band
-                new = true;
-                for (int i = 0; i < totalskimmers; i++)
-                {
-                    if (strcmp(skimarray[i], decall) == 0)
-                    {
-                        new = false;
-                        break;
-                    }
-                }
-                if (new) 
+                if (strindex(decall, skimarray, totalskimmers) == -1) 
                 {
                     // printf("New skimmer %s\n", decall);
                     strcpy(skimarray[totalskimmers++], decall);
@@ -225,49 +164,58 @@ int main(int argc, char *argv[])
             }      
             else
             {
-                // printf("%s", line);
-                // printf("bandindex=%2d, decontindex=%2d, dxcontindex=%2d\n", bandindex, decontindex, dxcontindex);
-                // printf("Error\n");
-                // return 1;
+                // printf("Ignored: %s", line);
             }
         }
     }
 
     (void)fclose(fp);
 
-    printf("Total %d active skimmers and %d unique calls.\n", totalskimmers, totalcalls);
+    char firsttimestring[STRLEN], lasttimestring[STRLEN];
+    stime = *localtime(&firstspot);
+    (void)strftime(firsttimestring, STRLEN, FMT, &stime);
+    stime = *localtime(&lastspot);
+    (void)strftime(lasttimestring, STRLEN, FMT, &stime);
+
+    
+    printf("RBN data between %s and %s.\n", firsttimestring, lasttimestring);
+    printf("%d spots from %d active skimmers with %d unique calls.\n", totalspots, totalskimmers, totalcalls);
  
-    printf("%-6s", "Calls");
+    printf("\n        Unique callsigns spotted per continent and band\n");
+    #define LEFTCOL "%-3s"
+    #define COLS "%5s"
+    #define COLN "%5d"
+    printf(LEFTCOL, "");
     for (int i = 0; i < MAXBANDS; i++)
     {
-        printf("%6s", bandname[i]);
+        printf(COLS, bandname[i]);
     }
     printf("\n");
     
     for (int i = 0; i < MAXCONT; i++) 
     {
-        printf("%-6s", contname[i]);
+        printf(LEFTCOL, contname[i]);
         for (int j = 0; j < MAXBANDS; j++)
         {
-            printf("%6d", bandarray[i][j].callcount);
+            printf(COLN, bandarray[i][j].callcount);
         }
         printf("\n");
     }
-    printf("\n");
 
-    printf("%-6s", "Skims");
+    printf("\n\n        Active skimmers per continent and band\n");
+    printf(LEFTCOL, "");
     for (int i = 0; i < MAXBANDS; i++)
     {
-        printf("%6s", bandname[i]);
+        printf(COLS, bandname[i]);
     }
     printf("\n");
     
     for (int i = 0; i < MAXCONT; i++) 
     {
-        printf("%-6s", contname[i]);
+        printf(LEFTCOL, contname[i]);
         for (int j = 0; j < MAXBANDS; j++)
         {
-            printf("%6d", bandarray[i][j].skimcount);
+            printf(COLN, bandarray[i][j].skimcount);
         }
         printf("\n");
     }
