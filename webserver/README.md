@@ -4,8 +4,9 @@ in text form to a web server for display using the simple PHP
 scripts `rbnref.php`, `rbnhist.php`, and `rbnskew.php`.
 
 The three scripts are `updatewebdata`, `updaterefdata`, and `updatehistdata`. 
-As written, they will run a Raspberry Pi under Raspbian. They are intended to be 
-run in the folder above to avoid having local copies of `reference` and `rreference`.
+As written, they will run on a Raspberry Pi under Raspbian. Note that they are 
+intended to be run *in the folder above* to avoid having local copies 
+of `reference` and `rreference`.
 
 To execute them periodically, add them to the Pi's crontab. To run them hourly:
 
@@ -31,9 +32,9 @@ the *Insert PHP Code Snippet* plugin and the body code from the PHP scripts abov
 ?>
 ```
 
-You also need a script called `upload` that uploads the three files `rbnskew.txt`, 
-`rbnref.txt`, and `rbnhist.txt` to the web host. This file is not included in the 
-repo since it unfortunately must contain sensitive information in plain text. 
+The script `upload` that uploads the three files `rbnskew.txt`, `rbnref.txt`, 
+and `rbnhist.txt` to the web hostis not included in the repo since it 
+unfortunately must contain sensitive information in plain text. 
 
 For a hosting service supporting FTP, this file could look like this:
 
