@@ -16,12 +16,14 @@ DATE=`date -u --date="1 days ago" +%Y-%m-%d`
 
 echo "Updating activity data for:" $DATE
 
-./cunique -f $FOLDER/rbndata.csv > rbnact.txt
+./cunique -f $FOLDER/rbndata.csv > $FOLDER/rbnact.txt
+echo "Last updated "`date -u "+%F %T"`" UTC" >> $FOLDER/rbnact.txt
 
-more rbnact.txt
-#./upload
+#more rbnact.txt
+cd $FOLDER
+./upload
 
 echo "Uploaded to web hosting"
-echo "Job ended "`date -u "+%F %T" `
+echo "Job ended "`date -u "+%F %T"`
 
 exit

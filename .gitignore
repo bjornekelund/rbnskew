@@ -10,5 +10,6 @@ webserver/*.txt
 webserver/*.zip
 webserver/*~
 doit
-webserver/upload
+webserver/upload*
 obsolete
+cunique
