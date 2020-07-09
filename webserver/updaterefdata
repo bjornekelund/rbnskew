@@ -1,7 +1,7 @@
 #!/bin/bash
 # Download yesterday's RBN data and check all the current 
 # reference skimmers against eachother
-#set -x
+set -x
 # Move to correct folder to allow cron execution on RPi
 [ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
 

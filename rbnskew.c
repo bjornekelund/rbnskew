@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < SPOTSWINDOW; i++)
         pipeline[i].analyzed = true;
 
-    while ((c = getopt(argc, argv, "dshqrwtx:f:m:n:")) != -1)
+    while ((c = getopt(argc, argv, "dshqrwt:x:f:m:n:")) != -1)
     {
         switch (c)
         {
