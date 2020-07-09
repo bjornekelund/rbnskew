@@ -21,7 +21,7 @@
 // Maximum number of skimmers supported
 #define MAXSKIMMERS 400
 // Usage string
-#define USAGE "Usage: %s -f filename [-dshqrw] [-t callsign] [-n minspots]\n"
+#define USAGE "Usage: %s -f filename [-dshqrw] [-t callsign] [-n minsnr] [-m minspots] [-x maxsec]\n"
 // Max number of seconds apart from a reference spot
 #define MAXAPART 30
 // Minimum SNR required for spot to be used
@@ -79,12 +79,12 @@ int main(int argc, char *argv[])
     struct tm *timeinfo, stime;
     char   filename[STRLEN] = "", target[STRLEN] = "", line[LINELEN] = "",
            outstring[LINELEN], referenceskimmer[MAXREF][STRLEN], *spotmode = "CW",
-		   *reffilename = REFFILENAME;
+           *reffilename = REFFILENAME;
     bool   verbose = false, worst = false, reference, sort = false, 
            targeted = false, quiet = false, forweb = false;
     int    i, j, referenceskimmers = 0, totalspots = 0, usedspots = 0, c,
            spp = 0, refspots = 0, minsnr = MINSNR, skimmers = 0, 
-           minspots = MINSPOTS;
+           minspots = MINSPOTS, maxapart = MAXAPART;
 
     struct Spot pipeline[SPOTSWINDOW];
     struct Skimmer skimmer[MAXSKIMMERS], temp;
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < SPOTSWINDOW; i++)
         pipeline[i].analyzed = true;
 
-    while ((c = getopt(argc, argv, "dshqrwt:f:m:n:")) != -1)
+    while ((c = getopt(argc, argv, "dshqrwtx:f:m:n:")) != -1)
     {
         switch (c)
         {
@@ -132,9 +132,12 @@ int main(int argc, char *argv[])
             case 'n': // Minimum SNR to consider spot
                 minsnr = atoi(optarg);
                 break;
+            case 'x': // Maximum difference in time to a reference spot
+                maxapart = atoi(optarg);
+                break;
             case 'r': // RTTY mode
                 spotmode = "RTTY";
-				reffilename = RREFFILENAME;
+                reffilename = RREFFILENAME;
                 break;
             case '?':
                 fprintf(stderr, USAGE, argv[0]);
@@ -247,7 +250,7 @@ int main(int argc, char *argv[])
                     {
                         if (!pipeline[i].analyzed && !pipeline[i].reference &&
                             strcmp(pipeline[i].dx, dx) == 0 &&
-                            abs((int)difftime(pipeline[i].time, spottime)) <= MAXAPART &&
+                            abs((int)difftime(pipeline[i].time, spottime)) <= maxapart &&
                             !(targeted && strcmp(pipeline[i].de, target) != 0))
                         {
                             int delta = pipeline[i].freq - (int)round(freq * 10.0);
@@ -350,13 +353,7 @@ int main(int argc, char *argv[])
         }
     }
 
-	if (forweb)
-	{
-		// printf("To improve the accuracy of your skimmer, multiply the current\n");
-		// printf("value of FreqCalibration in SkimSrv.ini/CwSkimmer.ini with\n");
-		// printf("the suggested adjustment factor listed below.\n\n");
-	}
-	else if (isatty(STDOUT_FILENO) == 0)
+    if (isatty(STDOUT_FILENO) == 0 && !forweb)
         printf("Skimmer accuracy analysis based on RBN offline data.\n\n");
 
     // List reference skimmers
@@ -397,10 +394,10 @@ int main(int argc, char *argv[])
             3600.0 * skimmer[0].count / difftime(skimmer[0].last, skimmer[0].first), firsttimestring, lasttimestring);
     }
     else
-	{
+    {
         sprintf(outstring, "The average total spot flow was %.0f per minute with %d active\n%s skimmers.\n",
         60 * totalspots / difftime(lastspot, firstspot), skimmers, spotmode);
-	}
+    }
     printboth(outstring, quiet);
 
     int qualskimcount = 0;
@@ -408,12 +405,12 @@ int main(int argc, char *argv[])
     {
         if (skimmer[i].count >= minspots)
         {
-			qualskimcount++;
+            qualskimcount++;
         }
     }
 
-	if (forweb)
-		printf("\n");
+    if (forweb)
+        printf("\n");
 
     sprintf(outstring, "%d spots from %d skimmers qualified for analysis by meeting\nthe following criteria:\n",
         (targeted && usedspots <= minspots) ? 0 : usedspots, qualskimcount);
@@ -428,7 +425,7 @@ int main(int argc, char *argv[])
     sprintf(outstring, " * Also spotted by a reference skimmer within %d most recent spots.\n", SPOTSWINDOW);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Also spotted by a reference skimmer within %ds. \n", MAXAPART);
+    sprintf(outstring, " * Also spotted by a reference skimmer within %ds. \n", maxapart);
     printboth(outstring, quiet);
 
     sprintf(outstring, " * SNR is %ddB or higher. \n", minsnr);
@@ -443,21 +440,21 @@ int main(int argc, char *argv[])
     sprintf(outstring, " * At least %d spots from same skimmer in data set.\n", minspots);
     printboth(outstring, quiet);
 
-	(void)time(&stoptime);
+    (void)time(&stoptime);
 
-	if (forweb)
-	{
-		printf("\n");
-	}
-	else if (isatty(STDOUT_FILENO) == 0)
-	{
-		sprintf(outstring, "Total processing time was %.0f seconds.\n\n", difftime(stoptime, starttime));
-		printboth(outstring, quiet);
-	}
+    if (forweb)
+    {
+        printf("\n");
+    }
+    else if (isatty(STDOUT_FILENO) == 0)
+    {
+        sprintf(outstring, "Total processing time was %.0f seconds.\n\n", difftime(stoptime, starttime));
+        printboth(outstring, quiet);
+    }
 
     // Present results for each skimmer
-	printf("  Skimmer   [ppm]  Spots    Adjustment \n");
-	printf("  -------------------------------------\n");
+    printf("  Skimmer   [ppm]  Spots    Adjustment \n");
+    printf("  -------------------------------------\n");
 
     for (i = 0; i < skimmers; i++)
     {
@@ -468,11 +465,11 @@ int main(int argc, char *argv[])
         }
     }
 
-	if (forweb)
-	{
-		strftime(outstring, LINELEN, "%Y-%m-%d %H:%M:%S UTC", gmtime(&stoptime));
-		printf("\nLast updated %s\n", outstring);
-	}
+    if (forweb)
+    {
+        strftime(outstring, LINELEN, "%Y-%m-%d %H:%M:%S UTC", gmtime(&stoptime));
+        printf("\nLast updated %s\n", outstring);
+    }
 
     return 0;
 }

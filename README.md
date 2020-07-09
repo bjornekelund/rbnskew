@@ -32,7 +32,7 @@ multiply the value currently used with the adjustment factor to get the correcte
 
 `SkimSrv.ini` can be found in `%appdata%\Afreet\Products\SkimSrv`
 
-`rbnskew -f csvfile [-t callsign] [-dshqrw] [-m N] [-n N]`
+`rbnskew -f csvfile [-dshqrw] [-t callsign] [-m N] [-n N] [-x N]`
 
  `-t file`\
 	File name of RBN spot data set.
@@ -57,6 +57,9 @@ multiply the value currently used with the adjustment factor to get the correcte
 	
 `-n N`\
     Set minimum SNR required for spot to qualify.
+
+`-x N`\
+    Set maximum allowed difference in time stamp to a reference spot for spot to qualify.
 
 The analysis algorithm has the following default characteristics:
 
