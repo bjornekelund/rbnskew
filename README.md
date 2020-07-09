@@ -9,10 +9,11 @@ It uses a set of known and trusted GPSDO-controlled skimmers as reference
 and calculates the average deviation in reported frequency for all spots
 meeeting the criteria below. 
 
-The trusted skimmers are listed in the file `reference`. One callsign per line.
+The trusted CW skimmers are listed in the file `reference`. 
+Trusted RTTY skimmers are listed in rreference. One callsign per line.
 Comment lines are allowed and start with "#". 
 
-For a quicker rapid analysis, the analysis can be done for only a selected call,
+For a more rapid analysis, the analysis can be done for only a selected call,
 using the -t option.
 
 This option is for instance used  by the script `checkreferences` which uses 
@@ -25,7 +26,7 @@ already exist) into the `rbnfiles` subfolder.
 The script `yesterday` downloads yesterday's RBN data and runs a full analysis on it.
 
 The adjustment factor listed within parentheses is intended to be applied to
-the skimmer's current value of the `FreqCalibration` parameter in `SkimSrv.ini`.
+CW Skimmer Server's current value of the `FreqCalibration` parameter in `SkimSrv.ini`.
 If it is the default 1.0, just replace it with the suggested factor. Otherwise,
 multiply the value currently used with the adjustment factor to get the corrected value.
 
@@ -34,7 +35,7 @@ multiply the value currently used with the adjustment factor to get the correcte
 `rbnskew -f csvfile [-t callsign] [-dshqrw] [-m N] [-n N]`
 
  `-t file`\
-	Loads RBN spot data set from file.
+	File name of RBN spot data set.
 	
 `-d`\
     Debug mode, lots of output.
@@ -43,19 +44,19 @@ multiply the value currently used with the adjustment factor to get the correcte
     Sorting by average deviation. -s for lowest first, -h for highest first.
 	
 `-w`\
-	Format output for web publication. 
+    Format output for web publication. 
 	
 `-q`\
-	Quiet mode. Does not print to stderr, only to stdout.
+    Quiet mode. Does not print to stderr, only to stdout.
 	
 `-r`\
-	Only consider RTTY spots.
+    Only consider RTTY spots.
 	
 `-m N`\
-	Set minimum number of spots from skimmer to include it in analysis.
+    Set minimum number of spots from skimmer to include it in analysis.
 	
 `-n N`\
-	Set minimum SNR required for spot to qualify.
+    Set minimum SNR required for spot to qualify.
 
 The analysis algorithm has the following default characteristics:
 
