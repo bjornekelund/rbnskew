@@ -74,5 +74,5 @@ To run the code on your machine (Linux or Windows' Ubuntu emulator) the followin
 `$ sudo apt install make`\
 `$ git clone https://github.com/bjornekelund/rbnskew`\
 `$ cd rbnskew`\
-`$ make`
+`$ make`\
 `$ ./rbnskew -f test.csv`
