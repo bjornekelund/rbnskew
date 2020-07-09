@@ -19,39 +19,40 @@
 #define BANDS { "6m", "10m", "12m", "15m", "17m", "20m", "30m", "40m", "60m", "80m", "160m" }
 #define MAXBANDS 11
 
-#define MAXCALLS 5000
+#define MAXCALLS 10000
 #define MAXSKIMMERS 400
 
 int main(int argc, char *argv[])
 {
     FILE   *fp;
     char   filename[STRLEN] = "", line[LINELEN] = "";
-    int c;
-   
+    int c, totalspots = 0;
+    time_t firstspot, lastspot;
+    struct tm stime;
+
     struct Bandcount {
         char call[MAXCALLS][STRLEN];
         char skimmer[MAXSKIMMERS][STRLEN];
         int skimcount;
         int callcount;
     };
-    
-    char bandname[MAXBANDS][STRLEN] = BANDS;
-    char contname[MAXCONT][STRLEN] = CONTINENTS;
-    
-    char skimarray[MAXSKIMMERS][STRLEN];
+
+    static char bandname[MAXBANDS][STRLEN] = BANDS;
+    static char contname[MAXCONT][STRLEN] = CONTINENTS;
+
+    static char skimarray[MAXSKIMMERS][STRLEN];
     int totalskimmers = 0;
-    char callarray[MAXCALLS * MAXBANDS][STRLEN];
-    int totalcalls = 0, totalspots = 0;
-    time_t firstspot, lastspot;    
-    struct tm stime;
+
+    static char callarray[MAXCALLS * MAXBANDS][STRLEN];
+    int totalcalls = 0;
 
     static struct Bandcount bandarray[MAXCONT][MAXBANDS];
 
     int strindex(char *string, char array[][STRLEN], int size)
     {
-        for (int i = 0; i < size; i++) 
+        for (int i = 0; i < size; i++)
         {
-            if (strcmp(string, array[i]) == 0) 
+            if (strcmp(string, array[i]) == 0)
             {
                 return i;
             }
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    for (int i = 0; i < MAXCONT; i++) 
+    for (int i = 0; i < MAXCONT; i++)
     {
         for (int j = 0; j < MAXBANDS; j++)
         {
