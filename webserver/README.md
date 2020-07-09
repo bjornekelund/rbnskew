@@ -1,11 +1,11 @@
 # Support files for web publication
-A set of files to perform three different analyses and upload their results 
-in text form to a web server for display using the simple PHP 
-scripts `rbnref.php`, `rbnhist.php`, and `rbnskew.php`.
+A set of shell scripts to perform three different analyses and 
+upload their results in text form to a web server for display 
+using the simple PHP scripts `rbnref.php`, `rbnhist.php`, and `rbnskew.php`.
 
-The three scripts are `updatewebdata`, `updaterefdata`, and `updatehistdata`. 
+The scripts are `updatewebdata`, `updaterefdata`, and `updatehistdata`. 
 As written, they will run on a Raspberry Pi under Raspbian. Note that they are 
-intended to be run *in the folder above* to avoid having local copies 
+intended to be run *in the folder above* to avoid having multiple copies 
 of `reference` and `rreference`.
 
 To execute them periodically, add them to the Pi's crontab. To run them hourly:
@@ -18,11 +18,12 @@ To execute them periodically, add them to the Pi's crontab. To run them hourly:
 
 Note that `updatewebdata` must be run before `updatehistdata` since the
 latter relies on the output from the former when the date changes. 
-`updaterefdata` should be run last since it can take a very long time 
+`updaterefdata` should be run last since it can take many minutes 
 to run after a busy day like a major contest. 
 
 It is also possible to embed the text file in a Wordpress page using
-the *Insert PHP Code Snippet* plugin and the body code from the PHP scripts above. 
+the *Insert PHP Code Snippet* plugin and the body code from the PHP 
+scripts above. 
 
 ```
 <?php
@@ -33,7 +34,7 @@ the *Insert PHP Code Snippet* plugin and the body code from the PHP scripts abov
 ```
 
 The script `upload` that uploads the three files `rbnskew.txt`, `rbnref.txt`, 
-and `rbnhist.txt` to the web hostis not included in the repo since it 
+and `rbnhist.txt` to the web host is not included in the repo since it 
 unfortunately must contain sensitive information in plain text. 
 
 For a hosting service supporting FTP, this file could look like this:
