@@ -295,6 +295,11 @@ int main(int argc, char *argv[])
                                 }
                                 else // If new skimmer, add it to list
                                 {
+                                    if (skimmers >= MAXSKIMMERS) {
+                                        fprintf(stderr, "Overflow: More than %d skimmers found.\n", MAXSKIMMERS);
+                                        (void)fclose(fp);
+                                        return 1;
+                                    }
                                     strcpy(skimmer[skimmers].name, pipeline[i].de);
                                     skimmer[skimmers].accdev = pipeline[i].freq / (10.0 * freq);
                                     skimmer[skimmers].count = 1;
@@ -303,11 +308,6 @@ int main(int argc, char *argv[])
                                     skimmers++;
                                     if (verbose && !quiet)
                                         fprintf(stderr, "Found skimmer #%d: %s \n", skimmers, pipeline[i].de);
-                                    if (skimmers > MAXSKIMMERS) {
-                                        fprintf(stderr, "Overflow: More than %d skimmers found.\n", MAXSKIMMERS);
-                                        (void)fclose(fp);
-                                        return 1;
-                                    }
                                 }
                             }
                         }
