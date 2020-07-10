@@ -25,11 +25,11 @@
 // Max number of seconds apart from a reference spot
 #define MAXAPART 30
 // Minimum SNR required for spot to be used
-#define MINSNR 6
+#define MINSNR 3
 // Minimum frequency for spot to be used
 #define MINFREQ 1800
 // Minimum number of spots to be analyzed
-#define MINSPOTS 50
+#define MINSPOTS 1
 // Maximum difference from reference spot times 100Hz
 #define MAXERR 5
 // Name of file containing callsigns of reference skimmmers
