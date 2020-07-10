@@ -37,12 +37,12 @@ if [[ $FILESIZE != "0" ]]; then
     ./$FOLDER/updaterefdata
     cd $FOLDER
 	./upload
+    echo "-"
     echo "Uploaded to web hosting"
 else
     echo "Could not download yesterday's RBN data!"
     echo "Job failed "`date -u "+%F %T" `
     exit
 fi
-echo "-"
 echo "Job ended "`date -u "+%F %T"`" and took $((SECONDS-START)) seconds"
 exit
