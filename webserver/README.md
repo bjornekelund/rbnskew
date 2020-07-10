@@ -3,17 +3,17 @@ A set of shell scripts to perform three different analyses and
 upload their results in text form to a web server for display 
 using the simple PHP scripts `rbnref.php`, `rbnhist.php`, and `rbnskew.php`.
 
-The scripts are `updatewebdata`, `updaterefdata`, and `updatehistdata`. 
+The scripts are `updatewebdata`, `updaterefdata`, `updatehistdata`, and
+`updateactdata`.
 As written, they will run on a Raspberry Pi under Raspbian. Note that they are 
-intended to be run *in the folder above* to avoid having multiple copies 
-of `reference` and `rreference`.
+intended to be run *in the folder above to avoid having copies 
+of `reference` and `rreference` in the folder.
 
-To execute them periodically, add them to the Pi's crontab. To run them hourly:
+To execute them periodically, add the script `updateweb` to the Pi's crontab. 
+To run them hourly:
 
 ```
-10 * * * * /home/pi/rbnskew/webserver/updatewebdata >> /home/pi/webrbnskew.log 2>&1
-20 * * * * /home/pi/rbnskew/webserver/updatehistdata >> /home/pi/webrbnskew.log 2>&1
-30 * * * * /home/pi/rbnskew/webserver/updaterefdata >> /home/pi/webrbnskew.log 2>&1
+10 * * * * /home/pi/rbnskew/updateweb >> /home/pi/webrbnskew.log 2>&1
 ```
 
 Note that `updatewebdata` must be run before `updatehistdata` since the

@@ -1,17 +1,17 @@
 #!/bin/bash
-# Download yesterday's RBN data and check all the current 
+# Use yesterday's RBN data in rbndata.csv and check all the current 
 # reference skimmers against each other
 # Assumes webserver/rbndata.csv has already been downloaded
 
 #set -x
 # Move to correct folder to allow cron execution on RPi
-[ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
+#[ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
 
 DATADATE=`date -u --date="1 days ago" +%Y-%m-%d`
 FOLDER="webserver"
 
-echo "---"
-echo "Job started "`date -u "+%F %T"`
+echo "-"
+#echo "Job started "`date -u "+%F %T"`
 echo "Reference skimmer integrity analysis."
 
 FILESIZE=$(stat -c%s $FOLDER/rbndata.csv)
@@ -37,11 +37,11 @@ if [[ $FILESIZE != "0" ]]; then
 	echo >> $FOLDER/rbnref.txt
 	echo "Last updated "`date -u "+%F %T"`" UTC" >> $FOLDER/rbnref.txt
     echo "Updated web data in rbnref.txt"
-    cd $FOLDER
-	./upload
-    echo "Uploaded to web hosting"
+#    cd $FOLDER
+#	./upload
+#    echo "Uploaded to web hosting"
 else
     echo "Could not access webserver/rbndata.csv!"
 fi
-echo "Job ended "`date -u "+%F %T" `
+#echo "Job ended "`date -u "+%F %T" `
 exit
