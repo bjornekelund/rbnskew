@@ -9,7 +9,7 @@ if [[ $FILESIZE != "0" ]]; then
     gunzip < $FOLDER/$FILE.zip > $FOLDER/$FILE.csv
     echo "Downloaded yesterday's "$((`wc -l < $FOLDER/$FILE.csv` - 2))" spots into "$FOLDER/$FILE.csv"."
     rm -f $FOLDER/$FILE.zip
-    ./rbnskew -q -f $FOLDER/$FILE.csv -s > $FILE.txt
+    ./rbnskew -q -f $FOLDER/$FILE.csv > $FILE.txt
     echo "Stored analysis result in "$FILE.txt"."
 else
     echo "Could not download yesterday's RBN data."

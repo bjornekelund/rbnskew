@@ -27,7 +27,7 @@
 // Minimum SNR required for spot to be used
 #define MINSNR 6
 // Minimum frequency for spot to be used
-#define MINFREQ 7000
+#define MINFREQ 1800
 // Minimum number of spots to be analyzed
 #define MINSPOTS 50
 // Maximum difference from reference spot times 100Hz
