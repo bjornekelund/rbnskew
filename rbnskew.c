@@ -29,7 +29,7 @@
 // Minimum frequency for spot to be used
 #define MINFREQ 1800
 // Minimum number of spots to be analyzed
-#define MINSPOTS 1
+#define MINSPOTS 5
 // Maximum difference from reference spot times 100Hz
 #define MAXERR 5
 // Name of file containing callsigns of reference skimmmers
