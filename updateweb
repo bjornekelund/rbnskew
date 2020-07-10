@@ -3,6 +3,7 @@
 # Put result in files rbnskew.txt, rbnskew2.txt, rbnskewr.txt,
 # rbnhist.txt, rbnact.txt, and rbnref.txt and upload them to web host.
 # Checks if it has already run for today and if it has, exits
+#set -x
 
 # Move to correct folder to allow cron execution on RPi
 [ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
@@ -38,14 +39,14 @@ if [[ $FILESIZE != "0" ]]; then
     ./$FOLDER/updateactdata
     ./$FOLDER/updaterefdata
     cd $FOLDER
-	./upload
+    ./upload
     echo "-"
     echo "Uploaded to web hosting"
+    echo $DATE > done
 else
     echo "Could not download yesterday's RBN data!"
     echo "Job failed "`date -u "+%F %T" `
     exit
 fi
-echo $DATE > $FOLDER/done
 echo "Job ended "`date -u "+%F %T"`" and took $((SECONDS-START)) seconds"
 exit
