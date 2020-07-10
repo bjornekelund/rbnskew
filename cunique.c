@@ -1,12 +1,8 @@
 #define _XOPEN_SOURCE
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <stdbool.h>
-#include <math.h>
 #include <unistd.h>
-#include <ctype.h>
 
 #define STRLEN 16
 #define LINELEN 128
@@ -77,10 +73,9 @@ int main(int argc, char *argv[])
                 strcpy(filename, optarg);
                 break;
             case '?':
+            default:
                 fprintf(stderr, USAGE, argv[0]);
                 return 1;
-            default:
-                abort();
         }
     }
 
