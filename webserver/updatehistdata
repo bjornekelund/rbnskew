@@ -19,7 +19,7 @@ rm -f history.txt
 echo "Updating historical data for: $FILES"
 
 for file in $FILES; do
-    gawk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,10) " " $3; }}' $file.txt >> history.txt
+    gawk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,8) " " $3; }}' $file.txt >> history.txt
 done
 
 # Produce header of output file
@@ -33,7 +33,7 @@ END {
   printf("Skimmer    ");
   j = 0
   for (datestring in array[call]) {
-    date[j++] = substr(datestring, 3, 6);
+    date[j++] = substr(datestring, 3, 2) "-" substr(datestring, 5, 2) "-" substr(datestring, 7, 2);
   }
   for (j = 4; j >= 0; j--) {
     printf("%10s", date[j]);
