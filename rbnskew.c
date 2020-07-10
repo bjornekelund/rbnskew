@@ -86,8 +86,8 @@ int main(int argc, char *argv[])
            spp = 0, refspots = 0, minsnr = MINSNR, skimmers = 0, 
            minspots = MINSPOTS, maxapart = MAXAPART;
 
-    struct Spot pipeline[SPOTSWINDOW];
-    struct Skimmer skimmer[MAXSKIMMERS], temp;
+    static struct Spot pipeline[SPOTSWINDOW];
+    static struct Skimmer skimmer[MAXSKIMMERS], temp;
 
     // Avoid that unitialized entries in pipeline are used
     for (i = 0; i < SPOTSWINDOW; i++)

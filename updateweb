@@ -8,6 +8,7 @@
 [ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
 
 DATE=`date -u --date="1 days ago" +%Y%m%d`
+OLDESTRES=`date -u --date="5 days ago" +%Y%m%d`.txt
 FOLDER="webserver"
 
 echo "---"
@@ -20,7 +21,8 @@ if [ "$DATE" == "`cat $FOLDER/done`" ]; then
     echo "Nothing to do."
     exit
 fi
-echo $DATE > $FOLDER/done
+
+[ -f $FOLDER/$OLDESTRES ] || ./initweb
 
 # Do the work
 echo "Downloading RBN data for "`date -u --date="1 days ago" +%Y-%m-%d`
@@ -44,5 +46,6 @@ else
     echo "Job failed "`date -u "+%F %T" `
     exit
 fi
+echo $DATE > $FOLDER/done
 echo "Job ended "`date -u "+%F %T"`" and took $((SECONDS-START)) seconds"
 exit
