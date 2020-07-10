@@ -12,6 +12,7 @@ FOLDER="webserver"
 
 echo "---"
 echo "Job started "`date -u "+%F %T" `
+START=$SECONDS
 
 # Check if we already did the work for today, if so, exit
 [ -f $FOLDER/done ] || echo "Never" > $FOLDER/done
@@ -43,4 +44,5 @@ else
     exit
 fi
 echo "-"
-echo "Job ended "`date -u "+%F %T" `
+echo "Job ended "`date -u "+%F %T"`" and took $((SECONDS-START)) seconds"
+exit

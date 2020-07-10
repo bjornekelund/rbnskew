@@ -2,10 +2,7 @@
 # Use yesterday's RBN data in rbndata.csv and check all the current 
 # reference skimmers against each other
 # Assumes webserver/rbndata.csv has already been downloaded
-
 #set -x
-# Move to correct folder to allow cron execution on RPi
-#[ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
 
 DATADATE=`date -u --date="1 days ago" +%Y-%m-%d`
 FOLDER="webserver"
@@ -21,7 +18,6 @@ if [[ $FILESIZE != "0" ]]; then
 	echo >> $FOLDER/rbnref.txt
     SKIMMERS=`cat reference | sort | grep -v '#' | tr '\n' ' '`
     echo "Skimmers: " $SKIMMERS
-    # echo "Analysis based on file "$FOLDER"/rbnref.csv with" `wc -l < $FOLDER/rbnref.csv` "lines."
 	echo "  Skimmer   [ppm]  Spots    Adjustment " >> $FOLDER/rbnref.txt
 	echo "  -------------------------------------" >> $FOLDER/rbnref.txt
     for skimmer in $SKIMMERS; do
@@ -37,11 +33,7 @@ if [[ $FILESIZE != "0" ]]; then
 	echo >> $FOLDER/rbnref.txt
 	echo "Last updated "`date -u "+%F %T"`" UTC" >> $FOLDER/rbnref.txt
     echo "Updated web data in rbnref.txt"
-#    cd $FOLDER
-#	./upload
-#    echo "Uploaded to web hosting"
 else
     echo "Could not access webserver/rbndata.csv!"
 fi
-#echo "Job ended "`date -u "+%F %T" `
 exit
