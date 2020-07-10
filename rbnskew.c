@@ -9,9 +9,9 @@
 #include <ctype.h>
 
 // Standard length of strings
-#define STRLEN 32
+#define STRLEN 16
 // Standard length of lines
-#define LINELEN 256
+#define LINELEN 128
 // Time format in RBN data file
 #define FMT "%Y-%m-%d %H:%M:%S"
 // Number of most recent spots considered in analysis
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     FILE   *fp, *fr;
     time_t starttime, stoptime, firstspot, lastspot;
     struct tm *timeinfo, stime;
-    char   filename[STRLEN] = "", target[STRLEN] = "", line[LINELEN] = "",
+    char   filename[LINELEN] = "", target[STRLEN] = "", line[LINELEN] = "",
            outstring[LINELEN], referenceskimmer[MAXREF][STRLEN], *spotmode = "CW",
            *reffilename = REFFILENAME;
     bool   verbose = false, worst = false, reference, sort = false, 
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
 
     while (fgets(line, LINELEN, fp) != NULL)
     {
-        char de[STRLEN], dx[STRLEN], timestring[STRLEN], mode[STRLEN];
+        char de[STRLEN], dx[STRLEN], timestring[LINELEN], mode[STRLEN];
         double freq;
         int snr;
         time_t spottime;
@@ -266,7 +266,7 @@ int main(int argc, char *argv[])
                                 if (adelta > 2 && verbose && !quiet) 
                                 {
                                     stime = *localtime(&pipeline[i].time);
-                                    (void)strftime(timestring, STRLEN, FMT, &stime);
+                                    (void)strftime(timestring, LINELEN, FMT, &stime);
                                     fprintf(stderr,
                                         "Outlier spot of %8s by %8s at %7.1f (was %7.1f) off by %+3.1f @ %s\n",
                                         pipeline[i].dx, pipeline[i].de, pipeline[i].freq / 10.0,
@@ -374,11 +374,11 @@ int main(int argc, char *argv[])
     printf(".\n\n");
 
     // Print results
-    char firsttimestring[STRLEN], lasttimestring[STRLEN];
+    char firsttimestring[LINELEN], lasttimestring[LINELEN];
     stime = *localtime(&firstspot);
-    (void)strftime(firsttimestring, STRLEN, FMT, &stime);
+    (void)strftime(firsttimestring, LINELEN, FMT, &stime);
     stime = *localtime(&lastspot);
-    (void)strftime(lasttimestring, STRLEN, FMT, &stime);
+    (void)strftime(lasttimestring, LINELEN, FMT, &stime);
     sprintf(outstring, "%d RBN spots between %s and %s\n", totalspots, firsttimestring, lasttimestring);
     printboth(outstring, quiet);
 
@@ -387,9 +387,9 @@ int main(int argc, char *argv[])
 
     if (targeted) {
         stime = *localtime(&skimmer[0].first);
-        (void)strftime(firsttimestring, STRLEN, FMT, &stime);
+        (void)strftime(firsttimestring, LINELEN, FMT, &stime);
         stime = *localtime(&skimmer[0].last);
-        (void)strftime(lasttimestring, STRLEN, FMT, &stime);
+        (void)strftime(lasttimestring, LINELEN, FMT, &stime);
         sprintf(outstring, "The selected skimmer produced an average of %.0f qualified spots per hour\n    between %s and %s.\n", 
             3600.0 * skimmer[0].count / difftime(skimmer[0].last, skimmer[0].first), firsttimestring, lasttimestring);
     }
