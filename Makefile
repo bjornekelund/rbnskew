@@ -20,4 +20,5 @@ clean:
 		rm -f *.o
 
 lint:
-			${lint} rbnskew.c
+		${lint} rbnskew.c
+		${lint} cunique.c

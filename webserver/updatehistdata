@@ -1,34 +1,29 @@
 #!/bin/bash
 # Uses saved analysis results from the last five days
 # to assemble a table sorted by skimmer callsign
-# Resulting file rbnhist.txt is uploaded to web host.
 # updatewebdata creates the required result files.
 # These have be to manually created before the first run.
 #set -x
 
-echo "---"
-echo "Job started "`date -u "+%F %T"`
+echo "-"
+#echo "Job started "`date -u "+%F %T"`
 
 FOLDER="webserver"
-FILES="`date -u --date="1 days ago" +%Y-%m-%d` `date -u --date="2 days ago" +%Y-%m-%d`\
- `date -u --date="3 days ago" +%Y-%m-%d` `date -u --date="4 days ago" +%Y-%m-%d`\
- `date -u --date="5 days ago" +%Y-%m-%d`"
-
-# Move to correct folder to allow cron execution on RPi
-[ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
+FILES="`date -u --date="1 days ago" +%Y%m%d` `date -u --date="2 days ago" +%Y%m%d`\
+ `date -u --date="3 days ago" +%Y%m%d` `date -u --date="4 days ago" +%Y%m%d`\
+ `date -u --date="5 days ago" +%Y%m%d`"
 
 cd $FOLDER
 rm -f history.txt
 
-echo "Updating historical data for:"
-echo  " $FILES"
+echo "Updating historical data for: $FILES"
 
 for file in $FILES; do
-    gawk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,10) " " $3; }}' $file.txt >> history.txt
+    gawk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,8) " " $3; }}' $file.txt >> history.txt
 done
 
 # Produce header of output file
-# Print data in reverse chronological order to newest data is to the left
+# Print data in reverse chronological order with newest data to the left
 gawk '
 {
   array[$1][$2] = $3;
@@ -36,25 +31,25 @@ gawk '
 }
 END {
   printf("Skimmer    ");
-  j = 0  
+  j = 0
   for (datestring in array[call]) {
-    date[j++] = substr(datestring, 3, 8);
+    date[j++] = substr(datestring, 3, 2) "-" substr(datestring, 5, 2) "-" substr(datestring, 7, 2);
   }
   for (j = 4; j >= 0; j--) {
     printf("%10s", date[j]);
-  }    
+  }
   printf("\n-------------------------------------------------------------\n");
 }' history.txt > rbnhist.txt
 
 # Produce meat of output file
-# Print data in reverse chronological order to newest data is to the left
+# Print data in reverse chronological order with newest data to the left
 gawk '
 {
   array[$1][$2] = $3;
   call = $1;
 }
 END {
-  j = 0  
+  j = 0
   for (datestring in array[call]) {
     date[j++] = datestring;
   }
@@ -71,8 +66,4 @@ END {
 echo >> rbnhist.txt
 echo "Last updated "`date -u "+%F %T"`" UTC" >> rbnhist.txt
 
-#more rbnhist.txt
-./upload
-echo "Uploaded to web hosting"
-echo "Job ended "`date -u "+%F %T" `
 exit

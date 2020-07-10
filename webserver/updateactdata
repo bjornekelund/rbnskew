@@ -2,28 +2,17 @@
 # Analyses the content of webserver/rbndata.csv and
 # creates summaries of station and skimmer activity
 # per continent and band.
-# Resulting file rbnact.txt is uploaded to web host.
+# Result is saved in rbnact.txt
 #set -x
 
-echo "---"
-echo "Job started "`date -u "+%F %T"`
+echo "-"
 
 FOLDER="webserver"
 DATE=`date -u --date="1 days ago" +%Y-%m-%d`
-
-# Move to correct folder to allow cron execution on RPi
-[ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
 
 echo "Updating activity data for:" $DATE
 
 ./cunique -f $FOLDER/rbndata.csv > $FOLDER/rbnact.txt
 echo "Last updated "`date -u "+%F %T"`" UTC" >> $FOLDER/rbnact.txt
-
-#more rbnact.txt
-cd $FOLDER
-./upload
-
-echo "Uploaded to web hosting"
-echo "Job ended "`date -u "+%F %T"`
 
 exit
