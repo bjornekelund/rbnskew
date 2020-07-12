@@ -378,9 +378,9 @@ int main(int argc, char *argv[])
     // Print results
     char firsttimestring[LINELEN], lasttimestring[LINELEN];
     stime = *localtime(&firstspot);
-    (void)strftime(firsttimestring, LINELEN, FMT, &stime);
+    (void)strftime(firsttimestring, LINELEN, "%Y-%m-%d %H:%M", &stime);
     stime = *localtime(&lastspot);
-    (void)strftime(lasttimestring, LINELEN, FMT, &stime);
+    (void)strftime(lasttimestring, LINELEN, "%Y-%m-%d %H:%M", &stime);
     sprintf(outstring, "%d RBN spots between %s and %s.\n", totalspots, firsttimestring, lasttimestring);
     printboth(outstring, quiet);
 
@@ -390,9 +390,9 @@ int main(int argc, char *argv[])
 
     if (targeted) {
         stime = *localtime(&skimmer[0].first);
-        (void)strftime(firsttimestring, LINELEN, FMT, &stime);
+        (void)strftime(firsttimestring, LINELEN, "%Y-%m-%d %H:%M:%S", &stime);
         stime = *localtime(&skimmer[0].last);
-        (void)strftime(lasttimestring, LINELEN, FMT, &stime);
+        (void)strftime(lasttimestring, LINELEN, "%Y-%m-%d %H:%M:%S", &stime);
         sprintf(outstring, "The selected skimmer produced an average of %.0f qualified spots per hour\nbetween %s and %s.\n", 
             3600.0 * skimmer[0].count / difftime(skimmer[0].last, skimmer[0].first), firsttimestring, lasttimestring);
     }
@@ -425,7 +425,7 @@ int main(int argc, char *argv[])
     sprintf(outstring, " * Mode of spot is %s.\n" , spotmode);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Also spotted by a reference skimmer within %d most recent spots.\n", SPOTSWINDOW);
+    sprintf(outstring, " * Also spotted by a reference skimmer within %d spots.\n", SPOTSWINDOW);
     printboth(outstring, quiet);
 
     sprintf(outstring, " * Also spotted by a reference skimmer within %ds. \n", maxapart);
