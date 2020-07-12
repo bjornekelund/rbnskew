@@ -9,6 +9,7 @@ webserver/*.csv
 webserver/*.txt
 webserver/*.zip
 webserver/*~
+webserver/done
 doit
 webserver/upload*
 obsolete

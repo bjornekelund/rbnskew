@@ -17,7 +17,7 @@ rbnskew.o:	rbnskew.c Makefile
 			$(gcc) -c rbnskew.c
 
 clean:
-		rm -f *.o
+		rm -f *.o *~
 
 lint:
 		${lint} rbnskew.c

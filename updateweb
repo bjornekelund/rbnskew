@@ -37,7 +37,7 @@ if [[ $FILESIZE != "0" ]]; then
     ./$FOLDER/updatewebdata
     ./$FOLDER/updatehistdata
     ./$FOLDER/updateactdata
-    ./$FOLDER/updaterefdata
+#    ./$FOLDER/updaterefdata
     cd $FOLDER
     ./upload
     echo "-"
