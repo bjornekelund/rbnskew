@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     struct tm *timeinfo, stime;
     char   filename[LINELEN] = "", target[STRLEN] = "", line[LINELEN] = "",
            outstring[LINELEN], referenceskimmer[MAXREF][STRLEN], *spotmode = "CW",
-           *reffilename = REFFILENAME;
+           reffilename[STRLEN] = REFFILENAME;
     bool   verbose = false, worst = false, reference, sort = false,
            targeted = false, quiet = false, forweb = false;
     int    i, j, referenceskimmers = 0, totalspots = 0, usedspots = 0, c,
@@ -141,7 +141,6 @@ int main(int argc, char *argv[])
                 break;
             case 'r': // RTTY mode
                 spotmode = "RTTY";
-                reffilename = RREFFILENAME;
                 break;
             case '?':
                 fprintf(stderr, USAGE, argv[0]);

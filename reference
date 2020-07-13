@@ -1,37 +1,28 @@
 # Automatically generated reference file
-# Frequency controlled skimmers
-AC0C
-WB6BEE
-KM3T
-OE9GHV
-SM7IUN
-CX6VM
-3B8CW
-JO1YYP
 # Skimmers with 0.0ppm deviation and more than 200 qualified spots
 AA4VV
 AC0C
-G0KTN
 G4ZFE
-K7EG
+KM3T
 LA6TPA
-OE9GHV
+NA0B
 SM0IHR
+WB6BEE
 # Skimmers with 0.1ppm deviation and more than 200 qualified spots
-3B8CW
 CX6VM
 DL3DTH
-EA5WU
-KM3T
+G0KTN
+JO1YYP
+K7EG
 LZ4UX
 LZ7AA
-W3OA
-WB6BEE
-# Skimmers with 0.2ppm deviation and more than 200 qualified spots
-JO1YYP
-NA0B
 NN3RP
-PA0MBO
+OE9GHV
+W3OA
+# Skimmers with 0.2ppm deviation and more than 200 qualified spots
+3B8CW
+EA5WU
+N7TUG
 SE5E
 SM7IUN
 WE9V
