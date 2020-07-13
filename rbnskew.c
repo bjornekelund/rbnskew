@@ -21,7 +21,7 @@
 // Maximum number of skimmers supported
 #define MAXSKIMMERS 400
 // Usage string
-#define USAGE "Usage: %s -f filename [-dshqrw] [-t callsign] [-n minsnr] [-m minspots] [-x maxsec]\n"
+#define USAGE "Usage: %s -f file [-dshqrw] [-t call] [-n N] [-m N] [-x sec] [-c file]\n"
 // Max number of seconds apart from a reference spot
 #define MAXAPART 30
 // Minimum SNR required for spot to be used
@@ -94,10 +94,13 @@ int main(int argc, char *argv[])
     for (i = 0; i < SPOTSWINDOW; i++)
         pipeline[i].analyzed = true;
 
-    while ((c = getopt(argc, argv, "dshqrwt:x:f:m:n:")) != -1)
+    while ((c = getopt(argc, argv, "dshqrwt:x:f:m:n:c:")) != -1)
     {
         switch (c)
         {
+            case 'c': // Reference filename
+                strcpy(reffilename, optarg);
+                break;
             case 'f': // Filename
                 strcpy(filename, optarg);
                 break;
