@@ -1,16 +1,37 @@
-# Skimmers with external frequency normal
+# Automatically generated reference file
+# Frequency controlled skimmers
 AC0C
 WB6BEE
-SM7IUN
 KM3T
-# Skimmers that benchmark well
 OE9GHV
-DL3DTH
-W3OA
-LZ4UX
-DJ9IE
-EA5WU
+SM7IUN
 CX6VM
+3B8CW
 JO1YYP
+# Skimmers with 0.0ppm deviation and more than 200 qualified spots
+AA4VV
+AC0C
+G0KTN
 G4ZFE
+K7EG
+LA6TPA
+OE9GHV
+SM0IHR
+# Skimmers with 0.1ppm deviation and more than 200 qualified spots
+3B8CW
+CX6VM
+DL3DTH
+EA5WU
+KM3T
+LZ4UX
 LZ7AA
+W3OA
+WB6BEE
+# Skimmers with 0.2ppm deviation and more than 200 qualified spots
+JO1YYP
+NA0B
+NN3RP
+PA0MBO
+SE5E
+SM7IUN
+WE9V

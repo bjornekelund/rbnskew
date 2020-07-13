@@ -34,10 +34,10 @@ FILESIZE=$(stat -c%s $FOLDER/rbndata.zip)
 if [[ $FILESIZE != "0" ]]; then
     gunzip < $FOLDER/rbndata.zip > $FOLDER/rbndata.csv
     echo "Downloaded yesterday's "$((`wc -l < $FOLDER/rbndata.csv` - 2))" spots into rbndata.csv"
+	./makenewref
     ./$FOLDER/updatewebdata
     ./$FOLDER/updatehistdata
     ./$FOLDER/updateactdata
-#    ./$FOLDER/updaterefdata
     cd $FOLDER
     ./upload
     echo "-"
