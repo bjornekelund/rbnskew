@@ -12,7 +12,7 @@ printf "Selecting reference skimmers..."
 
 echo "# Automatically generated reference file" > $REFFILE
 
-#printf "# Frequency controlled skimmers\nAC0C\nWB6BEE\nKM3T\nOE9GHV\nSM7IUN\nCX6VM\n3B8CW\nJO1YYP\n" >> $REFFILE
+printf "# Geographically motivated reference skimmers\nCX6VM\n3B8CW\nJO1YYP\n" >> $REFFILE
 
 echo "# Skimmers with 0.0ppm deviation and more than 20 qualified spots" >> $REFFILE
 gawk '{if ($1 == "#" && ($3 >= 0.0 ? $3 : -$3) < 0.1 && $4 > 20){print $2;}}' $SOURCE | sed 's/*//g' >> $REFFILE
