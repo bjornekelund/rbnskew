@@ -3,7 +3,7 @@
 # to assemble a table sorted by skimmer callsign
 # updatewebdata creates the required result files.
 # These have be to manually created before the first run.
-#set -x
+set -x
 
 echo "-"
 #echo "Job started "`date -u "+%F %T"`
@@ -30,9 +30,19 @@ gawk '
   call = $1;
 }
 END {
+  for (trycall in array) {
+    if (isarray(array[trycall])) {
+      k = 0;
+      for (elem in array[trycall])
+        k++;
+      if (k == 5)
+        call = trycall;
+    }
+  }
   printf("Skimmer    ");
   j = 0
-  for (datestring in array[call]) {
+  for (datestring in array["SE5E"]) {
+    print datestring > "/dev/stderr"
     date[j++] = substr(datestring, 3, 2) "-" substr(datestring, 5, 2) "-" substr(datestring, 7, 2);
   }
   for (j = 4; j >= 0; j--) {
@@ -49,6 +59,15 @@ gawk '
   call = $1;
 }
 END {
+  for (trycall in array) {
+    if (isarray(array[trycall])) {
+      k = 0;
+      for (elem in array[trycall])
+        k++;
+      if (k == 5)
+        call = trycall;
+    }
+  }
   j = 0
   for (datestring in array[call]) {
     date[j++] = datestring;
