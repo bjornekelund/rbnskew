@@ -1,9 +1,14 @@
+# This list of trusted reference skimmers is 
+# used to identify a larger list of highly
+# accurate skimmers.
+#
 # Skimmers with external frequency normal
 AC0C
 WB6BEE
 KM3T
 OE9GHV
-# Skimmers that benchmark well
+# Skimmers that benchmark well and/or
+# are geographically motivated
 SM7IUN
 DL3DTH
 W3OA
