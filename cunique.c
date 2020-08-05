@@ -15,8 +15,8 @@
 #define BANDS { "6m", "10m", "12m", "15m", "17m", "20m", "30m", "40m", "60m", "80m", "160m" }
 #define MAXBANDS 11
 
-#define MAXCALLS 12000
-#define MAXSKIMMERS 400
+#define MAXCALLS 50000
+#define MAXSKIMMERS 500
 
 int main(int argc, char *argv[])
 {
