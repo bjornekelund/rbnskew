@@ -1,0 +1,8 @@
+# Edit this file to introduce tasks to be run by cron.
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+# 
+# m h  dom mon dow   command
+@reboot /home/pi/skewsrv/skewsrv -r /home/pi/skewsrv/reference >> /home/pi/srvskewlog.log 2>&1 &
+10 * * * * /home/pi/rbnskew/updateweb  >> /home/pi/webrbnskew.log 2>&1
+*/2 * * * * /home/pi/skewsrv/update24hskew >> /home/pi/update24hlog.log 2>&1
