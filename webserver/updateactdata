@@ -9,10 +9,14 @@ echo "-"
 
 FOLDER="webserver"
 DATE=`date -u --date="1 days ago" +%Y-%m-%d`
+DFILE="rbndata.csv"
+OFILE="rbnact.txt"
 
 echo "Updating activity data for:" $DATE
 
-./cunique -f $FOLDER/rbndata.csv > $FOLDER/rbnact.txt
-echo "Last updated "`date -u "+%F %T"`" UTC" >> $FOLDER/rbnact.txt
+./cunique -f $FOLDER/$DFILE > $FOLDER/$OFILE
+
+echo >> $FOLDER/$OFILE
+echo "Last updated "`date -u "+%F %T"`" UTC" >> $FOLDER/$OFILE
 
 exit

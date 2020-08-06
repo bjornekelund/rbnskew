@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     for (int bi = 0; bi < MAXBANDS; bi++)
     {
         contarray[bi].skimcount = 0;
-        contarray[bi].callcount = 0;            
+        contarray[bi].callcount = 0;
         for (int ci = 0; ci < MAXCONT; ci++)
         {
             contbandarray[ci][bi].skimcount = 0;
@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
                 }
 
                 // Check if new skimmer for any band
-                if (strindex(decall, skimarray, totalskimmers) == -1) 
+                if (strindex(decall, skimarray, totalskimmers) == -1)
                 {
                     strcpy(skimarray[totalskimmers++], decall);
                 }
@@ -202,12 +202,12 @@ int main(int argc, char *argv[])
     (void)strftime(lasttimestring, LINELEN, FMT, &stime);
 
     printf("RBN data between %s and %s.\n", firsttimestring, lasttimestring);
-    printf("%d spots with %d unique callsigns from %d active skimmers.\n", 
+    printf("%d spots with %d unique callsigns from %d active skimmers.\n",
         totalspots, totalcalls, totalskimmers);
 
     printf("\n        Unique callsigns spotted per continent and band\n");
     printf("---------------------------------------------------------------\n");
-    
+
     #define LEFTCOL "%-3s"
     #define COLS "%5s"
     #define COLN "%5d"
@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
         printf(COLN, contarray[ci].skimcount);
         printf("\n");
     }
- 
+
     printf(LEFTCOL, "");
     for (int bi = 0; bi < MAXBANDS; bi++)
     {
