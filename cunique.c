@@ -12,7 +12,8 @@
 #define CONTINENTS {"AF", "AS", "EU", "NA", "OC", "SA" }
 #define MAXCONT 6
 
-#define BANDS { "6m", "10m", "12m", "15m", "17m", "20m", "30m", "40m", "60m", "80m", "160m" }
+// #define BANDS { "6m", "10m", "12m", "15m", "17m", "20m", "30m", "40m", "60m", "80m", "160m" }
+#define BANDS { "160m", "80m", "60m", "40m", "30m", "20m", "17m", "15m", "12m", "10m", "6m" }
 #define MAXBANDS 11
 
 #define MAXCALLS 50000
@@ -26,14 +27,7 @@ int main(int argc, char *argv[])
     time_t firstspot, lastspot;
     struct tm stime;
 
-    struct Bandcount {
-        char call[MAXCALLS][STRLEN];
-        char skimmer[MAXSKIMMERS][STRLEN];
-        int skimcount;
-        int callcount;
-    };
-
-    struct Contcount {
+    struct Counter {
         char call[MAXCALLS][STRLEN];
         char skimmer[MAXSKIMMERS][STRLEN];
         int skimcount;
@@ -48,12 +42,12 @@ int main(int argc, char *argv[])
     int totalskimmers = 0;
 
     // List of all calls found
-    static char callarray[4 * MAXCALLS][STRLEN];
+    static char callarray[2 * MAXCALLS][STRLEN];
     int totalcalls = 0;
 
-    static struct Bandcount bandarray[MAXCONT][MAXBANDS];
-
-    static struct Contcount contarray[MAXCONT];
+    static struct Counter contbandarray[MAXCONT][MAXBANDS];
+    static struct Counter contarray[MAXCONT];
+    static struct Counter bandarray[MAXBANDS];
 
     int strindex(char *string, char array[][STRLEN], int size)
     {
@@ -73,8 +67,10 @@ int main(int argc, char *argv[])
         contarray[bi].callcount = 0;            
         for (int ci = 0; ci < MAXCONT; ci++)
         {
-            bandarray[ci][bi].skimcount = 0;
-            bandarray[ci][bi].callcount = 0;
+            contbandarray[ci][bi].skimcount = 0;
+            contbandarray[ci][bi].callcount = 0;
+            bandarray[bi].skimcount = 0;
+            bandarray[bi].callcount = 0;
         }
     }
 
@@ -113,8 +109,6 @@ int main(int argc, char *argv[])
         int snr;
         double freq;
 
-        // printf("%s", line);
-
         int got = sscanf(line, "%[^,],%*[^,],%[^,],%lf,%[^,],%[^,],%*[^,],%[^,],%*[^,],%d,%[^,],%*[^,],%s",
             decall, decont, &freq, band, dxcall, dxcont, &snr, timestring, mode);
 
@@ -147,18 +141,22 @@ int main(int argc, char *argv[])
                 // Check if new dx call for continent
                 if (strindex(dxcall, contarray[dxcontindex].call, contarray[dxcontindex].callcount) == -1)
                 {
-                    // printf("New call %s\n", dxcall);
                     strcpy(contarray[dxcontindex].call[contarray[dxcontindex].callcount++], dxcall);
                 }
 
-                // Check if new dx call for band and continent
-                if (strindex(dxcall, bandarray[dxcontindex][bandindex].call, bandarray[dxcontindex][bandindex].callcount) == -1)
+                // Check if new dx call for band
+                if (strindex(dxcall, bandarray[bandindex].call, bandarray[bandindex].callcount) == -1)
                 {
-                    // printf("New call %s\n", dxcall);
-                    strcpy(bandarray[dxcontindex][bandindex].call[bandarray[dxcontindex][bandindex].callcount++], dxcall);
+                    strcpy(bandarray[bandindex].call[bandarray[bandindex].callcount++], dxcall);
                 }
 
-                // Check if new dx call for any band
+                // Check if new dx call for band and continent
+                if (strindex(dxcall, contbandarray[dxcontindex][bandindex].call, contbandarray[dxcontindex][bandindex].callcount) == -1)
+                {
+                    strcpy(contbandarray[dxcontindex][bandindex].call[contbandarray[dxcontindex][bandindex].callcount++], dxcall);
+                }
+
+                // Check if new dx call
                 if (strindex(dxcall, callarray, totalcalls) == -1)
                 {
                     strcpy(callarray[totalcalls++], dxcall);
@@ -167,21 +165,24 @@ int main(int argc, char *argv[])
                 // Check if new skimmer for continent
                 if (strindex(decall, contarray[decontindex].skimmer, contarray[decontindex].skimcount) == -1)
                 {
-                    // printf("New skimmer %s\n", decall);
                     strcpy(contarray[decontindex].skimmer[contarray[decontindex].skimcount++], decall);
                 }
 
-                // Check if new skimmer for band and continent
-                if (strindex(decall, bandarray[decontindex][bandindex].skimmer, bandarray[decontindex][bandindex].skimcount) == -1)
+                // Check if new skimmer for band
+                if (strindex(decall, bandarray[bandindex].skimmer, bandarray[bandindex].skimcount) == -1)
                 {
-                    // printf("New skimmer %s\n", decall);
-                    strcpy(bandarray[decontindex][bandindex].skimmer[bandarray[decontindex][bandindex].skimcount++], decall);
+                    strcpy(bandarray[bandindex].skimmer[bandarray[bandindex].skimcount++], decall);
+                }
+
+                // Check if new skimmer for band and continent
+                if (strindex(decall, contbandarray[decontindex][bandindex].skimmer, contbandarray[decontindex][bandindex].skimcount) == -1)
+                {
+                    strcpy(contbandarray[decontindex][bandindex].skimmer[contbandarray[decontindex][bandindex].skimcount++], decall);
                 }
 
                 // Check if new skimmer for any band
                 if (strindex(decall, skimarray, totalskimmers) == -1) 
                 {
-                    // printf("New skimmer %s\n", decall);
                     strcpy(skimarray[totalskimmers++], decall);
                 }
             }
@@ -206,6 +207,7 @@ int main(int argc, char *argv[])
 
     printf("\n        Unique callsigns spotted per continent and band\n");
     printf("---------------------------------------------------------------\n");
+    
     #define LEFTCOL "%-3s"
     #define COLS "%5s"
     #define COLN "%5d"
@@ -215,7 +217,6 @@ int main(int argc, char *argv[])
     {
         printf(COLS, bandname[bi]);
     }
-    printf(COLS, "Tot");
     printf("\n");
 
     for (int ci = 0; ci < MAXCONT; ci++)
@@ -223,11 +224,18 @@ int main(int argc, char *argv[])
         printf(LEFTCOL, contname[ci]);
         for (int bi = 0; bi < MAXBANDS; bi++)
         {
-            printf(COLN, bandarray[ci][bi].callcount);
+            printf(COLN, contbandarray[ci][bi].callcount);
         }
         printf(COLN, contarray[ci].callcount);
         printf("\n");
     }
+
+    printf(LEFTCOL, "");
+    for (int bi = 0; bi < MAXBANDS; bi++)
+    {
+        printf(COLN, bandarray[bi].callcount);
+    }
+    printf("\n");
 
     printf("\n        Active skimmers per continent and band\n");
     printf("---------------------------------------------------------------\n");
@@ -236,7 +244,6 @@ int main(int argc, char *argv[])
     {
         printf(COLS, bandname[bi]);
     }
-    printf(COLS, "Tot");
     printf("\n");
 
     for (int ci = 0; ci < MAXCONT; ci++)
@@ -244,10 +251,16 @@ int main(int argc, char *argv[])
         printf(LEFTCOL, contname[ci]);
         for (int bi = 0; bi < MAXBANDS; bi++)
         {
-            printf(COLN, bandarray[ci][bi].skimcount);
+            printf(COLN, contbandarray[ci][bi].skimcount);
         }
         printf(COLN, contarray[ci].skimcount);
         printf("\n");
+    }
+ 
+    printf(LEFTCOL, "");
+    for (int bi = 0; bi < MAXBANDS; bi++)
+    {
+        printf(COLN, bandarray[bi].skimcount);
     }
     printf("\n");
 
