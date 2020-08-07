@@ -13,7 +13,7 @@ To execute them periodically, add the script `updateweb` to the Pi's crontab.
 To run them hourly:
 
 ```
-10 * * * * /home/pi/rbnskew/updateweb >> /home/pi/webrbnskew.log 2>&1
+10 * * * * /home/sm7iun/rbnskew/updateweb >> /home/sm7iun/webrbnskew.log 2>&1
 ```
 
 Note that `updatewebdata` must be run before `updatehistdata` since the

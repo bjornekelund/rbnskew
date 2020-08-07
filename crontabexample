@@ -3,6 +3,6 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
-@reboot /home/pi/skewsrv/skewsrv -r /home/pi/skewsrv/reference >> /home/pi/srvskewlog.log 2>&1 &
-10 * * * * /home/pi/rbnskew/updateweb  >> /home/pi/webrbnskew.log 2>&1
-*/2 * * * * /home/pi/skewsrv/update24hskew >> /home/pi/update24hlog.log 2>&1
+@reboot /home/sm7iun/skewsrv/skewsrv -r /home/sm7iun/skewsrv/reference >> /home/sm7iun/srvskewlog.log 2>&1 &
+10 * * * * /home/sm7iun/rbnskew/updateweb  >> /home/sm7iun/webrbnskew.log 2>&1
+*/2 * * * * /home/sm7iun/skewsrv/update24hskew >> /home/sm7iun/update24hlog.log 2>&1

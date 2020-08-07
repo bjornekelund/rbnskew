@@ -6,7 +6,7 @@
 #set -x
 
 # Move to correct folder to allow cron execution on RPi
-[ -d "/home/pi/rbnskew" ] && cd /home/pi/rbnskew
+[ -d "/home/sm7iun/rbnskew" ] && cd /home/sm7iun/rbnskew
 
 DATE=`date -u --date="1 days ago" +%Y%m%d`
 OLDESTRES=`date -u --date="5 days ago" +%Y%m%d`.txt
