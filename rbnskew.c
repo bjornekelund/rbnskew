@@ -366,7 +366,7 @@ int main(int argc, char *argv[])
     // int column = (int)strlen(outstring);
     // for (i = 0; i < referenceskimmers; i++)
     // {
-        // sprintf(outstring, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i]);
+        // snprintf(outstring, LINELEN, i == referenceskimmers - 1 ? "and %s" : "%s, ", referenceskimmer[i]);
         // printf("%s", outstring);
         // column += strlen(outstring);
         // if (column > 60 && i < referenceskimmers - 1)
@@ -383,10 +383,10 @@ int main(int argc, char *argv[])
     (void)strftime(firsttimestring, LINELEN, "%Y-%m-%d %H:%M", &stime);
     stime = *localtime(&lastspot);
     (void)strftime(lasttimestring, LINELEN, "%Y-%m-%d %H:%M", &stime);
-    sprintf(outstring, "%d RBN spots between %s and %s.\n", totalspots, firsttimestring, lasttimestring);
+    snprintf(outstring, LINELEN, "%d RBN spots between %s and %s.\n", totalspots, firsttimestring, lasttimestring);
     printboth(outstring, quiet);
 
-    sprintf(outstring, "%d spots (%.1f%%) were from reference skimmers (*).\n", 
+    snprintf(outstring, LINELEN, "%d spots (%.1f%%) were from reference skimmers (*).\n", 
         refspots, 100.0 * refspots / totalspots);
     printboth(outstring, quiet);
 
@@ -395,12 +395,12 @@ int main(int argc, char *argv[])
         (void)strftime(firsttimestring, LINELEN, "%Y-%m-%d %H:%M:%S", &stime);
         stime = *localtime(&skimmer[0].last);
         (void)strftime(lasttimestring, LINELEN, "%Y-%m-%d %H:%M:%S", &stime);
-        sprintf(outstring, "The selected skimmer produced an average of %.0f qualified spots per hour\nbetween %s and %s.\n", 
+        snprintf(outstring, LINELEN, "The selected skimmer produced an average of %.0f qualified spots per hour\nbetween %s and %s.\n", 
             3600.0 * skimmer[0].count / difftime(skimmer[0].last, skimmer[0].first), firsttimestring, lasttimestring);
     }
     else
     {
-        sprintf(outstring, "Average spot flow was %.0f per minute from %d active %s skimmers.\n",
+        snprintf(outstring, LINELEN, "Average spot flow was %.0f per minute from %d active %s skimmers.\n",
         60 * totalspots / difftime(lastspot, firstspot), skimmers, spotmode);
     }
     printboth(outstring, quiet);
@@ -417,32 +417,32 @@ int main(int argc, char *argv[])
     if (forweb)
         printf("\n");
 
-    sprintf(outstring, "%d spots from %d skimmers qualified for analysis by meeting\nthe following criteria:\n",
+    snprintf(outstring, LINELEN, "%d spots from %d skimmers qualified for analysis by meeting\nthe following criteria:\n",
         (targeted && usedspots <= minspots) ? 0 : usedspots, qualskimcount);
     printboth(outstring, quiet);
 
     if (targeted)
         printboth(" * Spotted by the selected skimmer.\n", quiet);
 
-    sprintf(outstring, " * Mode of spot is %s.\n" , spotmode);
+    snprintf(outstring, LINELEN, " * Mode of spot is %s.\n" , spotmode);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Also spotted by a reference skimmer within %d spots.\n", SPOTSWINDOW);
+    snprintf(outstring, LINELEN, " * Also spotted by a reference skimmer within %d spots.\n", SPOTSWINDOW);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Also spotted by a reference skimmer within %ds. \n", maxapart);
+    snprintf(outstring, LINELEN, " * Also spotted by a reference skimmer within %ds. \n", maxapart);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * SNR is %ddB or higher. \n", minsnr);
+    snprintf(outstring, LINELEN, " * SNR is %ddB or higher. \n", minsnr);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Frequency is %dkHz or higher. \n", MINFREQ);
+    snprintf(outstring, LINELEN, " * Frequency is %dkHz or higher. \n", MINFREQ);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * Frequency deviation from reference skimmer is %.1fkHz or less.\n", MAXERR / 10.0);
+    snprintf(outstring, LINELEN, " * Frequency deviation from reference skimmer is %.1fkHz or less.\n", MAXERR / 10.0);
     printboth(outstring, quiet);
 
-    sprintf(outstring, " * At least %d spots from same skimmer in data set.\n", minspots);
+    snprintf(outstring, LINELEN, " * At least %d spots from same skimmer in data set.\n", minspots);
     printboth(outstring, quiet);
 
     (void)time(&stoptime);
@@ -453,7 +453,7 @@ int main(int argc, char *argv[])
     }
     else if (isatty(STDOUT_FILENO) == 0)
     {
-        sprintf(outstring, "Total processing time was %.0f seconds.\n\n", difftime(stoptime, starttime));
+        snprintf(outstring, LINELEN, "Total processing time was %.0f seconds.\n\n", difftime(stoptime, starttime));
         printboth(outstring, quiet);
     }
 
