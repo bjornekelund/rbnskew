@@ -10,6 +10,8 @@
 
 // Standard length of strings
 #define STRLEN 16
+// Standard length of time strings
+#define TSLEN 32
 // Standard length of lines
 #define LINELEN 128
 // Time format in RBN data file
@@ -378,7 +380,7 @@ int main(int argc, char *argv[])
     // printf(".\n\n");
 
     // Print results
-    char firsttimestring[LINELEN], lasttimestring[LINELEN];
+    char firsttimestring[TSLEN], lasttimestring[TSLEN];
     stime = *localtime(&firstspot);
     (void)strftime(firsttimestring, LINELEN, "%Y-%m-%d %H:%M", &stime);
     stime = *localtime(&lastspot);
@@ -401,7 +403,7 @@ int main(int argc, char *argv[])
     else
     {
         snprintf(outstring, LINELEN, "Average spot flow was %.0f per minute from %d active %s skimmers.\n",
-        60 * totalspots / difftime(lastspot, firstspot), skimmers, spotmode);
+            60 * totalspots / difftime(lastspot, firstspot), skimmers, spotmode);
     }
     printboth(outstring, quiet);
 
