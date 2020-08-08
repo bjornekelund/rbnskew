@@ -13,7 +13,7 @@
 // Standard length of time strings
 #define TSLEN 32
 // Standard length of lines
-#define LINELEN 128
+#define LINELEN 256
 // Time format in RBN data file
 #define FMT "%Y-%m-%d %H:%M:%S"
 // Number of most recent spots considered in analysis
