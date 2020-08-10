@@ -467,7 +467,7 @@ int main(int argc, char *argv[])
     {
         if (skimmer[i].count >= minspots)
         {
-            printf("# %-9s %+5.1f %6d %13.9f\n",
+            printf("# %-10s %+5.1f %6d %13.9f\n",
                 strcat(skimmer[i].name, skimmer[i].reference ? "*" : ""), 
                 skimmer[i].avdev, skimmer[i].count, skimmer[i].accdev / skimmer[i].count);
         }
