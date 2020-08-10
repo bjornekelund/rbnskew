@@ -460,7 +460,7 @@ int main(int argc, char *argv[])
     }
 
     // Present results for each skimmer
-    printf("  Skimmer   [ppm]  Spots    Adjustment \n");
+    printf("  Skimmer    [ppm]  Spots    Adjustment \n");
     printf("  -------------------------------------\n");
 
     for (i = 0; i < skimmers; i++)
