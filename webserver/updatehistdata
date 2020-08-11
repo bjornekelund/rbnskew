@@ -19,12 +19,12 @@ rm -f history.txt
 echo "Updating historical data for: $FILES"
 
 for file in $FILES; do
-    gawk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,8) " " $3; }}' $file.txt | sed 's/*//g' >> history.txt
+    awk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,8) " " $3; }}' $file.txt | sed 's/*//g' >> history.txt
 done
 
 # Produce header of output file
 # Print data in reverse chronological order with newest data to the left
-gawk '
+awk '
 {
   array[$1][$2] = $3;
   call = $1;
@@ -52,7 +52,7 @@ END {
 
 # Produce meat of output file
 # Print data in reverse chronological order with newest data to the left
-gawk '
+awk '
 {
   array[$1][$2] = $3;
   call = $1;
