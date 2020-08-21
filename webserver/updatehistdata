@@ -24,9 +24,8 @@ done
 
 # Produce header of output file
 # Print data in reverse chronological order with newest data to the left
-awk '
-{
-  array[$1][$2] = $3;
+awk '{
+  array[$1][$2] = $3;  
   call = $1;
 }
 END {
