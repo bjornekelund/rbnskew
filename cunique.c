@@ -8,6 +8,8 @@
 #define LINELEN 128
 #define USAGE "Usage: %s -f filename\n"
 #define FMT "%Y-%m-%d %H:%M:%S"
+#define FMT1 "%Y-%m-%d %H:%M"
+#define FMT2 "%H:%M UTC"
 
 #define CONTINENTS {"AF", "AS", "EU", "NA", "OC", "SA" }
 #define MAXCONT 6
@@ -197,11 +199,11 @@ int main(int argc, char *argv[])
 
     char firsttimestring[LINELEN], lasttimestring[LINELEN];
     stime = *localtime(&firstspot);
-    (void)strftime(firsttimestring, LINELEN, FMT, &stime);
+    (void)strftime(firsttimestring, LINELEN, FMT1, &stime);
     stime = *localtime(&lastspot);
-    (void)strftime(lasttimestring, LINELEN, FMT, &stime);
+    (void)strftime(lasttimestring, LINELEN, FMT2, &stime);
 
-    printf("RBN data between %s and %s.\n", firsttimestring, lasttimestring);
+    printf("RBN activity between %s and %s.\n", firsttimestring, lasttimestring);
     printf("%d spots with %d unique callsigns from %d active skimmers.\n",
         totalspots, totalcalls, totalskimmers);
 

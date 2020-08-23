@@ -384,7 +384,7 @@ int main(int argc, char *argv[])
     stime = *localtime(&firstspot);
     (void)strftime(firsttimestring, LINELEN, "%Y-%m-%d %H:%M", &stime);
     stime = *localtime(&lastspot);
-    (void)strftime(lasttimestring, LINELEN, "%Y-%m-%d %H:%M", &stime);
+    (void)strftime(lasttimestring, LINELEN, "%H:%M UTC", &stime);
     snprintf(outstring, LINELEN, "%d RBN spots between %s and %s.\n", totalspots, firsttimestring, lasttimestring);
     printboth(outstring, quiet);
 
