@@ -53,7 +53,6 @@ static void printboth(char *outstring, bool quiet)
 
 int main(int argc, char *argv[])
 {
-
     struct Spot
     {
         char de[STRLEN];   // Skimmer callsign
@@ -182,7 +181,6 @@ int main(int argc, char *argv[])
                     (void)fclose(fr);
                     return 1;
                 }
-
             }
         }
     }
@@ -233,7 +231,6 @@ int main(int argc, char *argv[])
             // If SNR is sufficient and frequency OK and mode is right
             if (snr >= minsnr && freq >= MINFREQ && strcmp(mode, spotmode) == 0)
             {
-
                 reference = false;
                 // Check if this spot is from a reference skimmer
                 for (i = 0; i < referenceskimmers; i++)
@@ -388,7 +385,7 @@ int main(int argc, char *argv[])
     snprintf(outstring, LINELEN, "%d RBN spots between %s and %s.\n", totalspots, firsttimestring, lasttimestring);
     printboth(outstring, quiet);
 
-    snprintf(outstring, LINELEN, "%d spots (%.1f%%) were from reference skimmers (*).\n", 
+    snprintf(outstring, LINELEN, "%d spots (%.1f%%) were from reference skimmers (*).\n",
         refspots, 100.0 * refspots / totalspots);
     printboth(outstring, quiet);
 
@@ -397,7 +394,7 @@ int main(int argc, char *argv[])
         (void)strftime(firsttimestring, LINELEN, "%Y-%m-%d %H:%M:%S", &stime);
         stime = *localtime(&skimmer[0].last);
         (void)strftime(lasttimestring, LINELEN, "%Y-%m-%d %H:%M:%S", &stime);
-        snprintf(outstring, LINELEN, "The selected skimmer produced an average of %.0f qualified spots per hour\nbetween %s and %s.\n", 
+        snprintf(outstring, LINELEN, "The selected skimmer produced an average of %.0f qualified spots per hour\nbetween %s and %s.\n",
             3600.0 * skimmer[0].count / difftime(skimmer[0].last, skimmer[0].first), firsttimestring, lasttimestring);
     }
     else
