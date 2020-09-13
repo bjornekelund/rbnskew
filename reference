@@ -4,37 +4,31 @@ CX6VM
 3B8CW
 JO1YYP
 # Skimmers with 0.0ppm deviation and more than 20 qualified spots
-3B8CW
-DK9IP
-DO4DXA
-EA8/DF4UE
-G4ZFE
-JA4ZRK
-KH6LC
-LZ4UX
-N7TUG
-VE2WU
-VE7CC
-VK6ANC
-WB6BEE
-# Skimmers with 0.1ppm deviation and more than 50 qualified spots
 AC0C
-DF7GB
-DL3DTH
+BG4GOV3
+DK9IP
 ES3V
-K3PA
-K9IMM
+JA1LZR
 KM3T
 KM3T-2
-LA6TPA
-LZ7AA
-N4ZR
+LZ4UX
+NN3RP
 OE9GHV
-W1NT-6
-W3OA
-W3RGA
+SE5E
+WB6BEE
 WZ7I
-# Skimmers with 0.2ppm deviation and more than 100 qualified spots
-DD5XX
-HA7GN
+# Skimmers with 0.1ppm deviation and more than 50 qualified spots
+DF7GB
+DL3DTH
+G4ZFE
+K3PA
+K9LC
+S53M
 SM7IUN
+VE2WU
+W3OA
+# Skimmers with 0.2ppm deviation and more than 100 qualified spots
+EA8/DF4UE
+LZ7AA
+R1LB
+W3RGA

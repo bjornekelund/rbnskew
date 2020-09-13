@@ -25,7 +25,7 @@ done
 # Produce header of output file
 # Print data in reverse chronological order with newest data to the left
 awk '{
-  array[$1][$2] = $3;  
+  array[$1][$2] = $3;
   call = $1;
 }
 END {
@@ -34,13 +34,15 @@ END {
       k = 0;
       for (elem in array[trycall])
         k++;
-      if (k == 5)
+      if (k == 5) {
         call = trycall;
+        break;
+      }
     }
   }
   printf("Skimmer    ");
   j = 0
-  for (datestring in array["SE5E"]) {
+  for (datestring in array[call]) {
     date[j++] = substr(datestring, 3, 2) "-" substr(datestring, 5, 2) "-" substr(datestring, 7, 2);
   }
   for (j = 4; j >= 0; j--) {
