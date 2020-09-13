@@ -29,6 +29,7 @@ awk '{
   call = $1;
 }
 END {
+# Find a call that has been active all five days
   for (trycall in array) {
     if (isarray(array[trycall])) {
       k = 0;
@@ -45,6 +46,7 @@ END {
   for (datestring in array[call]) {
     date[j++] = substr(datestring, 3, 2) "-" substr(datestring, 5, 2) "-" substr(datestring, 7, 2);
   }
+# Print in antichronological order
   for (j = 4; j >= 0; j--) {
     printf("%10s", date[j]);
   }
