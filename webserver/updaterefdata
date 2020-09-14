@@ -1,4 +1,6 @@
 #!/bin/bash
+# This file is obsolete and no longer used.
+# It has been replaced by a two-step skew analysis selecting reference skimmers on a per day basis.
 # Use yesterday's RBN data in rbndata.csv and check all the current 
 # reference skimmers against each other
 # Assumes webserver/rbndata.csv has already been downloaded
