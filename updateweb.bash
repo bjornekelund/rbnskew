@@ -23,7 +23,7 @@ if [ "$DATE" == "`cat $FOLDER/done`" ]; then
     exit
 fi
 
-[ -f $FOLDER/$OLDESTRES ] || ./initweb
+[ -f $FOLDER/$OLDESTRES ] || ./initweb.bash
 
 # Do the work
 echo "Downloading RBN data for "`date -u --date="1 days ago" +%Y-%m-%d`
@@ -34,12 +34,12 @@ FILESIZE=$(stat -c%s $FOLDER/rbndata.zip)
 if [[ $FILESIZE != "0" ]]; then
     gunzip < $FOLDER/rbndata.zip > $FOLDER/rbndata.csv
     echo "Downloaded yesterday's "$((`wc -l < $FOLDER/rbndata.csv` - 2))" spots into rbndata.csv"
-	./makenewref
-    ./$FOLDER/updatewebdata
-    ./$FOLDER/updatehistdata
-    ./$FOLDER/updateactdata
+	./makenewref.bash
+    ./$FOLDER/updatewebdata.bash
+    ./$FOLDER/updatehistdata.bash
+    ./$FOLDER/updateactdata.bash
     cd $FOLDER
-    ./upload
+    ./upload.bash
     echo "-"
     echo "Uploaded to web hosting"
     echo $DATE > done
