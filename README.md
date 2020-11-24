@@ -34,7 +34,7 @@ multiply the value currently used with the adjustment factor to get the correcte
 
 `rbnskew -f csvfile [-dshqrw] [-t callsign] [-m N] [-n N] [-x N]`
 
- `-t file`\
+ `-f file`\
 	File name of RBN spot data set.
 	
 `-d`\
@@ -61,6 +61,9 @@ multiply the value currently used with the adjustment factor to get the correcte
 `-x N`\
     Set maximum allowed difference in time stamp to a reference spot for spot to qualify.
 
+ `-t callsign`\
+    Do analysis only for this skimmer callsign.
+
 The analysis algorithm has the following default characteristics:
 
 * Only considers the 1000 most recent spots at any time for efficiency reasons
@@ -79,4 +82,4 @@ To run the code on your machine (Linux or Windows' Ubuntu emulator) the followin
 `$ git clone https://github.com/bjornekelund/rbnskew`\
 `$ cd rbnskew`\
 `$ make`\
-`$ ./rbnskew -f test.csv`
+`$ ./rbnskew -f rbnfiles/test.csv`
