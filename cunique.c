@@ -217,17 +217,26 @@ int main(int argc, char *argv[])
     printf(LEFTCOL, "");
     for (int bi = 0; bi < MAXBANDS; bi++)
     {
+        if (bandarray[bi].callcount > 9999) printf(" ");
         printf(COLS, bandname[bi]);
     }
     printf("\n");
+
+    int longcont = 0;
+    for (int ci = 0; ci < MAXCONT; ci++)
+    {
+        longcont |= contarray[ci].callcount > 9999;
+    }
 
     for (int ci = 0; ci < MAXCONT; ci++)
     {
         printf(LEFTCOL, contname[ci]);
         for (int bi = 0; bi < MAXBANDS; bi++)
         {
+            if (bandarray[bi].callcount > 9999) printf(" ");
             printf(COLN, contbandarray[ci][bi].callcount);
         }
+        if (longcont) printf(" ");
         printf(COLN, contarray[ci].callcount);
         printf("\n");
     }
@@ -235,6 +244,7 @@ int main(int argc, char *argv[])
     printf(LEFTCOL, "");
     for (int bi = 0; bi < MAXBANDS; bi++)
     {
+        if (bandarray[bi].callcount > 9999) printf(" ");
         printf(COLN, bandarray[bi].callcount);
     }
     printf("\n");
@@ -244,6 +254,7 @@ int main(int argc, char *argv[])
     printf(LEFTCOL, "");
     for (int bi = 0; bi < MAXBANDS; bi++)
     {
+        if (bandarray[bi].callcount > 9999) printf(" ");
         printf(COLS, bandname[bi]);
     }
     printf("\n");
@@ -253,8 +264,10 @@ int main(int argc, char *argv[])
         printf(LEFTCOL, contname[ci]);
         for (int bi = 0; bi < MAXBANDS; bi++)
         {
+            if (bandarray[bi].callcount > 9999) printf(" ");
             printf(COLN, contbandarray[ci][bi].skimcount);
         }
+        if (longcont) printf(" ");
         printf(COLN, contarray[ci].skimcount);
         printf("\n");
     }
@@ -262,6 +275,7 @@ int main(int argc, char *argv[])
     printf(LEFTCOL, "");
     for (int bi = 0; bi < MAXBANDS; bi++)
     {
+        if (bandarray[bi].callcount > 9999) printf(" ");
         printf(COLN, bandarray[bi].skimcount);
     }
     printf("\n");
