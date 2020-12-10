@@ -36,8 +36,6 @@
 #define MAXERR 5
 // Name of file containing callsigns of reference skimmmers
 #define REFFILENAME "reference"
-// Name of file containing callsigns of RTTY reference skimmmers
-#define RREFFILENAME "rreference"
 // Mode of spots
 #define MODE "CW"
 
