@@ -11,9 +11,10 @@ frequency for all spots meeeting a selection of criterias.
 The default filename for the list of trusted skimmers is `reference`. 
 
 The script `updateweb.bash` is run shortly after UTC midnight every day to 
-update https://sm7iun.se/rbn/analytics
+update https://sm7iun.se/rbn/analytics. To embed the text files in the Wordpress 
+page, php snippets are used. 
 
-This script calls the scripts `makenewref.bash`, `webserver/updatewebdata.bash`, 
+`updateweb.bash` calls the scripts `makenewref.bash`, `webserver/updatewebdata.bash`, 
 `webserver/updatehistdata.bash`, and `webserver/updateactdata.bash` and finally
 uploads the analysis results to the web server using the script `webserver/upload.bash`. 
 The upload script is not available in the repo since it contains login information. 
@@ -31,8 +32,8 @@ The results are then used to create an expanded list of trusted skimmers which i
 file `reference`. `makenewref.bash` lists all skimmers with more than 100 spots and 
 less than 0.2ppm deviation from the "anchor" skimmers in this updated `reference` file. 
 
-The second step is then to run `webserver/updatewebdata.bash` which uses this updated `reference` 
-file and creates the text output for the web site.
+The second step is then to run `webserver/updatewebdata.bash` using the updated `reference` 
+file and create the text output for the web site.
 
 The script `webserver/updatehistdata.bash` uses the results from `updatewebdata.bash` for 
 the last five days to create a text table.
@@ -90,7 +91,7 @@ multiply the value currently used with the adjustment factor to get the correcte
     Set maximum allowed difference in time stamp to a reference spot for spot to qualify.
 
  `-t callsign`\
-    Do analysis only for this skimmer callsign.
+    Do analysis only for this skimmer callsign. Runs considerably faster.
 
 The analysis algorithm has the following default characteristics:
 
