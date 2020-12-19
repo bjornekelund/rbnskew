@@ -19,9 +19,9 @@
 // Number of most recent spots considered in analysis
 #define SPOTSWINDOW 1000
 // Maximum number of reference skimmers
-#define MAXREF 50
+#define MAXREF 300
 // Maximum number of skimmers supported
-#define MAXSKIMMERS 400
+#define MAXSKIMMERS 600
 // Usage string
 #define USAGE "Usage: %s -f file [-dshqrw] [-t call] [-n N] [-m N] [-x sec] [-c file]\n"
 // Max number of seconds apart from a reference spot
