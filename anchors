@@ -3,13 +3,12 @@
 # accurate skimmers.
 #
 # Skimmers with external frequency normal
-AC0C
+AC0C-1
 OE9GHV
 WB6BEE
 WZ7I
+KM3T
+KM3T-1
 # Skimmers that benchmark well and/or
 # are geographically motivated
-KM3T
-KM3T-2
 SM7IUN
-LZ4UX
