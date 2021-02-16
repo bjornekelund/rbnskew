@@ -43,10 +43,16 @@ if [[ $FILESIZE != "0" ]]; then
     echo "-"
     echo "Uploaded to web hosting"
     echo $DATE > done
+    cd ..
 else
     echo "Could not download yesterday's RBN data!"
     echo "Job failed "`date -u "+%F %T" `
     exit
 fi
+
+echo "-"
+./emailstatus.bash
+echo Emailed status report
+echo "-"
 echo "Job ended "`date -u "+%F %T"`" and took $((SECONDS-START)) seconds"
 exit
