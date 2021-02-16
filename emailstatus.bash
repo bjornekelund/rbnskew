@@ -14,5 +14,5 @@ for call in SM7IUN SE5E OH6BG SM0FPR SJ2W N6TV; do
   grep $call $FILE >> .email.txt
 done
 echo "</pre>" >> .email.txt
-sendmail $ADDRESS < .email.txt
+/usr/sbin/sendmail $ADDRESS < .email.txt
 exit
