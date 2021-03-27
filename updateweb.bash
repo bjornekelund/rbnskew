@@ -34,7 +34,7 @@ FILESIZE=$(stat -c%s $FOLDER/rbndata.zip)
 if [[ $FILESIZE != "0" ]]; then
     gunzip < $FOLDER/rbndata.zip > $FOLDER/rbndata.csv
     echo "Downloaded yesterday's "$((`wc -l < $FOLDER/rbndata.csv` - 2))" spots into rbndata.csv"
-	./makenewref.bash
+    ./makenewref.bash
     ./$FOLDER/updatewebdata.bash
     ./$FOLDER/updatehistdata.bash
     ./$FOLDER/updateactdata.bash
