@@ -23,9 +23,9 @@
 // Maximum number of skimmers supported
 #define MAXSKIMMERS 600
 // Usage string
-#define USAGE "Usage: %s -f file [-dshqrw] [-t call] [-n N] [-m N] [-x sec] [-c file]\n"
+#define USAGE "Usage: %s -f file [-dshqrw] [-t call] [-n SNR] [-m mincount] [-x sec] [-c file]\n"
 // Max number of seconds apart from a reference spot
-#define MAXAPART 30
+#define MAXAPART 10
 // Minimum SNR required for spot to be used
 #define MINSNR 3
 // Minimum frequency for spot to be used
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
             {
                 strcpy(referenceskimmer[referenceskimmers], tempstring);
                 referenceskimmers++;
-                if (referenceskimmers >= MAXREF) 
+                if (referenceskimmers >= MAXREF)
                 {
                     fprintf(stderr, "Overflow: More than %d reference skimmers defined.\n", MAXREF);
                     (void)fclose(fr);
