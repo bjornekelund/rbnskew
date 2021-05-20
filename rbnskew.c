@@ -213,6 +213,7 @@ int main(int argc, char *argv[])
         if (got == 6 ) // If parsing is successful
         {
             (void)strptime(timestring, FMT, &stime);
+            stime.tm_isdst = 0;
             spottime = mktime(&stime);
 
             if (totalspots++ == 0) // If first spot
