@@ -110,6 +110,9 @@ int main(int argc, char *argv[])
              timestring[LINELEN], decall[STRLEN];
         int snr;
         double freq;
+//        time_t spottime = 0;
+//        int year, month;
+
 
         int got = sscanf(line, "%[^,],%*[^,],%[^,],%lf,%[^,],%[^,],%*[^,],%[^,],%*[^,],%d,%[^,],%*[^,],%s",
             decall, decont, &freq, band, dxcall, dxcont, &snr, timestring, mode);
@@ -121,7 +124,12 @@ int main(int argc, char *argv[])
             int dxcontindex = strindex(dxcont, contname, MAXCONT);
 
             (void)strptime(timestring, FMT, &stime);
+            stime.tm_isdst = 0;
             time_t spottime = mktime(&stime);
+
+//            fprintf(stderr, "timestring=%s spottime=%ld year=%d mon=%d day=%d hour=%d min=%d sec=%d\n",
+//                    timestring, spottime, stime.tm_year + 1900, stime.tm_mon + 1, stime.tm_mday, stime.tm_hour,
+//                    stime.tm_min, stime.tm_sec);
 
             if (totalspots == 0)
             {
