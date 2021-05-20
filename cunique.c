@@ -4,8 +4,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#define STRLEN 16
-#define LINELEN 128
+#define STRLEN 32
+#define LINELEN 256
 #define USAGE "Usage: %s -f filename\n"
 #define FMT "%Y-%m-%d %H:%M:%S"
 #define FMT1 "%Y-%m-%d %H:%M"
@@ -18,7 +18,7 @@
 #define BANDS { "160m", "80m", "60m", "40m", "30m", "20m", "17m", "15m", "12m", "10m", "6m" }
 #define MAXBANDS 11
 
-#define MAXCALLS 50000
+#define MAXCALLS 100000
 #define MAXSKIMMERS 500
 
 int main(int argc, char *argv[])
