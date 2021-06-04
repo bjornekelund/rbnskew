@@ -52,7 +52,7 @@ else
 fi
 
 echo "-"
-#./emailstatus.bash
+./emailstatus.bash
 echo Emailed status report
 echo "-"
 echo "Job ended "`date -u "+%F %T"`" and took $((SECONDS-START)) seconds"
