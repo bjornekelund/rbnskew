@@ -24,7 +24,8 @@ for address in bjorn@ekelund.nu sm5ajv@qrq.se; do
   grep -- -- $FILE >> .email.txt
   grep AC0C-1 $FILE >> .email.txt
   grep 'K3PA ' $FILE >> .email.txt
-  grep 'KM3T ' $FILE >> .email.txt
+  grep 'G4ZFE' $FILE >> .email.txt
+#  grep 'KM3T ' $FILE >> .email.txt
   grep 'OE9GHV ' $FILE >> .email.txt
   grep WB6BEE $FILE >> .email.txt
   echo "</pre>" >> .email.txt
