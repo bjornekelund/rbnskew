@@ -38,6 +38,7 @@ if [[ $FILESIZE != "0" ]]; then
     ./$FOLDER/updatewebdata.bash
     ./$FOLDER/updatehistdata.bash
     ./$FOLDER/updateactdata.bash
+    ./$FOLDER/updateanchordata.bash
     cd $FOLDER
     ./upload.bash
     echo "-"
@@ -51,7 +52,7 @@ else
 fi
 
 echo "-"
-./emailstatus.bash
+#./emailstatus.bash
 echo Emailed status report
 echo "-"
 echo "Job ended "`date -u "+%F %T"`" and took $((SECONDS-START)) seconds"
