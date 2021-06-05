@@ -24,9 +24,13 @@ for address in bjorn@ekelund.nu sm5ajv@qrq.se; do
   grep -- -- $FILE >> .email.txt
   grep AC0C-1 $FILE >> .email.txt
   grep 'K3PA ' $FILE >> .email.txt
-  grep 'G4ZFE' $FILE >> .email.txt
-#  grep 'KM3T ' $FILE >> .email.txt
-  grep 'OE9GHV ' $FILE >> .email.txt
+  grep G4ZFE $FILE >> .email.txt
+  grep 'KM3T-1' $FILE >> .email.txt
+  grep 'KM3T ' $FILE >> .email.txt
+  grep OE9GHV $FILE >> .email.txt
+  grep NA0B $FILE >> .email.txt
+  grep LZ3CB $FILE >> .email.txt
+  grep DF7GB $FILE >> .email.txt
   grep WB6BEE $FILE >> .email.txt
   echo "</pre>" >> .email.txt
   echo "Visit <a href=\"https://sm7iun.se/rbn/analytics\">sm7iun.se</a> for more detailed information." >> .email.txt

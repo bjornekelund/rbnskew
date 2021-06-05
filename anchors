@@ -4,7 +4,7 @@
 #
 # Skimmers with external frequency normal
 #AC0C-1
-OE9GHV
+#OE9GHV
 WB6BEE
 #KM3T
 #WZ7I
@@ -12,10 +12,11 @@ KM3T-1
 K3PA
 #SM7IUN
 NA0B
+LZ3CB
+#DF7GB
 # Skimmers that benchmark well and/or
 # are geographically motivated
 #DL3DTH
-#DF7GB
 G4ZFE
 #RN4WA
 #DO4DXA
