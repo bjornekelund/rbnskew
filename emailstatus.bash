@@ -4,7 +4,7 @@
 
 FILE=webserver/rbnhist.txt
 
-for address in bjorn@ekelund.nu sm5ajv@qrq.se; do
+for address in bjorn@ekelund.nu sm5ajv@qrq.se holger@gatternig.com; do
 #for address in bjorn@ekelund.nu; do
   echo "From: SM7IUN RBN Analytics <sm7iun@sm7iun.se>" > .email.txt
   echo "To:" $address >> .email.txt
