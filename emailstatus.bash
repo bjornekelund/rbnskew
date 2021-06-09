@@ -4,7 +4,8 @@
 
 FILE=webserver/rbnhist.txt
 
-for address in `grep -v \# mailrecipients`; do
+#for address in `grep -v \# mailrecipients`; do
+for address in bjorn@ekelund.nu; do
   echo "From: SM7IUN RBN Analytics <noreply@rbn.sm7iun.se>" > .email.txt
   echo "To:" $address >> .email.txt
   echo "Subject: Skimmer skew report for" `date -u "+%F" --date="1 day ago"` >> .email.txt
@@ -13,7 +14,7 @@ for address in `grep -v \# mailrecipients`; do
   echo "<pre>" >> .email.txt
   grep Skimmer $FILE >> .email.txt
   grep -- -- $FILE >> .email.txt
-  for call in SE5E SJ2W SM6FMB SM7IUN N6TV OH6BG; do
+  for call in `cat trackedskimmers`; do
     grep $call $FILE >> .email.txt
   done
   # List all anchor skimmers before pruning list
