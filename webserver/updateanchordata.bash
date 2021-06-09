@@ -8,10 +8,10 @@
 echo "-"
 
 FOLDER="webserver"
-AFILE="anchors"
+AFILE="verified"
 OFILE="anchors.txt"
 
-echo "Updating anchors.txt."
+printf "Updating anchors.txt..."
 
 awk '
 {
@@ -26,4 +26,5 @@ END {
 echo >> $FOLDER/$OFILE
 echo "Last updated "`date -u "+%F %T"`" UTC" >> $FOLDER/$OFILE
 
+printf "done\n"
 exit

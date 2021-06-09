@@ -10,7 +10,7 @@ RESULT=.result
 
 # Create a grep filter file with anchors. Add space to end of callsign to avoid 
 # that e.g. KM3T matches with KM3T-1
-grep -v \# $1 |  sed -e 's/$/ /g' > .anchors
+grep -v \# $1 | sed -e 's/$/ /g' > .anchors
 
 # First, run an analysis with only anchor skimmers. 
 printf "Removing bad anchors..."

@@ -10,8 +10,9 @@ VERFILE="verified" # File with verified anchors
 
 echo "-"
 
-# Remove the worst anchor if it has more than a certain deviation to avoid 
+# Remove the worst anchor if it has more than a certain deviation to avoid
 # temporarily misbehaving anchors to destroy results.
+# Do this twicet to be able to sustain two misbehaving anchors without loss of accuracy.
 ./removebadanchors.bash anchors .tmp
 ./removebadanchors.bash .tmp $VERFILE
 
@@ -30,6 +31,6 @@ awk '{if ($1 == "#" && ($3 >= 0.0 ? $3 : -$3) == 0.1 && $4 > 200){print $2;}}' $
 #echo "# Skimmers with 0.2ppm deviation and more than 1000 qualified spots" >> $REFFILE
 #awk '{if ($1 == "#" && ($3 >= 0.0 ? $3 : -$3) == 0.2 && $4 > 1000){print $2;}}' $SOURCE | sed 's/*//g' >> $REFFILE
 
-printf "done.\n"
+printf "done\n"
 
 exit

@@ -14,6 +14,7 @@ FOLDER="webserver"
 
 echo "---"
 echo "Job started "`date -u "+%F %T" `
+echo "-"
 START=$SECONDS
 
 # Check if we already did the work for today, if so, exit
@@ -40,9 +41,9 @@ if [[ $FILESIZE != "0" ]]; then
     ./$FOLDER/updateactdata.bash
     ./$FOLDER/updateanchordata.bash
     cd $FOLDER
+    printf "Uploading to web hosting..."
     ./upload.bash
-    echo "-"
-    echo "Uploaded to web hosting"
+    printf "done\n"
     echo $DATE > done
     cd ..
 else
@@ -52,8 +53,9 @@ else
 fi
 
 echo "-"
+printf "Emailing status report..."
 ./emailstatus.bash
-echo Emailed status report
+printf "done\n"
 echo "-"
 echo "Job ended "`date -u "+%F %T"`" and took $((SECONDS-START)) seconds"
 exit
