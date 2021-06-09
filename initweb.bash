@@ -1,6 +1,7 @@
 #!/bin/bash
 # Creates analysis results for the past five days
 # provide historical data for script webserver/updatehistdata
+# Used when installing fresh
 #set -x
 
 FOLDER="webserver"
