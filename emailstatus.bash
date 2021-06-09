@@ -4,8 +4,7 @@
 
 FILE=webserver/rbnhist.txt
 
-for address in bjorn@ekelund.nu sm5ajv@qrq.se holger@gatternig.com; do
-#for address in bjorn@ekelund.nu bjorn.ekelund@ericsson.com; do
+for address in `grep -v \# mailrecipients`; do
   echo "From: SM7IUN RBN Analytics <noreply@rbn.sm7iun.se>" > .email.txt
   echo "To:" $address >> .email.txt
   echo "Subject: Skimmer skew report for" `date -u "+%F" --date="1 day ago"` >> .email.txt
@@ -22,8 +21,8 @@ for address in bjorn@ekelund.nu sm5ajv@qrq.se holger@gatternig.com; do
   grep -v \# anchors | sed -e 's/$/ /g' > .anchors
   grep -- -- $FILE >> .email.txt
   grep -f .anchors $FILE >> .email.txt
+  echo >> .email.txt
   echo "</pre>" >> .email.txt
-  echo " " >> .email.txt
   echo "Visit <a href=\"https://sm7iun.se/rbn/analytics\">sm7iun.se</a> for more detailed information." >> .email.txt
   echo "</body></html>" >> .email.txt
   /usr/sbin/sendmail $address < .email.txt
