@@ -4,8 +4,8 @@
 
 FILE=webserver/rbnhist.txt
 
-#for address in bjorn@ekelund.nu sm5ajv@qrq.se holger@gatternig.com; do
-for address in bjorn@ekelund.nu; do
+for address in bjorn@ekelund.nu sm5ajv@qrq.se holger@gatternig.com; do
+#for address in bjorn@ekelund.nu; do
   echo "From: SM7IUN RBN Analytics <sm7iun@sm7iun.se>" > .email.txt
   echo "To:" $address >> .email.txt
   echo "Subject: Skimmer skew report for" `date -u "+%F" --date="1 day ago"` >> .email.txt
@@ -21,7 +21,7 @@ for address in bjorn@ekelund.nu; do
   grep AC0C-1 $FILE >> .email.txt
   grep 'K3PA ' $FILE >> .email.txt
   grep G4ZFE $FILE >> .email.txt
-  grep 'KM3T-1' $FILE >> .email.txt
+  grep KM3T-1 $FILE >> .email.txt
   grep 'KM3T ' $FILE >> .email.txt
   grep OE9GHV $FILE >> .email.txt
   grep NA0B $FILE >> .email.txt
