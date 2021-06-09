@@ -4,16 +4,12 @@
 
 FILE=webserver/rbnhist.txt
 
-for address in bjorn@ekelund.nu sm5ajv@qrq.se holger@gatternig.com; do
-#for address in bjorn@ekelund.nu; do
+#for address in bjorn@ekelund.nu sm5ajv@qrq.se holger@gatternig.com; do
+for address in bjorn@ekelund.nu; do
   echo "From: SM7IUN RBN Analytics <sm7iun@sm7iun.se>" > .email.txt
   echo "To:" $address >> .email.txt
   echo "Subject: Skimmer skew report for" `date -u "+%F" --date="1 day ago"` >> .email.txt
   echo "Content-Type:text/html; charset=\"utf-8\"" >> .email.txt
-#  echo "Mime-Version: 1.0" >> .email.txt
-#  echo "Content-Type:text/plain; charset=\"utf-8\"" >> .email.txt
-#  echo "Content-Transfer-Encoding: quoted-printable" >> .email.txt
-#  echo "<!DOCTYPE html PUBLIC \"-//WRC//DTD HTML 3.2//EN\">" >> .email.txt
   echo "<html lang=\"en\"><body>" >> .email.txt
   echo "<pre>" >> .email.txt
   grep Skimmer $FILE >> .email.txt
