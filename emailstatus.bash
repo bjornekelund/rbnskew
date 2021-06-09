@@ -4,8 +4,8 @@
 
 FILE=webserver/rbnhist.txt
 
-#for address in `grep -v \# mailrecipients`; do
-for address in bjorn@ekelund.nu; do
+for address in `grep -v \# mailrecipients`; do
+#for address in bjorn@ekelund.nu; do
   echo "From: SM7IUN RBN Analytics <noreply@rbn.sm7iun.se>" > .email.txt
   echo "To:" $address >> .email.txt
   echo "Subject: Skimmer skew report for" `date -u "+%F" --date="1 day ago"` >> .email.txt
