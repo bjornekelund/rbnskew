@@ -4,24 +4,32 @@
 
 FILE=webserver/rbnhist.txt
 
-for address in `grep -v \# mailrecipients`; do
-#for address in bjorn@ekelund.nu; do
+#for address in `grep -v \# mailrecipients`; do
+for address in bjorn@ekelund.nu; do
   echo "From: SM7IUN RBN Analytics <noreply@rbn.sm7iun.se>" > .email.txt
   echo "To:" $address >> .email.txt
   echo "Subject: Skimmer skew report for" `date -u "+%F" --date="1 day ago"` >> .email.txt
   echo "Content-Type:text/html; charset=\"utf-8\"" >> .email.txt
   echo "<html lang=\"en\"><body>" >> .email.txt
   echo "<pre>" >> .email.txt
+
+  # Header line and separator
   grep Skimmer $FILE >> .email.txt
   grep -- -- $FILE >> .email.txt
-  for call in `cat trackedskimmers`; do
-    grep $call $FILE >> .email.txt
-  done
-  # List all anchor skimmers before pruning list
+
+  # List all tracked skimmers
+  # Add space to end to avoid false matches of aliases
+  sed -e 's/$/ /g' trackedskimmers > .trackedskimmers
+    grep -f .trackedskimmers $FILE >> .email.txt
+
+  # Separator line
+  grep -- -- $FILE >> .email.txt
+
+  # List all anchor skimmers before removing misbehaving ones
   # Add space to end to avoid false matches of aliases
   grep -v \# anchors | sed -e 's/$/ /g' > .anchors
-  grep -- -- $FILE >> .email.txt
   grep -f .anchors $FILE >> .email.txt
+
   echo >> .email.txt
   echo "</pre>" >> .email.txt
   echo "Visit <a href=\"https://sm7iun.se/rbn/analytics\">sm7iun.se</a> for more detailed information." >> .email.txt

@@ -10,13 +10,9 @@ webserver/*.txt
 webserver/*.zip
 webserver/*~
 webserver/done
-doit
 webserver/upload*
-obsolete
 cunique
 rbndata
-.result
-verified
-.worstskimmer
-.anchors
+.*
 reference
+verified
