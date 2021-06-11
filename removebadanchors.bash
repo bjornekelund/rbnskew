@@ -8,7 +8,7 @@
 RBNDATA=webserver/rbndata.csv
 RESULT=.result
 
-# Create a grep filter file with anchors. Add space to end of callsign to avoid 
+# Create a grep filter file with anchors. Add space to end of callsign to avoid
 # that e.g. KM3T matches with KM3T-1
 grep -v \# $1 | sed -e 's/$/ /g' > .anchors
 
@@ -17,7 +17,7 @@ printf "Removing bad anchors..."
 ./rbnskew -wq -f $RBNDATA -c $1 | awk '{if ($1 == "#"){print $0}}' | sed 's/*//g' | grep -f .anchors > $RESULT
 
 # Remove the worst but only if it is more than 0.2ppm off.
-gawk '
+awk '
 BEGIN {
   worstdev = -1.0;
   worstskimmer = "ZZZ";
@@ -43,4 +43,3 @@ grep -v -f .worstskimmer $RESULT | awk '{if ($1 == "#"){print $2}}' | sed 's/*//
 
 echo done
 exit
-

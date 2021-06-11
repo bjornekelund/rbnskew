@@ -22,14 +22,14 @@ printf "Selecting reference skimmers..."
 
 echo "# Automatically generated reference file" > $REFFILE
 
-echo "# Skimmers with 0.0ppm deviation and more than 100 qualified spots" >> $REFFILE
+echo "# Skimmers with 0.0ppm deviation and more than 200 qualified spots" >> $REFFILE
 awk '{if ($1 == "#" && ($3 >= 0.0 ? $3 : -$3) == 0.0 && $4 > 100){print $2;}}' $SOURCE | sed 's/*//g' >> $REFFILE
 
-echo "# Skimmers with 0.1ppm deviation and more than 200 qualified spots" >> $REFFILE
+echo "# Skimmers with 0.1ppm deviation and more than 500 qualified spots" >> $REFFILE
 awk '{if ($1 == "#" && ($3 >= 0.0 ? $3 : -$3) == 0.1 && $4 > 200){print $2;}}' $SOURCE | sed 's/*//g' >> $REFFILE
 
-#echo "# Skimmers with 0.2ppm deviation and more than 1000 qualified spots" >> $REFFILE
-#awk '{if ($1 == "#" && ($3 >= 0.0 ? $3 : -$3) == 0.2 && $4 > 1000){print $2;}}' $SOURCE | sed 's/*//g' >> $REFFILE
+#echo "# Skimmers with 0.2ppm deviation and more than 500 qualified spots" >> $REFFILE
+#awk '{if ($1 == "#" && ($3 >= 0.0 ? $3 : -$3) == 0.2 && $4 > 500){print $2;}}' $SOURCE | sed 's/*//g' >> $REFFILE
 
 printf "done\n"
 

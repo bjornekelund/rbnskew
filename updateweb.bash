@@ -53,9 +53,7 @@ else
 fi
 
 echo "-"
-printf "Emailing status report..."
 ./emailstatus.bash
-printf "done\n"
 echo "-"
 echo "Job ended "`date -u "+%F %T"`" and took $((SECONDS-START)) seconds"
 exit

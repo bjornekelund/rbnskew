@@ -3,9 +3,12 @@
 # Assumes email is set up in /etc/ssmtp/ssmtp.conf
 
 FILE=webserver/rbnhist.txt
-
+COUNT=0
+echo "Mailing status report to:"
 for address in `grep -v \# mailrecipients`; do
-#for address in bjorn@ekelund.nu; do
+#for address in bjorn@ekelund.nu bjornekelund@gmail.com; do
+  printf $address
+  printf " "
   # Email header
   echo "From: SM7IUN RBN Analytics <noreply@rbn.sm7iun.se>" > .email.txt
   echo "To:" $address >> .email.txt
@@ -35,7 +38,11 @@ for address in `grep -v \# mailrecipients`; do
   echo "</pre>" >> .email.txt
   echo "Visit <a href=\"https://sm7iun.se/rbn/analytics\">sm7iun.se</a> for more detailed information." >> .email.txt
   echo "</body></html>" >> .email.txt
-
+  COUNT=$(($COUNT+1))
+  if ! (($COUNT % 4)); then
+    echo
+  fi
   /usr/sbin/sendmail $address < .email.txt
 done
+printf "\n"
 exit
