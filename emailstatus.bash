@@ -4,8 +4,9 @@
 
 FILE=webserver/rbnhist.txt
 
-#for address in `grep -v \# mailrecipients`; do
-for address in bjorn@ekelund.nu; do
+for address in `grep -v \# mailrecipients`; do
+#for address in bjorn@ekelund.nu; do
+  # Email header
   echo "From: SM7IUN RBN Analytics <noreply@rbn.sm7iun.se>" > .email.txt
   echo "To:" $address >> .email.txt
   echo "Subject: Skimmer skew report for" `date -u "+%F" --date="1 day ago"` >> .email.txt
@@ -19,8 +20,8 @@ for address in bjorn@ekelund.nu; do
 
   # List all tracked skimmers
   # Add space to end to avoid false matches of aliases
-  sed -e 's/$/ /g' trackedskimmers > .trackedskimmers
-    grep -f .trackedskimmers $FILE >> .email.txt
+  grep -v \# trackedskimmers | sed -e 's/$/ /g' > .trackedskimmers
+  grep -f .trackedskimmers $FILE >> .email.txt
 
   # Separator line
   grep -- -- $FILE >> .email.txt
@@ -34,6 +35,7 @@ for address in bjorn@ekelund.nu; do
   echo "</pre>" >> .email.txt
   echo "Visit <a href=\"https://sm7iun.se/rbn/analytics\">sm7iun.se</a> for more detailed information." >> .email.txt
   echo "</body></html>" >> .email.txt
+
   /usr/sbin/sendmail $address < .email.txt
 done
 exit
