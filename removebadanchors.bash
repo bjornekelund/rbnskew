@@ -13,7 +13,7 @@ RESULT=.result
 grep -v \# $1 | sed -e 's/$/ /g' > .anchors
 
 # First, run an analysis with only anchor skimmers. 
-printf "Removing bad anchors..."
+printf "Removing inaccurate anchors..."
 ./rbnskew -wq -f $RBNDATA -c $1 | awk '{if ($1 == "#"){print $0}}' | sed 's/*//g' | grep -f .anchors > $RESULT
 
 # Remove the worst but only if it is more than 0.2ppm off.
