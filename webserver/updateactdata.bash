@@ -5,8 +5,6 @@
 # Result is saved in rbnact.txt
 #set -x
 
-echo "-"
-
 FOLDER="webserver"
 DATE=`date -u --date="1 days ago" +%Y-%m-%d`
 DFILE="rbndata.csv"

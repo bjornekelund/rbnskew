@@ -8,11 +8,9 @@ SOURCE=$FOLDER/`date -u --date="1 days ago" +%Y%m%d`.txt # Result with reference
 REFFILE="reference" # File with reference skimmers
 VERFILE="verified" # File with verified anchors
 
-echo "-"
-
-# Remove the worst anchor if it has more than a certain deviation to avoid
-# temporarily misbehaving anchors to destroy results.
-# Do this twicet to be able to sustain two misbehaving anchors without loss of accuracy.
+# Remove the most inaccurate anchor if it has more than a certain deviation to keep
+# temporarily misbehaving anchors from destroy results.
+# Do this twice to allow two misbehaving anchors without loss of accuracy.
 ./removebadanchors.bash anchors .tmp
 ./removebadanchors.bash .tmp $VERFILE
 

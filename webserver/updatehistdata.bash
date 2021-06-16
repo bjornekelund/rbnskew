@@ -5,9 +5,6 @@
 # These have be to manually created before the first run.
 #set -x
 
-echo "-"
-#echo "Job started "`date -u "+%F %T"`
-
 FOLDER="webserver"
 FILES="`date -u --date="1 days ago" +%Y%m%d` `date -u --date="2 days ago" +%Y%m%d`\
  `date -u --date="3 days ago" +%Y%m%d` `date -u --date="4 days ago" +%Y%m%d`\

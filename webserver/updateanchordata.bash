@@ -5,8 +5,6 @@
 # Result is saved in rbnact.txt
 #set -x
 
-echo "-"
-
 FOLDER="webserver"
 AFILE="verified"
 OFILE="anchors.txt"

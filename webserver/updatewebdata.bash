@@ -7,8 +7,6 @@ FOLDER="webserver"
 SAVEFILE=$FOLDER/`date -u --date="1 days ago" +%Y%m%d`.txt
 DELFILE=$FOLDER/`date -u --date="6 days ago" +%Y%m%d`.txt
 
-echo "-"
-
 ./rbnskew -wq -f $FOLDER/rbndata.csv > $SAVEFILE
 tr "#" " " < $SAVEFILE > $FOLDER/rbnskew.txt
 echo "Updated rbnskew.txt and also saved result in "$SAVEFILE

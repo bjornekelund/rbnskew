@@ -12,8 +12,6 @@ fi
 
 echo "Mailing status report to:"
 for address in $MAILLIST; do
-#for address in `grep -v \# mailrecipients`; do
-#for address in bjorn@ekelund.nu bjornekelund@gmail.com; do
   printf $address
   printf " "
   # Email header
