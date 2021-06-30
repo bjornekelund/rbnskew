@@ -17,7 +17,7 @@ OLDESTRES=`date -u --date="5 days ago" +%Y%m%d`.txt
 FOLDER="webserver"
 
 echo "---"
-echo "Job started "`date -u "+%F %T" `
+echo "Job started "`date -u "+%F %T"` UTC
 
 START=$SECONDS
 
@@ -57,5 +57,5 @@ else
 fi
 
 ./emailstatus.bash $1
-echo "Job ended "`date -u "+%F %T"`" and took $((SECONDS-START)) seconds"
+echo "Job ended "`date -u "+%F %T"`" UTC and took $((SECONDS-START)) seconds"
 exit
