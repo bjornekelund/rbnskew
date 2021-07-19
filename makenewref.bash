@@ -9,7 +9,7 @@ REFFILE="reference" # File with reference skimmers
 VERFILE="verified" # File with verified anchors
 
 # Remove the most inaccurate anchor if it has more than a certain deviation to keep
-# temporarily misbehaving anchors from destroy results.
+# temporarily misbehaving anchors from destroying results.
 # Do this twice to allow two misbehaving anchors without loss of accuracy.
 ./removebadanchors.bash anchors .tmp
 ./removebadanchors.bash .tmp $VERFILE
