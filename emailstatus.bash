@@ -43,8 +43,8 @@ for address in $MAILLIST; do
   echo "</pre>" >> .email.txt
   echo "Visit <a href=\"https://sm7iun.se/rbn/analytics\">sm7iun.se</a> for more detailed information." >> .email.txt
   echo "</body></html>" >> .email.txt
-  COUNT=$(($COUNT+1))
-  if ! (($COUNT % 4)); then
+  COUNT=$(($COUNT + 1))
+  if ! (($COUNT % 6)); then
     echo
   fi
   /usr/sbin/sendmail $address < .email.txt
