@@ -10,7 +10,7 @@ else
   MAILLIST=`grep -v \# mailrecipients`
 fi
 
-echo "Mailing status report to:"
+printf "Mailing status report to: "
 for address in $MAILLIST; do
   printf $address
   printf " "
@@ -44,7 +44,7 @@ for address in $MAILLIST; do
   echo "Visit <a href=\"https://sm7iun.se/rbn/analytics\">sm7iun.se</a> for more detailed information." >> .email.txt
   echo "</body></html>" >> .email.txt
   COUNT=$(($COUNT + 1))
-  if ! (($COUNT % 6)); then
+  if ! (($COUNT % 5)); then
     echo
   fi
   /usr/sbin/sendmail $address < .email.txt
