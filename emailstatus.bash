@@ -7,7 +7,7 @@ COUNT=0
 if [ "$1" == "TEST" ]; then
   MAILLIST="bjorn@ekelund.nu"
 else
-  MAILLIST=`grep -v \# mailrecipients`
+  MAILLIST=`grep -v \# MAILRECIPIENTS`
 fi
 
 printf "Mailing status report to: "
@@ -28,7 +28,7 @@ for address in $MAILLIST; do
 
   # List all tracked skimmers
   # Add space to end to avoid false matches of aliases
-  grep -v \# trackedskimmers | sed -e 's/$/ /g' > .trackedskimmers
+  grep -v \# TRACKEDSKIMMERS | sed -e 's/$/ /g' > .trackedskimmers
   grep -f .trackedskimmers $FILE >> .email.txt
 
   # Separator line
@@ -36,7 +36,7 @@ for address in $MAILLIST; do
 
   # List all anchor skimmers before removing misbehaving ones
   # Add space to end to avoid false matches of aliases
-  grep -v \# anchors | sed -e 's/$/ /g' > .anchors
+  grep -v \# ANCHORS | sed -e 's/$/ /g' > .anchors
   grep -f .anchors $FILE >> .email.txt
 
   echo >> .email.txt

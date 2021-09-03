@@ -24,8 +24,8 @@ To maximize the number of usable spots, the skew analysis is done in two success
 After downloading the data from RBN, the script `makenewref.bash` is executed.
 The purpose of this first step is to determine which skimmers were reliable yesterday.
 
-This is done by running `rbnskew` on yesterday's RBN data set using the skimmmers in the file `anchors` 
-as reference. The file `anchors` contains a set of highly trusted (typically GPSDO-controlled) 
+This is done by running `rbnskew` on yesterday's RBN data set using the skimmmers in the file `ANCHORS` 
+as reference. The file `ANCHORS` contains a set of highly trusted (typically GPSDO-controlled) 
 skimmers.
 
 The results are then used to create an expanded list of trusted skimmers which is saved in the 
