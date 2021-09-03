@@ -25,7 +25,8 @@ BEGIN {
 {
   if ($1 == "#" && $3 ~ /^[+-]?[0-9]+\.[0-9]$/) {
     dev = $3 + 0;
-    absdev = $3 < 0.0 ? -$3 : $3;
+    absdev = dev < 0.0 ? -dev : dev;
+#    printf("dev=%f absdev=%f\n", dev, absdev) >> "/dev/stderr";
     if (absdev > worstdev) {
       worstdev = absdev;
       if (absdev > 0.2) {
