@@ -7,7 +7,9 @@
 FOLDER="webserver"
 DATES="`date -u --date="1 days ago" +%Y%m%d` `date -u --date="2 days ago" +%Y%m%d`\
  `date -u --date="3 days ago" +%Y%m%d` `date -u --date="4 days ago" +%Y%m%d`\
- `date -u --date="5 days ago" +%Y%m%d`"
+ `date -u --date="5 days ago" +%Y%m%d` `date -u --date="6 days ago" +%Y%m%d`\
+ `date -u --date="7 days ago" +%Y%m%d` `date -u --date="8 days ago" +%Y%m%d`\
+ `date -u --date="9 days ago" +%Y%m%d` `date -u --date="10 days ago" +%Y%m%d`"
 
 echo "Creating historical analysis results for:" $DATES
 

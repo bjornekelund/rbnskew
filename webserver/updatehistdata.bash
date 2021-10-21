@@ -8,7 +8,9 @@
 FOLDER="webserver"
 FILES="`date -u --date="1 days ago" +%Y%m%d` `date -u --date="2 days ago" +%Y%m%d`\
  `date -u --date="3 days ago" +%Y%m%d` `date -u --date="4 days ago" +%Y%m%d`\
- `date -u --date="5 days ago" +%Y%m%d`"
+ `date -u --date="5 days ago" +%Y%m%d` `date -u --date="6 days ago" +%Y%m%d`\
+ `date -u --date="7 days ago" +%Y%m%d` `date -u --date="8 days ago" +%Y%m%d`\
+ `date -u --date="9 days ago" +%Y%m%d` `date -u --date="10 days ago" +%Y%m%d`"
 
 cd $FOLDER
 rm -f history.txt
@@ -32,7 +34,7 @@ END {
       k = 0;
       for (elem in array[trycall])
         k++;
-      if (k == 5) {
+      if (k == 10) {
         call = trycall;
         break;
       }
@@ -41,13 +43,13 @@ END {
   printf("Skimmer    ");
   j = 0
   for (datestring in array[call]) {
-    date[j++] = substr(datestring, 3, 2) "-" substr(datestring, 5, 2) "-" substr(datestring, 7, 2);
+    date[j++] = substr(datestring, 5, 4);
   }
 # Print in antichronological order
-  for (j = 4; j >= 0; j--) {
-    printf("%10s", date[j]);
+  for (j = 9; j >= 0; j--) {
+    printf("%6s", date[j]);
   }
-  printf("\n-------------------------------------------------------------\n");
+  printf("\n-----------------------------------------------------------------------\n");
 }' history.txt > rbnhist.txt
 
 # Produce meat of output file
@@ -64,7 +66,7 @@ END {
       k = 0;
       for (elem in array[trycall])
         k++;
-      if (k == 5)
+      if (k == 10)
         call = trycall;
     }
   }
@@ -74,11 +76,11 @@ END {
     date[j++] = datestring;
   }
   for (i in array) {
-	printf("%-9s", i);
+	printf("%-11s", i);
     if (isarray(array[i])) {
 # Print data in row in antichronological order
-      for (j = 4; j >= 0; j--) {
-        printf("%10s", array[i][date[j]]);
+      for (j = 9; j >= 0; j--) {
+        printf("%6s", array[i][date[j]]);
       }
 	  printf("\n");
     }

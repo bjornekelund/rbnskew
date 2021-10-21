@@ -5,7 +5,7 @@
 FILE=`date -u --date="1 days ago" +%Y%m%d`
 FOLDER="webserver"
 SAVEFILE=$FOLDER/`date -u --date="1 days ago" +%Y%m%d`.txt
-DELFILE=$FOLDER/`date -u --date="6 days ago" +%Y%m%d`.txt
+DELFILE=$FOLDER/`date -u --date="11 days ago" +%Y%m%d`.txt
 
 ./rbnskew -wq -f $FOLDER/rbndata.csv > $SAVEFILE
 tr "#" " " < $SAVEFILE > $FOLDER/rbnskew.txt
