@@ -40,7 +40,7 @@ END {
       }
     }
   }
-  printf("Skimmer    ");
+  printf("Skimmer  ");
   j = 0
   for (datestring in array[call]) {
     date[j++] = substr(datestring, 5, 4);
@@ -49,7 +49,7 @@ END {
   for (j = 9; j >= 0; j--) {
     printf("%6s", date[j]);
   }
-  printf("\n-----------------------------------------------------------------------\n");
+  printf("\n---------------------------------------------------------------------\n");
 }' history.txt > rbnhist.txt
 
 # Produce meat of output file
@@ -76,7 +76,7 @@ END {
     date[j++] = datestring;
   }
   for (i in array) {
-	printf("%-11s", i);
+	printf("%-9s", i);
     if (isarray(array[i])) {
 # Print data in row in antichronological order
       for (j = 9; j >= 0; j--) {
