@@ -42,7 +42,6 @@ if [[ $FILESIZE != "0" ]]; then
     ./makenewref.bash
     ./$FOLDER/updatewebdata.bash
     ./$FOLDER/updatehistdata.bash
-    ./$FOLDER/updateactdata.bash
     ./$FOLDER/updateanchordata.bash
     cd $FOLDER
     printf "Uploading to web hosting..."
