@@ -4,13 +4,17 @@
 
 FILE=webserver/rbnhist.txt
 COUNT=0
+
 if [ "$1" == "TEST" ]; then
   MAILLIST="bjorn@ekelund.nu"
 else
   MAILLIST=`grep -v \# MAILRECIPIENTS`
 fi
 
+ADDRS=`echo $MAILLIST | wc -w`
+
 printf "Mailing status report to: "
+
 for address in $MAILLIST; do
   printf $address
   printf " "
@@ -44,10 +48,10 @@ for address in $MAILLIST; do
   echo "Visit <a href=\"https://sm7iun.se/rbn/analytics\">sm7iun.se</a> for more detailed information." >> .email.txt
   echo "</body></html>" >> .email.txt
   COUNT=$(($COUNT + 1))
-  if ! (($COUNT % 5)); then
+  if (($COUNT % 5 == 0)) && (($COUNT != $ADDRS)); then
     echo
   fi
-  /usr/sbin/sendmail $address < .email.txt
+#  /usr/sbin/sendmail $address < .email.txt
 done
-printf "\n"
+echo
 exit
