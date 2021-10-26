@@ -51,7 +51,7 @@ for address in $MAILLIST; do
   if (($COUNT % 5 == 0)) && (($COUNT != $ADDRS)); then
     echo
   fi
-#  /usr/sbin/sendmail $address < .email.txt
+  /usr/sbin/sendmail $address < .email.txt
 done
 echo
 exit
