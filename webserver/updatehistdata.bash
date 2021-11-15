@@ -76,7 +76,7 @@ END {
     date[j++] = datestring;
   }
   for (i in array) {
-	printf("%-9s", i);
+        printf("%-9s", substr(sprintf("%s", i), 1, 9));
     if (isarray(array[i])) {
 # Print data in row in antichronological order
       for (j = 9; j >= 0; j--) {
