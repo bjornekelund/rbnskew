@@ -7,7 +7,6 @@ cd sm7iun.se/targetfolder
 put rbnskew.txt
 put rbnskew2.txt
 put rbnhist.txt
-put rbnact.txt
 put anchors.txt
 quit
 END_SCRIPT

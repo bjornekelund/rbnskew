@@ -1,7 +1,7 @@
 #!/bin/bash
 # Get yesterday's RBN data and run a number of analyses on it
 # Put result in files rbnskew.txt, rbnskew2.txt, rbnhist.txt
-# and rbnact.txt and upload them to web host.
+# and anchors.txt and upload them to web host.
 #
 # Checks if it has already run for today and if it has, exits
 #

@@ -1,12 +1,10 @@
 #!/bin/bash
-# Analyses the content of webserver/rbndata.csv and
-# creates summaries of station and skimmer activity
-# per continent and band.
-# Result is saved in rbnact.txt
+# Creates anchors.txt which contains a list 
+# of the verified anchors
 #set -x
 
 FOLDER="webserver"
-AFILE="verified"
+AFILE="VERIFIED"
 OFILE="anchors.txt"
 
 printf "Updating anchors.txt..."

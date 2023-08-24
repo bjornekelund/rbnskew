@@ -5,8 +5,8 @@
 FOLDER="webserver"
 PSOURCE=$FOLDER/`date -u --date="1 days ago" +%Y%m%d`p.txt # Result with anchors
 SOURCE=$FOLDER/`date -u --date="1 days ago" +%Y%m%d`.txt # Result with reference skimmers
-REFFILE="reference" # File with reference skimmers
-VERFILE="verified" # File with verified anchors
+REFFILE="REFERENCE" # File with reference skimmers
+VERFILE="VERIFIED" # File with verified anchors
 
 # Remove the most inaccurate anchor if it has more than a certain deviation to keep
 # temporarily misbehaving anchors from destroying results.

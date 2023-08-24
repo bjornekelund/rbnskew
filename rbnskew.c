@@ -35,7 +35,7 @@
 // Maximum difference from reference spot times 100Hz
 #define MAXERR 5
 // Name of file containing callsigns of reference skimmmers
-#define REFFILENAME "reference"
+#define REFFILENAME "REFERENCE"
 // Mode of spots
 #define MODE "CW"
 
