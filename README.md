@@ -8,7 +8,7 @@ the relative frequency error for all skimmers listed in the file.
 It uses a set of trusted skimmers to calculate the average deviation in reported
 frequency for all spots meeeting a selection of criterias.
 
-The default filename for the list of trusted skimmers is `reference`. 
+The trusted skimmers are listed in the file `ANCHORS`. 
 
 The script `updateweb.bash` is run shortly after UTC midnight every day to 
 update https://sm7iun.se/rbn/analytics. To embed the text files in the Wordpress 
@@ -17,22 +17,23 @@ page, php snippets are used.
 `updateweb.bash` calls the scripts `makenewref.bash`, `webserver/updatewebdata.bash`, 
 `webserver/updatehistdata.bash`, and `webserver/updateactdata.bash` and finally
 uploads the analysis results to the web server using the script `webserver/upload.bash`. 
-The upload script is not available in the repo since it contains login information. 
+The upload script is not available in this repository since it contains login information. 
 
 To maximize the number of usable spots, the skew analysis is done in two successive steps. 
 
 After downloading the data from RBN, the script `makenewref.bash` is executed.
-The purpose of this first step is to determine which skimmers were reliable yesterday.
+The purpose of this first step is to determine which skimmers, beyond the reference skimmers,
+were reliable yesterday.
 
 This is done by running `rbnskew` on yesterday's RBN data set using the skimmmers in the file `ANCHORS` 
 as reference. The file `ANCHORS` contains a set of highly trusted (typically GPSDO-controlled) 
 skimmers.
 
 The results are then used to create an expanded list of trusted skimmers which is saved in the 
-file `reference`. `makenewref.bash` lists all skimmers with more than 100 spots and 
-less than 0.2ppm deviation from the "anchor" skimmers in this updated `reference` file. 
+file `REFERENCE`. `makenewref.bash` lists all skimmers that are considered sufficiently accurate
+in the `REFERENCE` file. 
 
-The second step is then to run `webserver/updatewebdata.bash` using the updated `reference` 
+The second step is then to run `webserver/updatewebdata.bash` using the updated `REFERENCE` 
 file and create the text output for the web site.
 
 The script `webserver/updatehistdata.bash` uses the results from `updatewebdata.bash` for 
@@ -41,7 +42,7 @@ the last five days to create a text table.
 The script `webserver/updateactdata.bash` calculates the activity statistics from yesterday's 
 RBN data set and creates two text tables. 
 
-The format of the `reference` file is simple. One callsign per line.
+The format of the `REFERENCE` and `ANCHORS`files is simple. One callsign per line.
 Comment lines are allowed and start with "#". 
 
 For a more rapid analysis, the analysis can be done for only a selected call,
