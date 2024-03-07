@@ -8,6 +8,7 @@ put rbnskew.txt
 put rbnskew2.txt
 put rbnhist.txt
 put anchors.txt
+put rbnskew.csv
 quit
 END_SCRIPT
 exit 0
