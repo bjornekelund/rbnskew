@@ -16,4 +16,8 @@ echo "Deleted "$DELFILE
 
 ./rbnskew -wqh -f $FOLDER/rbndata.csv | tr "#" " " > $FOLDER/rbnskew2.txt
 echo "Updated rbnskew2.txt"
+
+tr "*" " " < $SAVEFILE | gawk -f $FOLDER/csv.awk > $FOLDER/rbnskew.csv
+echo "Updated rbnskew.csv"
+
 exit

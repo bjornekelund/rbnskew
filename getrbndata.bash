@@ -1,7 +1,7 @@
 #!/bin/bash
 # get a full month of data, unpack and delete zip files
-YEAR="2021"
-MONTH="05"
+YEAR="2024"
+MONTH="03"
 FOLDER="rbnfiles"
 mkdir -p $FOLDER
 for day in {01..31}
