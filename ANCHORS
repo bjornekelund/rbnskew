@@ -5,16 +5,11 @@
 # Skimmers with external frequency normal
 AA4VV
 ES2RR
-#AC0C-1
 OE9GHV
 WB6BEE
 KM3T
-#KM3T-1
-#K3PA-1
-#NA0B
 LZ3CB
 DF7GB
-MM3NDH
 # Skimmers that benchmark well and/or
 # are geographically motivated
 #DM5GG
@@ -22,10 +17,3 @@ LZ4UX
 #WZ7I
 #DL3DTH
 #G4ZFE
-#RN4WA
-#DO4DXA
-#SM7IUN
-#DK9IP
-# Skimmers with poor accuracy, only used for testing
-#HB9JCB
-#DR4W
