@@ -1,4 +1,5 @@
 BEGIN {
+	printf("# Calculated %s\n", strftime("%Y-%m-%d %H:%M:%S"));
 	printf("Callsign,Skew,Spots,Correction factor\n");
 }
 {
