@@ -1,0 +1,14 @@
+defaults
+auth           on
+tls            on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        ~/msmtp.log
+
+account        rbn
+host           mailcluster.loopia.se
+port           587
+from           SM7IUN RBN Analytics <noreply@rbn.sm7iun.se>
+user           noreply@rbn.sm7iun.se
+password       asd79087&()hfkkd1}}22374
+
+account default : rbn

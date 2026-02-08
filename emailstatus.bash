@@ -18,9 +18,9 @@ printf "Mailing status report to: "
 for address in $MAILLIST; do
   printf $address
   printf " "
+
   # Email header
-  echo "From: SM7IUN RBN Analytics <noreply@rbn.sm7iun.se>" > .email.txt
-  echo "To:" $address >> .email.txt
+  echo "To:" $address > .email.txt
   echo "Subject: Skimmer skew report for" `date -u "+%F" --date="1 day ago"` >> .email.txt
   echo "Content-Type:text/html; charset=\"utf-8\"" >> .email.txt
   echo "<html lang=\"en\"><body>" >> .email.txt
@@ -51,7 +51,7 @@ for address in $MAILLIST; do
   if (($COUNT % 5 == 0)) && (($COUNT != $ADDRS)); then
     echo
   fi
-  /usr/sbin/sendmail $address < .email.txt
+  msmtp $address < .email.txt
 done
 echo
 exit
