@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Creates analysis results for the past five days
 # provide historical data for script webserver/updatehistdata
 # Used when installing fresh

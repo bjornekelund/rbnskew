@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Get yesterday's RBN data and run a number of analyses on it
 # Put result in files rbnskew.txt, rbnskew2.txt, rbnhist.txt
 # and anchors.txt and upload them to web host.
@@ -28,7 +28,7 @@ if [ "$DATE" == "`cat $FOLDER/done`" ]; then
     exit
 fi
 
-[ -f $FOLDER/$OLDESTRES ] || ./initweb.bash
+[ -f $FOLDER/$OLDESTRES ] || ./initweb.sh
 
 # Do the work
 echo "Downloading RBN data for "`date -u --date="1 days ago" +%Y-%m-%d`
@@ -39,13 +39,13 @@ FILESIZE=$(stat -c%s $FOLDER/rbndata.zip)
 if [[ $FILESIZE != "0" ]]; then
     gunzip < $FOLDER/rbndata.zip > $FOLDER/rbndata.csv
     echo "Downloaded yesterday's "$((`wc -l < $FOLDER/rbndata.csv` - 2))" spots into rbndata.csv"
-    ./makenewref.bash
-    ./$FOLDER/updatewebdata.bash
-    ./$FOLDER/updatehistdata.bash
-    ./$FOLDER/updateanchordata.bash
+    ./makenewref.sh
+    ./$FOLDER/updatewebdata.sh
+    ./$FOLDER/updatehistdata.sh
+    ./$FOLDER/updateanchordata.sh
     cd $FOLDER
     printf "Uploading to web hosting..."
-    ./upload.bash
+    ./upload.sh
     printf "done\n"
     echo $DATE > done
     cd ..
@@ -55,6 +55,6 @@ else
     exit
 fi
 
-./emailstatus.bash $1
+./emailstatus.sh $1
 echo "Job ended "`date -u "+%F %T"`" UTC and took $((SECONDS-START)) seconds"
 exit

@@ -10,18 +10,18 @@ frequency for all spots meeeting a selection of criterias.
 
 The trusted skimmers are listed in the file `ANCHORS`. 
 
-The script `updateweb.bash` is run shortly after UTC midnight every day to 
+The script `updateweb.sh` is run shortly after UTC midnight every day to 
 update https://sm7iun.se/rbn/analytics. To embed the text files in the Wordpress 
 page, php snippets are used. 
 
-`updateweb.bash` calls the scripts `makenewref.bash`, `webserver/updatewebdata.bash`, 
-`webserver/updatehistdata.bash`, and `webserver/updateactdata.bash` and finally
-uploads the analysis results to the web server using the script `webserver/upload.bash`. 
+`updateweb.sh` calls the scripts `makenewref.sh`, `webserver/updatewebdata.sh`, 
+`webserver/updatehistdata.sh`, and `webserver/updateactdata.sh` and finally
+uploads the analysis results to the web server using the script `webserver/upload.sh`. 
 The upload script is not available in this repository since it contains login information. 
 
 To maximize the number of usable spots, the skew analysis is done in two successive steps. 
 
-After downloading the data from RBN, the script `makenewref.bash` is executed.
+After downloading the data from RBN, the script `makenewref.sh` is executed.
 The purpose of this first step is to determine which skimmers, beyond the reference skimmers,
 were reliable yesterday.
 
@@ -30,16 +30,16 @@ as reference. The file `ANCHORS` contains a set of highly trusted (typically GPS
 skimmers.
 
 The results are then used to create an expanded list of trusted skimmers which is saved in the 
-file `REFERENCE`. `makenewref.bash` lists all skimmers that are considered sufficiently accurate
+file `REFERENCE`. `makenewref.sh` lists all skimmers that are considered sufficiently accurate
 in the `REFERENCE` file. 
 
-The second step is then to run `webserver/updatewebdata.bash` using the updated `REFERENCE` 
+The second step is then to run `webserver/updatewebdata.sh` using the updated `REFERENCE` 
 file and create the text output for the web site.
 
-The script `webserver/updatehistdata.bash` uses the results from `updatewebdata.bash` for 
+The script `webserver/updatehistdata.sh` uses the results from `updatewebdata.sh` for 
 the last five days to create a text table.
 
-The script `webserver/updateactdata.bash` calculates the activity statistics from yesterday's 
+The script `webserver/updateactdata.sh` calculates the activity statistics from yesterday's 
 RBN data set and creates two text tables. 
 
 The format of the `REFERENCE` and `ANCHORS`files is simple. One callsign per line.
@@ -48,9 +48,9 @@ Comment lines are allowed and start with "#".
 For a more rapid analysis, the analysis can be done for only a selected call,
 using the -t option.
 
-The script `initweb.bash` offers a crude way to start up the process. 
+The script `initweb.sh` offers a crude way to start up the process. 
 It will run a basic (not two-step) analysis of the last five days of 
-RBN data to make sure the table created by `webserver/updatehistdata.bash` is not empty. 
+RBN data to make sure the table created by `webserver/updatehistdata.sh` is not empty. 
 
 The script `getrbndata` downloads all RBN data for a selected month (that does not 
 already exist) into the `rbnfiles` subfolder.

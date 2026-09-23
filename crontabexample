@@ -3,4 +3,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
-10 * * * * /home/sm7iun/rbnskew/updateweb.bash  >> /home/sm7iun/webrbnskew.log 2>&1
+10 * * * * /home/sm7iun/rbnskew/updateweb.sh  >> /home/sm7iun/webrbnskew.log 2>&1

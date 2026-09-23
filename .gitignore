@@ -10,10 +10,10 @@ webserver/*.txt
 webserver/*.zip
 webserver/*~
 webserver/done
-webserver/upload*
 cunique
 rbndata
 obsolete
 .*
 REFERENCE
 VERIFIED
+LOOPIACREDENTIALS

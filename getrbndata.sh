@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # get a full month of data, unpack and delete zip files
 YEAR="2024"
 MONTH="03"

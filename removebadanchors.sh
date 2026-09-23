@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Removes worst anchor if it has a deviation more than 0.2ppm
 # Uses webserver/rbndata.csv

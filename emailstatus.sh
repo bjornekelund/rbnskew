@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Assumes ssmtp is installed (sudo apt install ssmtp)
 # Assumes email is set up in /etc/ssmtp/ssmtp.conf
 
