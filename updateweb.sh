@@ -35,7 +35,7 @@ fi
 [ -f $RBNFOLDER/$OLDESTRES ] || ./initweb.sh
 
 # Do the work
-printf "Downloading RBN data for "`date -u --date="1 days ago" +%Y-%m-%d`" ... "
+printf "Downloading RBN data for "`date -u --date="1 days ago" +%Y-%m-%d`"..."
 
 wget --quiet --no-hsts http://www.reversebeacon.net/raw_data/dl.php?f=$DATE -O $RBNFOLDER/rbndata.zip
 
