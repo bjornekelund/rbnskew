@@ -9,11 +9,10 @@
 # results to a single email address.
 #set -x
 
-# Move to correct folder to allow cron execution on RPi
+# Move to correct folder to allow cron execution
 [ -d "/home/sm7iun/rbnskew" ] && cd /home/sm7iun/rbnskew
 
 DATE=`date -u --date="1 days ago" +%Y%m%d`
-OLDESTRES=`date -u --date="5 days ago" +%Y%m%d`.txt
 WEBFOLDER="webfiles"
 RBNFOLDER="rbndata"
 CREDFILE=WEBCREDENTIALS
@@ -32,7 +31,8 @@ fi
 
 [ -f rbnskew ] || make
 
-[ -f $RBNFOLDER/$OLDESTRES ] || ./initialize.sh
+OLDESTRBN=`date -u --date="10 days ago" +%Y%m%d`.txt
+[ -f $RBNFOLDER/$OLDESTRBN ] || ./initialize.sh
 
 # Do the work
 printf "Downloading RBN data for "`date -u --date="1 days ago" +%Y-%m-%d`"..."
