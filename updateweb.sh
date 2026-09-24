@@ -13,6 +13,7 @@
 [ -d "/home/sm7iun/rbnskew" ] && cd /home/sm7iun/rbnskew
 
 DATE=`date -u --date="1 days ago" +%Y%m%d`
+OLDESTRES=`date -u --date="10 days ago" +%Y%m%d`.txt
 WEBFOLDER="webfiles"
 RBNFOLDER="rbndata"
 CREDFILE=WEBCREDENTIALS
