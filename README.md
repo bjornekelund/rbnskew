@@ -47,7 +47,7 @@ Comment lines are allowed and start with "#".
 For a more rapid analysis, the analysis can be done for only a selected call,
 using the -t option.
 
-The script `initweb.sh` offers a crude way to start up the process. 
+The script `initialize.sh` offers a easy way to start up the process. 
 It will run a basic (not two-step) analysis of the last five days of 
 RBN data to make sure the table created by `createhistdata.sh` is not empty. 
 

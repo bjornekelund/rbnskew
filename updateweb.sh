@@ -32,7 +32,7 @@ fi
 
 [ -f rbnskew ] || make
 
-[ -f $RBNFOLDER/$OLDESTRES ] || ./initweb.sh
+[ -f $RBNFOLDER/$OLDESTRES ] || ./initialize.sh
 
 # Do the work
 printf "Downloading RBN data for "`date -u --date="1 days ago" +%Y-%m-%d`"..."
