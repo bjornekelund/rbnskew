@@ -3,7 +3,7 @@
 # Put result in files rbnskew.txt, and rbnskew2.txt
 
 FILE=`date -u --date="1 days ago" +%Y%m%d`
-RBNFOLDER="rbnfiles"
+RBNFOLDER="rbndata"
 WEBFOLDER="webfiles"
 SAVEFILE=$WEBFOLDER/`date -u --date="1 days ago" +%Y%m%d`.txt
 DELFILE=$WEBFOLDER/`date -u --date="11 days ago" +%Y%m%d`.txt

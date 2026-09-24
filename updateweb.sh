@@ -15,7 +15,7 @@
 DATE=`date -u --date="1 days ago" +%Y%m%d`
 OLDESTRES=`date -u --date="5 days ago" +%Y%m%d`.txt
 WEBFOLDER="webfiles"
-RBNFOLDER="rbnfiles"
+RBNFOLDER="rbndata"
 CREDFILE=WEBCREDENTIALS
 
 echo "---"

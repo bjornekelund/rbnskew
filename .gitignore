@@ -1,6 +1,5 @@
 *.o
 *.txt
-*.csv
 *.log
 *.tmp
 *.zip
@@ -11,3 +10,5 @@ REFERENCE
 VERIFIED
 WEBCREDENTIALS
 .*
+rbndata/rbndata.csv
+webfiles/rbnskew.csv

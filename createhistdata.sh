@@ -6,7 +6,7 @@
 #set -x
 
 WEBFOLDER="webfiles"
-RBNFOLDER="rbnfiles"
+RBNFOLDER="rbndata"
 HISTORY=$WEBFOLDER/history.txt
 OUTFILE=$WEBFOLDER/rbnhist.txt
 

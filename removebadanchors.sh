@@ -5,7 +5,7 @@
 # $1 incoming anchorfile
 # $2 outgoing and pruned anchorfile
 
-RBNFOLDER="rbnfiles"
+RBNFOLDER="rbndata"
 RBNDATA=$RBNFOLDER/rbndata.csv
 RESULT=".result"
 

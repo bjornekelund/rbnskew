@@ -2,7 +2,7 @@
 # Calculate a new set of reference skimmers for the next night's run
 # Built to be called from script updateweb
 
-RBNFOLDER="rbnfiles"
+RBNFOLDER="rbndata"
 SOURCE=$RBNFOLDER/`date -u --date="1 days ago" +%Y%m%d`.txt # Result with reference skimmers
 REFFILE="REFERENCE" # File with reference skimmers
 VERFILE="VERIFIED" # File with verified anchors

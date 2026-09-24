@@ -52,7 +52,7 @@ It will run a basic (not two-step) analysis of the last five days of
 RBN data to make sure the table created by `createhistdata.sh` is not empty. 
 
 The script `getrbndata` downloads all RBN data for a selected month (that does not 
-already exist) into the `rbnfiles` subfolder.
+already exist) into the `rbndata` subfolder.
 
 The adjustment factor listed within parentheses is intended to be applied to
 CW Skimmer Server's current value of the `FreqCalibration` parameter in `SkimSrv.ini`.
@@ -111,4 +111,4 @@ To run the code on your machine (Linux or Windows' Ubuntu emulator) the followin
 `$ git clone https://github.com/bjornekelund/rbnskew`\
 `$ cd rbnskew`\
 `$ make`\
-`$ ./rbnskew -f webfiles/test.csv`
+`$ ./rbnskew -f rbndata/test.csv`
