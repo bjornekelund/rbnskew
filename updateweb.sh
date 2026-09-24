@@ -42,7 +42,7 @@ wget --quiet --no-hsts http://www.reversebeacon.net/raw_data/dl.php?f=$DATE -O $
 FILESIZE=$(stat -c%s $RBNFOLDER/rbndata.zip)
 if [[ $FILESIZE != "0" ]]; then
     gunzip < $RBNFOLDER/rbndata.zip > $RBNFOLDER/rbndata.csv
-    echo "Downloaded yesterday's "$((`wc -l < $RBNFOLDER/rbndata.csv` - 2))" spots into rbndata.csv"
+    echo "Downloaded yesterday's "$((`wc -l < $RBNFOLDER/rbndata.csv` - 2))" spots"
     ./makenewref.sh
     ./createwebdata.sh
     ./createhistdata.sh
