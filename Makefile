@@ -9,7 +9,7 @@ rbnskew:	rbnskew.c Makefile
 
 clean:
 		rm -f *.o *~ rbnskew
-		rm -f rbnfiles/[0-9]* webfiles/*.txt 
+		rm -f rbndata/2*.txt rbndata/rbndata.* webfiles/*.txt webfiles/done webfiles/rbnskew.csv
 
 lint:
 		${lint} rbnskew.c
