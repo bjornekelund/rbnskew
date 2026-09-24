@@ -47,9 +47,9 @@ if [[ $FILESIZE != "0" ]]; then
     ./createwebdata.sh
     ./createhistdata.sh
     ./createanchordata.sh
-    printf "Uploading to web hosting..."
+#    printf "Uploading to web hosting...\n"
     ./ftptohost.sh $CREDFILE $WEBFOLDER/rbnskew.txt $WEBFOLDER/rbnskew2.txt $WEBFOLDER/rbnhist.txt $WEBFOLDER/anchors.txt $WEBFOLDER/rbnskew.csv
-    printf "done\n"
+#    printf "done\n"
     echo $DATE > $WEBFOLDER/done
 else
     echo "Could not download yesterday's RBN data!"
