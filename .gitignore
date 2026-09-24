@@ -10,10 +10,7 @@ webfiles/*.txt
 webfiles/*.zip
 webfiles/*~
 webfiles/done
-cunique
-rbndata
-obsolete
-.*
 REFERENCE
 VERIFIED
 WEBCREDENTIALS
+.*
