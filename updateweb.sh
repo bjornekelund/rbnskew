@@ -30,6 +30,8 @@ if [ "$DATE" == "`cat $WEBFOLDER/done`" ]; then
     exit
 fi
 
+[ -f rbnskew ] || make
+
 [ -f $RBNFOLDER/$OLDESTRES ] || ./initweb.sh
 
 # Do the work
