@@ -32,23 +32,3 @@ scripts above.
     echo "</pre>";
 ?>
 ```
-
-The script `upload` that uploads the three files `rbnskew.txt`, `rbnref.txt`, 
-and `rbnhist.txt` to the web host is not included in the repo since it 
-unfortunately must contain sensitive information in plain text. 
-
-For a hosting service supporting FTP, this file could look like this:
-
-```
-#!/bin/sh
-ftp -n ftpcluster.myhosting.com <<END_SCRIPT
-quote USER myusername
-quote PASS mypassword
-cd mywebpage.com/public_html
-put rbnskew.txt
-put rbnref.txt
-put rbnhist.txt
-quit
-END_SCRIPT
-exit 0
-```

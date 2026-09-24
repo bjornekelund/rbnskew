@@ -5,20 +5,23 @@
 # These have be to manually created before the first run.
 #set -x
 
-FOLDER="webserver"
+WEBFOLDER="webfiles"
+RBNFOLDER="rbnfiles"
+HISTORY=$WEBFOLDER/history.txt
+OUTFILE=$WEBFOLDER/rbnhist.txt
+
 FILES="`date -u --date="1 days ago" +%Y%m%d` `date -u --date="2 days ago" +%Y%m%d`\
  `date -u --date="3 days ago" +%Y%m%d` `date -u --date="4 days ago" +%Y%m%d`\
  `date -u --date="5 days ago" +%Y%m%d` `date -u --date="6 days ago" +%Y%m%d`\
  `date -u --date="7 days ago" +%Y%m%d` `date -u --date="8 days ago" +%Y%m%d`\
  `date -u --date="9 days ago" +%Y%m%d` `date -u --date="10 days ago" +%Y%m%d`"
 
-cd $FOLDER
-rm -f history.txt
+rm -f $HISTORY
 
 echo "Updating historical data for: $FILES"
 
 for file in $FILES; do
-    awk '{ if ($1 == "#") { print $2 " " substr(FILENAME,0,8) " " $3; }}' $file.txt | sed 's/*//g' >> history.txt
+  awk -v FNAME="$file.txt" '{ if ($1 == "#") { print $2 " " substr(FNAME,0,8) " " $3; }}' "$RBNFOLDER/$file.txt" | sed 's/*//g' >> $HISTORY
 done
 
 # Produce header of output file
@@ -50,7 +53,7 @@ END {
     printf("%6s", date[j]);
   }
   printf("\n---------------------------------------------------------------------\n");
-}' history.txt > rbnhist.txt
+}' $HISTORY > $OUTFILE
 
 # Produce meat of output file
 # Print data in reverse chronological order with newest data to the left
@@ -84,9 +87,9 @@ END {
       }
 	  printf("\n");
     }
-}}' history.txt | sort >> rbnhist.txt
+}}' $HISTORY | sort >> $OUTFILE
 
-echo >> rbnhist.txt
-echo "Last updated "`date -u "+%F %T"`" UTC" >> rbnhist.txt
+echo >> $OUTFILE
+echo "Last updated "`date -u "+%F %T"`" UTC" >> $OUTFILE
 
 exit

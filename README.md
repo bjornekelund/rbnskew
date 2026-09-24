@@ -14,10 +14,10 @@ The script `updateweb.sh` is run shortly after UTC midnight every day to
 update https://sm7iun.se/rbn/analytics. To embed the text files in the Wordpress 
 page, php snippets are used. 
 
-`updateweb.sh` calls the scripts `makenewref.sh`, `webserver/updatewebdata.sh`, 
-`webserver/updatehistdata.sh`, and `webserver/updateactdata.sh` and finally
-uploads the analysis results to the web server using the script `webserver/upload.sh`. 
-The upload script is not available in this repository since it contains login information. 
+`updateweb.sh` calls the scripts `makenewref.sh`, `createwebdata.sh`, 
+`createhistdata.sh`, and `createanchordata.sh` and finally
+uploads the analysis results to the web server using the script `ftptohost.sh`. 
+The credentials for the upload are stored in `WEBCREDENTIALS`. 
 
 To maximize the number of usable spots, the skew analysis is done in two successive steps. 
 
@@ -33,14 +33,13 @@ The results are then used to create an expanded list of trusted skimmers which i
 file `REFERENCE`. `makenewref.sh` lists all skimmers that are considered sufficiently accurate
 in the `REFERENCE` file. 
 
-The second step is then to run `webserver/updatewebdata.sh` using the updated `REFERENCE` 
+The second step is then to run `createwebdata.sh` using the updated `REFERENCE` 
 file and create the text output for the web site.
 
-The script `webserver/updatehistdata.sh` uses the results from `updatewebdata.sh` for 
+The script `createhistdata.sh` uses the results from `createwebdata.sh` for 
 the last five days to create a text table.
 
-The script `webserver/updateactdata.sh` calculates the activity statistics from yesterday's 
-RBN data set and creates two text tables. 
+The script `createanchordata.sh` creates a list of the used anchors for display on the web site. 
 
 The format of the `REFERENCE` and `ANCHORS`files is simple. One callsign per line.
 Comment lines are allowed and start with "#". 
@@ -50,7 +49,7 @@ using the -t option.
 
 The script `initweb.sh` offers a crude way to start up the process. 
 It will run a basic (not two-step) analysis of the last five days of 
-RBN data to make sure the table created by `webserver/updatehistdata.sh` is not empty. 
+RBN data to make sure the table created by `createhistdata.sh` is not empty. 
 
 The script `getrbndata` downloads all RBN data for a selected month (that does not 
 already exist) into the `rbnfiles` subfolder.
@@ -112,4 +111,4 @@ To run the code on your machine (Linux or Windows' Ubuntu emulator) the followin
 `$ git clone https://github.com/bjornekelund/rbnskew`\
 `$ cd rbnskew`\
 `$ make`\
-`$ ./rbnskew -f rbnfiles/test.csv`
+`$ ./rbnskew -f webfiles/test.csv`

@@ -2,7 +2,7 @@
 # Assumes ssmtp is installed (sudo apt install ssmtp)
 # Assumes email is set up in /etc/ssmtp/ssmtp.conf
 
-FILE=webserver/rbnhist.txt
+FILE=webfiles/rbnhist.txt
 COUNT=0
 
 if [ "$1" == "TEST" ]; then

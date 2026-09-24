@@ -3,7 +3,7 @@
 # of the verified anchors
 #set -x
 
-FOLDER="webserver"
+WFOLDER="webfiles"
 AFILE="VERIFIED"
 OFILE="anchors.txt"
 
@@ -17,10 +17,10 @@ awk '
 }
 END {
   printf("\n");
-}' < $AFILE > $FOLDER/$OFILE
+}' < $AFILE > $WFOLDER/$OFILE
 
-echo >> $FOLDER/$OFILE
-echo "Last updated "`date -u "+%F %T"`" UTC" >> $FOLDER/$OFILE
+echo >> $WFOLDER/$OFILE
+echo "Last updated "`date -u "+%F %T"`" UTC" >> $WFOLDER/$OFILE
 
 printf "done\n"
 exit

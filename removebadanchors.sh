@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
 # Removes worst anchor if it has a deviation more than 0.2ppm
-# Uses webserver/rbndata.csv
+# Uses webfiles/rbndata.csv
 # $1 incoming anchorfile
 # $2 outgoing and pruned anchorfile
 
-RBNDATA=webserver/rbndata.csv
-RESULT=.result
+RBNFOLDER="rbnfiles"
+RBNDATA=$RBNFOLDER/rbndata.csv
+RESULT=".result"
 
 # Create a grep filter file with anchors. Add space to end of callsign to avoid
 # that e.g. KM3T matches with KM3T-1

@@ -5,6 +5,11 @@ rbnfiles
 *.tmp
 rbnskew
 *~
+webfiles/*.csv
+webfiles/*.txt
+webfiles/*.zip
+webfiles/*~
+webfiles/done
 cunique
 rbndata
 obsolete
@@ -12,4 +17,3 @@ obsolete
 REFERENCE
 VERIFIED
 WEBCREDENTIALS
-webfiles/done

@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
+#set -x
 
 set -euo pipefail
 
-CREDENTIALS_FILE="../WEBCREDENTIALS"
+if [[ $# -lt 2 ]]; then
+    echo "Usage: $0 credentials_file file1 [file2 ...]" >&2
+    exit 1
+fi
 
-dos2unix -q $CREDENTIALS_FILE
+CREDENTIALS_FILE="$1"
+shift
 
 if [[ ! -f "$CREDENTIALS_FILE" ]]; then
     echo "ERROR: Credentials file '$CREDENTIALS_FILE' not found." >&2
@@ -15,21 +20,13 @@ fi
 # shellcheck disable=SC1090
 source "$CREDENTIALS_FILE"
 
-#printf 'HOST=<%q>\n' "$FTP_HOST"
-#printf 'USER=<%q>\n' "$FTP_USER"
-#printf 'DIR=<%q>\n' "$FTP_REMOTE_DIR"
-
 : "${FTP_HOST:?FTP_HOST is not set in $CREDENTIALS_FILE}"
 : "${FTP_USER:?FTP_USER is not set in $CREDENTIALS_FILE}"
 : "${FTP_PASSWORD:?FTP_PASSWORD is not set in $CREDENTIALS_FILE}"
 
 FTP_REMOTE_DIR="${FTP_REMOTE_DIR:-/}"
 
-if [[ $# -lt 1 ]]; then
-    echo "Usage: $0 file1 file2 file3" >&2
-    exit 1
-fi
-
+# Check that all files exist before uploading anything
 for file in "$@"; do
     if [[ ! -f "$file" ]]; then
         echo "ERROR: File not found: $file" >&2
@@ -37,13 +34,11 @@ for file in "$@"; do
     fi
 done
 
-
-
 for file in "$@"; do
-    echo "Uploading $file..."
+    filename=$(basename "$file")
+    url="ftp://${FTP_HOST}${FTP_REMOTE_DIR%/}/$filename"
 
-    url="ftp://$FTP_HOST${FTP_REMOTE_DIR%/}/$(basename "$file")"
-#    printf 'URL=<%q>\n' "$url"
+    # echo "Uploading $file -> $url"
 
     curl \
         --fail \
@@ -54,7 +49,7 @@ for file in "$@"; do
         --upload-file "$file" \
         "$url"
 
-#    echo "Uploaded $file"
+    echo "Uploaded $file"
 done
 
-echo "All files uploaded successfully."
+#echo "All files uploaded successfully."

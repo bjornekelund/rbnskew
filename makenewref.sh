@@ -2,9 +2,8 @@
 # Calculate a new set of reference skimmers for the next night's run
 # Built to be called from script updateweb
 
-FOLDER="webserver"
-PSOURCE=$FOLDER/`date -u --date="1 days ago" +%Y%m%d`p.txt # Result with anchors
-SOURCE=$FOLDER/`date -u --date="1 days ago" +%Y%m%d`.txt # Result with reference skimmers
+RBNFOLDER="rbnfiles"
+SOURCE=$RBNFOLDER/`date -u --date="1 days ago" +%Y%m%d`.txt # Result with reference skimmers
 REFFILE="REFERENCE" # File with reference skimmers
 VERFILE="VERIFIED" # File with verified anchors
 
@@ -17,7 +16,7 @@ VERFILE="VERIFIED" # File with verified anchors
 
 printf "Selecting reference skimmers..."
 
-./rbnskew -wq -f $FOLDER/rbndata.csv -c $VERFILE > $SOURCE
+./rbnskew -wq -f $RBNFOLDER/rbndata.csv -c $VERFILE > $SOURCE
 
 echo "# Automatically generated reference file" > $REFFILE
 

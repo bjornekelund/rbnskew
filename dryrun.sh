@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-rm webserver/done
+rm -f webfiles/done
 ./updateweb.sh TEST
 exit
