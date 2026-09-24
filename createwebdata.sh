@@ -7,14 +7,14 @@ WEBFOLDER="webfiles"
 SAVEFILE=$WEBFOLDER/`date -u --date="1 days ago" +%Y%m%d`.txt
 DELFILE=$WEBFOLDER/`date -u --date="11 days ago" +%Y%m%d`.txt
 
-echo "Created $SAVEFILE and deleted $DELFILE"
 
 ./rbnskew -wq -f $RBNFOLDER/rbndata.csv > $SAVEFILE
+echo "Created $SAVEFILE and deleted $DELFILE"
+rm -f $DELFILE
+
 tr "#" " " < $SAVEFILE > $WEBFOLDER/rbnskew.txt
 echo "Updated rbnskew.txt and also saved result in "$SAVEFILE
 
-rm -f $DELFILE
-echo "Deleted "$DELFILE
 
 ./rbnskew -wqh -f $RBNFOLDER/rbndata.csv | tr "#" " " > $WEBFOLDER/rbnskew2.txt
 echo "Updated rbnskew2.txt"
