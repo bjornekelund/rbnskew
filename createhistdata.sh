@@ -1,5 +1,5 @@
 #!/bin/bash
-# Uses saved analysis results from the last five days
+# Uses saved analysis results from the last ten days
 # to assemble a table sorted by skimmer callsign
 # updatewebdata creates the required result files.
 # These have be to manually created before the first run.
@@ -7,7 +7,7 @@
 
 WEBFOLDER="webfiles"
 RBNFOLDER="rbndata"
-HISTORY=$WEBFOLDER/history.txt
+HISTORY=$RBNFOLDER/history.txt
 OUTFILE=$WEBFOLDER/rbnhist.txt
 
 FILES="`date -u --date="1 days ago" +%Y%m%d` `date -u --date="2 days ago" +%Y%m%d`\
@@ -31,7 +31,7 @@ awk '{
   call = $1;
 }
 END {
-# Find a call that has been active all five days
+# Find a call that has been active all ten days
   for (trycall in array) {
     if (isarray(array[trycall])) {
       k = 0;
@@ -63,7 +63,7 @@ awk '
   call = $1;
 }
 END {
-# Find a call that has been active all five days
+# Find a call that has been active all ten days
   for (trycall in array) {
     if (isarray(array[trycall])) {
       k = 0;
@@ -73,7 +73,7 @@ END {
         call = trycall;
     }
   }
-# Put the date of the last five days in date[]
+# Put the date of the last ten days in date[]
   j = 0
   for (datestring in array[call]) {
     date[j++] = datestring;
