@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run a full analysis on yesterday's RBN data in file rbndata.csv 
 # Put result in files rbnskew.txt, and rbnskew2.txt
-set -x
+#set -x
 
 RBNFOLDER="rbndata"
 WEBFOLDER="webfiles"
