@@ -49,9 +49,11 @@ if [[ $FILESIZE != "0" ]]; then
     ./makenewref.sh
     ./createwebdata.sh
     ./createhistdata.sh
+    ./createworstdata.sh
     ./createanchordata.sh
 #    printf "Uploading to web hosting...\n"
-    ./ftptohost.sh $CREDFILE $WEBFOLDER/rbnskew.txt $WEBFOLDER/rbnskew2.txt $WEBFOLDER/rbnhist.txt $WEBFOLDER/anchors.txt $WEBFOLDER/rbnskew.csv
+    ./ftptohost.sh $CREDFILE $WEBFOLDER/rbnskew.txt $WEBFOLDER/rbnskew2.txt $WEBFOLDER/rbnhist.txt \
+        $WEBFOLDER/anchors.txt $WEBFOLDER/rbnskew.csv $WEBFOLDER/rbnworst.txt
 #    printf "done\n"
     echo $DATE > $WEBFOLDER/done
 else
